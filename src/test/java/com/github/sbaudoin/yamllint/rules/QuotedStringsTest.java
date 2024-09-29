@@ -27,14 +27,22 @@ class QuotedStringsTest extends RuleTester {
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("quoted-strings: disable");
 
-        check("---\n" +
-                "foo: bar\n", conf);
-        check("---\n" +
-                "foo: \"bar\"\n", conf);
-        check("---\n" +
-                "foo: 'bar'\n", conf);
-        check("---\n" +
-                "bar: 123\n", conf);
+        check("""
+              ---
+              foo: bar
+              """, conf);
+        check("""
+              ---
+              foo: "bar"
+              """, conf);
+        check("""
+              ---
+              foo: 'bar'
+              """, conf);
+        check("""
+              ---
+              bar: 123
+              """, conf);
     }
 
     @Test
@@ -192,44 +200,48 @@ class QuotedStringsTest extends RuleTester {
     void testAnyQuotesNotRequired() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any, required: false}");
 
-        check("---\n" +
-               "boolean1: true\n" +
-               "number1: 123\n" +
-               "string1: foo\n" +
-               "string2: \"foo\"\n" +
-               "string3: \"true\"\n" +
-               "string4: \"123\"\n" +
-               "string5: 'bar'\n" +
-               "string6: !!str genericstring\n" +
-               "string7: !!str 456\n" +
-               "string8: !!str \"quotedgenericstring\"\n" +
-               "binary: !!binary binstring\n" +
-               "integer: !!int intstring\n" +
-               "boolean2: !!bool boolstring\n" +
-               "boolean3: !!bool \"quotedboolstring\"\n" +
-               "block-seq:\n" +
-               "  - foo\n" +
-               "  - \"foo\"\n" +
-               "flow-seq: [foo, \"foo\"]\n" +
-               "flow-map: {a: foo, b: \"foo\"}\n" +
-               "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        check("""
+              ---
+              boolean1: true
+              number1: 123
+              string1: foo
+              string2: "foo"
+              string3: "true"
+              string4: "123"
+              string5: 'bar'
+              string6: !!str genericstring
+              string7: !!str 456
+              string8: !!str "quotedgenericstring"
+              binary: !!binary binstring
+              integer: !!int intstring
+              boolean2: !!bool boolstring
+              boolean3: !!bool "quotedboolstring"
+              block-seq:
+                - foo
+                - "foo"
+              flow-seq: [foo, "foo"]
+              flow-map: {a: foo, b: "foo"}
+              flow-seq2: [foo, "foo,bar", "foo[bar]", "foo{bar}"]
+              flow-map2: {a: foo, b: "foo,bar"}
+              nested-flow1: {a: foo, b: [foo, "foo,bar"]}
+              nested-flow2: [{a: foo}, {b: "foo,bar", c: ["d[e]"]}]
+              """,
                conf);
-        check("---\n" +
-               "multiline string 1: |\n" +
-               "  line 1\n" +
-               "  line 2\n" +
-               "multiline string 2: >\n" +
-               "  word 1\n" +
-               "  word 2\n" +
-               "multiline string 3:\n" +
-               "  word 1\n" +
-               "  word 2\n" +
-               "multiline string 4:\n" +
-               "  \"word 1\\\n" +
-               "   word 2\"\n",
+        check("""
+              ---
+              multiline string 1: |
+                line 1
+                line 2
+              multiline string 2: >
+                word 1
+                word 2
+              multiline string 3:
+                word 1
+                word 2
+              multiline string 4:
+                "word 1\\
+                 word 2"
+              """,
                conf);
     }
 
@@ -387,26 +399,30 @@ class QuotedStringsTest extends RuleTester {
     void testOnlyWwhenNeededCornerCases() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
 
-        check("---\n" +
-                "- \"\"\n" +
-                "- \"- item\"\n" +
-                "- \"key: value\"\n" +
-                "- \"%H:%M:%S\"\n" +
-                "- \"%wheel ALL=(ALL) NOPASSWD: ALL\"\n" +
-                "- '\"quoted\"'\n" +
-                "- \"'foo' == 'bar'\"\n" +
-                "- \"'Mac' in ansible_facts.product_name\"\n" +
-                "- 'foo # bar'\n",
+        check("""
+              ---
+              - ""
+              - "- item"
+              - "key: value"
+              - "%H:%M:%S"
+              - "%wheel ALL=(ALL) NOPASSWD: ALL"
+              - '"quoted"'
+              - "'foo' == 'bar'"
+              - "'Mac' in ansible_facts.product_name"
+              - 'foo # bar'
+              """,
                 conf);
-        check("---\n" +
-                "k1: \"\"\n" +
-                "k2: \"- item\"\n" +
-                "k3: \"key: value\"\n" +
-                "k4: \"%H:%M:%S\"\n" +
-                "k5: \"%wheel ALL=(ALL) NOPASSWD: ALL\"\n" +
-                "k6: '\"quoted\"'\n" +
-                "k7: \"'foo' == 'bar'\"\n" +
-                "k8: \"'Mac' in ansible_facts.product_name\"\n",
+        check("""
+              ---
+              k1: ""
+              k2: "- item"
+              k3: "key: value"
+              k4: "%H:%M:%S"
+              k5: "%wheel ALL=(ALL) NOPASSWD: ALL"
+              k6: '"quoted"'
+              k7: "'foo' == 'bar'"
+              k8: "'Mac' in ansible_facts.product_name"
+              """,
                 conf);
 
         check("---\n" +
@@ -639,9 +655,11 @@ class QuotedStringsTest extends RuleTester {
                 conf, getLintProblem(2, 7));
 
         conf = getConfig("quoted-strings: {quote-type: any}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +
-                "foo2: '[bar\"baz]'\n",
+        check("""
+              ---
+              foo1: '[barbaz]'
+              foo2: '[bar"baz]'
+              """,
                 conf);
     }
 }

@@ -26,9 +26,12 @@ class ExtendedLibraryYamlLintConfigTest {
     @Test
     void testExtendConfigDisableRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
-        YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
-                "rules:\n" +
-                "  trailing-spaces: disable\n");
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                extends: default
+                rules:
+                  trailing-spaces: disable
+                """);
 
         oldConf.ruleConf.put("trailing-spaces", null);
 
@@ -42,12 +45,15 @@ class ExtendedLibraryYamlLintConfigTest {
     @SuppressWarnings("unchecked")
     void testExtendConfigOverrideWholeRule() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
-        YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
-                "rules:\n" +
-                "  empty-lines:\n" +
-                "    max: 42\n" +
-                "    max-start: 43\n" +
-                "    max-end: 44\n");
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                extends: default
+                rules:
+                  empty-lines:
+                    max: 42
+                    max-start: 43
+                    max-end: 44
+                """);
 
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max", 42);
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max-start", 43);
@@ -63,10 +69,13 @@ class ExtendedLibraryYamlLintConfigTest {
     @SuppressWarnings("unchecked")
     void testExtendConfigOverrideRulePartly() throws YamlLintConfigException {
         YamlLintConfig oldConf = getFakeConfig();
-        YamlLintConfig newConf = new YamlLintConfig("extends: default\n" +
-                "rules:\n" +
-                "  empty-lines:\n" +
-                "    max-start: 42\n");
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                extends: default
+                rules:
+                  empty-lines:
+                    max-start: 42
+                """);
 
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max-start", 42);
 

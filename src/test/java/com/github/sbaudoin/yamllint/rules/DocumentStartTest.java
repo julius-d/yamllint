@@ -35,15 +35,21 @@ class DocumentStartTest extends RuleTester {
         check("", conf);
         check("\n", conf);
         check("key: val", conf, getLintProblem(1, 1));
-        check("\n" +
-                "\n" +
-                "key: val\n", conf, getLintProblem(3, 1));
-        check("---\n" +
-                "key: val\n", conf);
-        check("\n" +
-                "\n" +
-                "---\n" +
-                "key: val\n", conf);
+        check("""
+              
+              
+              key: val
+              """, conf, getLintProblem(3, 1));
+        check("""
+              ---
+              key: val
+              """, conf);
+        check("""
+              
+              
+              ---
+              key: val
+              """, conf);
     }
 
     @Test
@@ -51,63 +57,83 @@ class DocumentStartTest extends RuleTester {
         YamlLintConfig conf = getConfig("document-start: {present: false}", "empty-lines: disable");
         check("", conf);
         check("key: val\n", conf);
-        check("\n" +
-                "\n" +
-                "key: val\n", conf);
-        check("---\n" +
-                "key: val\n", conf, getLintProblem(1, 1));
-        check("\n" +
-                "\n" +
-                "---\n" +
-                "key: val\n", conf, getLintProblem(3, 1));
-        check("first: document\n" +
-                "---\n" +
-                "key: val\n", conf, getLintProblem(2, 1));
+        check("""
+              
+              
+              key: val
+              """, conf);
+        check("""
+              ---
+              key: val
+              """, conf, getLintProblem(1, 1));
+        check("""
+              
+              
+              ---
+              key: val
+              """, conf, getLintProblem(3, 1));
+        check("""
+              first: document
+              ---
+              key: val
+              """, conf, getLintProblem(2, 1));
     }
 
     @Test
     void testMultipleDocuments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
-        check("---\n" +
-                "first: document\n" +
-                "...\n" +
-                "---\n" +
-                "second: document\n" +
-                "...\n" +
-                "---\n" +
-                "third: document\n", conf);
-        check("---\n" +
-                "first: document\n" +
-                "---\n" +
-                "second: document\n" +
-                "---\n" +
-                "third: document\n", conf);
-        check("---\n" +
-                "first: document\n" +
-                "...\n" +
-                "second: document\n" +
-                "---\n" +
-                "third: document\n", conf, getSyntaxError(4, 1));
+        check("""
+              ---
+              first: document
+              ...
+              ---
+              second: document
+              ...
+              ---
+              third: document
+              """, conf);
+        check("""
+              ---
+              first: document
+              ---
+              second: document
+              ---
+              third: document
+              """, conf);
+        check("""
+              ---
+              first: document
+              ...
+              second: document
+              ---
+              third: document
+              """, conf, getSyntaxError(4, 1));
     }
 
     @Test
     void testDirectives() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
-        check("%YAML 1.2\n" +
-                "---\n" +
-                "doc: ument\n" +
-                "...\n", conf);
-        check("%YAML 1.2\n" +
-                "%TAG ! tag:clarkevans.com,2002:\n" +
-                "---\n" +
-                "doc: ument\n" +
-                "...\n", conf);
-        check("---\n" +
-                "doc: 1\n" +
-                "...\n" +
-                "%YAML 1.2\n" +
-                "---\n" +
-                "doc: 2\n" +
-                "...\n", conf);
+        check("""
+              %YAML 1.2
+              ---
+              doc: ument
+              ...
+              """, conf);
+        check("""
+              %YAML 1.2
+              %TAG ! tag:clarkevans.com,2002:
+              ---
+              doc: ument
+              ...
+              """, conf);
+        check("""
+              ---
+              doc: 1
+              ...
+              %YAML 1.2
+              ---
+              doc: 2
+              ...
+              """, conf);
     }
 }

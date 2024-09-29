@@ -26,8 +26,10 @@ class TrailingSpacesTest extends RuleTester {
         check("", conf);
         check("\n", conf);
         check("    \n", conf);
-        check("---\n" +
-                "some: text \n", conf);
+        check("""
+              ---
+              some: text\s
+              """, conf);
     }
 
     @Test
@@ -37,8 +39,10 @@ class TrailingSpacesTest extends RuleTester {
         check("\n", conf);
         check("    \n", conf, getLintProblem(1, 1));
         check("\t\t\t\n", conf, getSyntaxError(1, 1));
-        check("---\n"+
-                "some: text \n", conf, getLintProblem(2, 11));
+        check("""
+              ---
+              some: text\s
+              """, conf, getLintProblem(2, 11));
         // Bug in snakeyaml: the syntax error is not raised.
         // See https://bitbucket.org/asomov/snakeyaml/issues/404/incorrect-handling-of-tab-character.
 //        check("---\n" +
@@ -49,9 +53,13 @@ class TrailingSpacesTest extends RuleTester {
     void testWithDosNewLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("trailing-spaces: enable",
                 "new-lines: {type: dos}");
-        check("---\r\n" +
-                "some: text\r\n", conf);
-        check("---\r\n" +
-                "some: text \r\n", conf, getLintProblem(2, 11));
+        check("""
+              ---\r
+              some: text\r
+              """, conf);
+        check("""
+              ---\r
+              some: text \r
+              """, conf, getLintProblem(2, 11));
     }
 }

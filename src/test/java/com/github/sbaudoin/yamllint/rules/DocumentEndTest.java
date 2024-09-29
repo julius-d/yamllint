@@ -23,13 +23,17 @@ class DocumentEndTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: disable");
-        check("---\n" +
-                "with:\n" +
-                "  document: end\n" +
-                "...\n", conf);
-        check("---\n" +
-                "without:\n" +
-                "  document: end\n", conf);
+        check("""
+              ---
+              with:
+                document: end
+              ...
+              """, conf);
+        check("""
+              ---
+              without:
+                document: end
+              """, conf);
     }
 
     @Test
@@ -37,67 +41,85 @@ class DocumentEndTest extends RuleTester {
         YamlLintConfig conf = getConfig("document-end: {present: true}");
         check("", conf);
         check("\n", conf);
-        check("---\n" +
-                "with:\n" +
-                "  document: end\n" +
-                "...\n", conf);
-        check("---\n" +
-                "without:\n" +
-                "  document: end\n", conf, getLintProblem(3, 1));
+        check("""
+              ---
+              with:
+                document: end
+              ...
+              """, conf);
+        check("""
+              ---
+              without:
+                document: end
+              """, conf, getLintProblem(3, 1));
     }
 
     @Test
     void testForbidden() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: false}");
-        check("---\n" +
-                "with:\n" +
-                "  document: end\n" +
-                "...\n", conf, getLintProblem(4, 1));
-        check("---\n" +
-                "without:\n" +
-                "  document: end\n", conf);
+        check("""
+              ---
+              with:
+                document: end
+              ...
+              """, conf, getLintProblem(4, 1));
+        check("""
+              ---
+              without:
+                document: end
+              """, conf);
     }
 
     @Test
     void testMultipleDocuments() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}", "document-start: disable");
-        check("---\n" +
-                "first: document\n" +
-                "...\n" +
-                "---\n" +
-                "second: document\n" +
-                "...\n" +
-                "---\n" +
-                "third: document\n" +
-                "...\n", conf);
-        check("---\n" +
-                "first: document\n" +
-                "...\n" +
-                "---\n" +
-                "second: document\n" +
-                "---\n" +
-                "third: document\n" +
-                "...\n", conf, getLintProblem(6, 1));
+        check("""
+              ---
+              first: document
+              ...
+              ---
+              second: document
+              ...
+              ---
+              third: document
+              ...
+              """, conf);
+        check("""
+              ---
+              first: document
+              ...
+              ---
+              second: document
+              ---
+              third: document
+              ...
+              """, conf, getLintProblem(6, 1));
     }
 
     @Test
     void testDirectives() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("document-end: {present: true}");
-        check("%YAML 1.2\n" +
-                "---\n" +
-                "document: end\n" +
-                "...\n", conf);
-        check("%YAML 1.2\n" +
-                "%TAG ! tag:clarkevans.com,2002:\n" +
-                "---\n" +
-                "document: end\n" +
-                "...\n", conf);
-        check("---\n" +
-                "first: document\n" +
-                "...\n" +
-                "%YAML 1.2\n" +
-                "---\n" +
-                "second: document\n" +
-                "...\n", conf);
+        check("""
+              %YAML 1.2
+              ---
+              document: end
+              ...
+              """, conf);
+        check("""
+              %YAML 1.2
+              %TAG ! tag:clarkevans.com,2002:
+              ---
+              document: end
+              ...
+              """, conf);
+        check("""
+              ---
+              first: document
+              ...
+              %YAML 1.2
+              ---
+              second: document
+              ...
+              """, conf);
     }
 }

@@ -23,167 +23,221 @@ class KeyDuplicatesTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: disable");
-        check("---\n" +
-                "block mapping:\n" +
-                "  key: a\n" +
-                "  otherkey: b\n" +
-                "  key: c\n", conf);
-        check("---\n" +
-                "flow mapping:\n" +
-                "  {key: a, otherkey: b, key: c}\n", conf);
-        check("---\n" +
-                "duplicated twice:\n" +
-                "  - k: a\n" +
-                "    ok: b\n" +
-                "    k: c\n" +
-                "    k: d\n", conf);
-        check("---\n" +
-                "duplicated twice:\n" +
-                "  - {k: a, ok: b, k: c, k: d}\n", conf);
-        check("---\n" +
-                "multiple duplicates:\n" +
-                "  a: 1\n" +
-                "  b: 2\n" +
-                "  c: 3\n" +
-                "  d: 4\n" +
-                "  d: 5\n" +
-                "  b: 6\n", conf);
-        check("---\n" +
-                "multiple duplicates:\n" +
-                "  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n", conf);
-        check("---\n" +
-                "at: root\n" +
-                "multiple: times\n" +
-                "at: root\n", conf);
-        check("---\n" +
-                "nested but OK:\n" +
-                "  a: {a: {a: 1}}\n" +
-                "  b:\n" +
-                "    b: 2\n" +
-                "    c: 3\n", conf);
-        check("---\n" +
-                "nested duplicates:\n" +
-                "  a: {a: 1, a: 1}\n" +
-                "  b:\n" +
-                "    c: 3\n" +
-                "    d: 4\n" +
-                "    d: 4\n" +
-                "  b: 2\n", conf);
-        check("---\n" +
-                "duplicates with many styles: 1\n" +
-                "\"duplicates with many styles\": 1\n" +
-                "'duplicates with many styles': 1\n" +
-                "? duplicates with many styles\n" +
-                ": 1\n" +
-                "? >-\n" +
-                "    duplicates with\n" +
-                "    many styles\n" +
-                ": 1\n", conf);
-            check("---\n" +
-                "Merge Keys are OK:\n" +
-                "anchor_one: &anchor_one\n" +
-                "  one: one\n" +
-                "anchor_two: &anchor_two\n" +
-                "  two: two\n" +
-                "anchor_reference:\n" +
-                "  <<: *anchor_one\n" +
-                "  <<: *anchor_two\n", conf);
-        check("---\n" +
-                "{a: 1, b: 2}}\n", conf, getSyntaxError(2, 13));
-        check("---\n" +
-                "[a, b, c]]\n", conf, getSyntaxError(2, 10));
+        check("""
+              ---
+              block mapping:
+                key: a
+                otherkey: b
+                key: c
+              """, conf);
+        check("""
+              ---
+              flow mapping:
+                {key: a, otherkey: b, key: c}
+              """, conf);
+        check("""
+              ---
+              duplicated twice:
+                - k: a
+                  ok: b
+                  k: c
+                  k: d
+              """, conf);
+        check("""
+              ---
+              duplicated twice:
+                - {k: a, ok: b, k: c, k: d}
+              """, conf);
+        check("""
+              ---
+              multiple duplicates:
+                a: 1
+                b: 2
+                c: 3
+                d: 4
+                d: 5
+                b: 6
+              """, conf);
+        check("""
+              ---
+              multiple duplicates:
+                {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}
+              """, conf);
+        check("""
+              ---
+              at: root
+              multiple: times
+              at: root
+              """, conf);
+        check("""
+              ---
+              nested but OK:
+                a: {a: {a: 1}}
+                b:
+                  b: 2
+                  c: 3
+              """, conf);
+        check("""
+              ---
+              nested duplicates:
+                a: {a: 1, a: 1}
+                b:
+                  c: 3
+                  d: 4
+                  d: 4
+                b: 2
+              """, conf);
+        check("""
+              ---
+              duplicates with many styles: 1
+              "duplicates with many styles": 1
+              'duplicates with many styles': 1
+              ? duplicates with many styles
+              : 1
+              ? >-
+                  duplicates with
+                  many styles
+              : 1
+              """, conf);
+        check("""
+              ---
+              Merge Keys are OK:
+              anchor_one: &anchor_one
+                one: one
+              anchor_two: &anchor_two
+                two: two
+              anchor_reference:
+                <<: *anchor_one
+                <<: *anchor_two
+              """, conf);
+        check("""
+              ---
+              {a: 1, b: 2}}
+              """, conf, getSyntaxError(2, 13));
+        check("""
+              ---
+              [a, b, c]]
+              """, conf, getSyntaxError(2, 10));
     }
 
     @Test
     void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
-        check("---\n" +
-                "block mapping:\n" +
-                "  key: a\n" +
-                "  otherkey: b\n" +
-                "  key: c\n", conf,
+        check("""
+              ---
+              block mapping:
+                key: a
+                otherkey: b
+                key: c
+              """, conf,
                 getLintProblem(5, 3));
-        check("---\n" +
-                "flow mapping:\n" +
-                "  {key: a, otherkey: b, key: c}\n", conf,
+        check("""
+              ---
+              flow mapping:
+                {key: a, otherkey: b, key: c}
+              """, conf,
                 getLintProblem(3, 25));
-        check("---\n" +
-                "duplicated twice:\n" +
-                "  - k: a\n" +
-                "    ok: b\n" +
-                "    k: c\n" +
-                "    k: d\n", conf,
+        check("""
+              ---
+              duplicated twice:
+                - k: a
+                  ok: b
+                  k: c
+                  k: d
+              """, conf,
                 getLintProblem(5, 5), getLintProblem(6, 5));
-        check("---\n" +
-                "duplicated twice:\n" +
-                "  - {k: a, ok: b, k: c, k: d}\n", conf,
+        check("""
+              ---
+              duplicated twice:
+                - {k: a, ok: b, k: c, k: d}
+              """, conf,
                 getLintProblem(3, 19), getLintProblem(3, 25));
-        check("---\n" +
-                "multiple duplicates:\n" +
-                "  a: 1\n" +
-                "  b: 2\n" +
-                "  c: 3\n" +
-                "  d: 4\n" +
-                "  d: 5\n" +
-                "  b: 6\n", conf,
+        check("""
+              ---
+              multiple duplicates:
+                a: 1
+                b: 2
+                c: 3
+                d: 4
+                d: 5
+                b: 6
+              """, conf,
                 getLintProblem(7, 3), getLintProblem(8, 3));
-        check("---\n" +
-                "multiple duplicates:\n" +
-                "  {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}\n", conf,
+        check("""
+              ---
+              multiple duplicates:
+                {a: 1, b: 2, c: 3, d: 4, d: 5, b: 6}
+              """, conf,
                 getLintProblem(3, 28), getLintProblem(3, 34));
-        check("---\n" +
-                "at: root\n" +
-                "multiple: times\n" +
-                "at: root\n", conf,
+        check("""
+              ---
+              at: root
+              multiple: times
+              at: root
+              """, conf,
                 getLintProblem(4, 1));
-        check("---\n" +
-                "nested but OK:\n" +
-                "  a: {a: {a: 1}}\n" +
-                "  b:\n" +
-                "    b: 2\n" +
-                "    c: 3\n", conf);
-        check("---\n" +
-                "nested duplicates:\n" +
-                "  a: {a: 1, a: 1}\n" +
-                "  b:\n" +
-                "    c: 3\n" +
-                "    d: 4\n" +
-                "    d: 4\n" +
-                "  b: 2\n", conf,
+        check("""
+              ---
+              nested but OK:
+                a: {a: {a: 1}}
+                b:
+                  b: 2
+                  c: 3
+              """, conf);
+        check("""
+              ---
+              nested duplicates:
+                a: {a: 1, a: 1}
+                b:
+                  c: 3
+                  d: 4
+                  d: 4
+                b: 2
+              """, conf,
                 getLintProblem(3, 13), getLintProblem(7, 5), getLintProblem(8, 3));
-        check("---\n" +
-                "duplicates with many styles: 1\n" +
-                "\"duplicates with many styles\": 1\n" +
-                "'duplicates with many styles': 1\n" +
-                "? duplicates with many styles\n" +
-                ": 1\n" +
-                "? >-\n" +
-                "    duplicates with\n" +
-                "    many styles\n" +
-                ": 1\n", conf,
+        check("""
+              ---
+              duplicates with many styles: 1
+              "duplicates with many styles": 1
+              'duplicates with many styles': 1
+              ? duplicates with many styles
+              : 1
+              ? >-
+                  duplicates with
+                  many styles
+              : 1
+              """, conf,
                 getLintProblem(3, 1), getLintProblem(4, 1), getLintProblem(5, 3),
                 getLintProblem(7, 3));
-        check("---\n" +
-                "Merge Keys are OK:\n" +
-                "anchor_one: &anchor_one\n" +
-                "  one: one\n" +
-                "anchor_two: &anchor_two\n" +
-                "  two: two\n" +
-                "anchor_reference:\n" +
-                "  <<: *anchor_one\n" +
-                "  <<: *anchor_two\n", conf);
-        check("---\n" +
-                "{a: 1, b: 2}}\n", conf, getSyntaxError(2, 13));
-        check("---\n" +
-                "[a, b, c]]\n", conf, getSyntaxError(2, 10));
+        check("""
+              ---
+              Merge Keys are OK:
+              anchor_one: &anchor_one
+                one: one
+              anchor_two: &anchor_two
+                two: two
+              anchor_reference:
+                <<: *anchor_one
+                <<: *anchor_two
+              """, conf);
+        check("""
+              ---
+              {a: 1, b: 2}}
+              """, conf, getSyntaxError(2, 13));
+        check("""
+              ---
+              [a, b, c]]
+              """, conf, getSyntaxError(2, 10));
     }
 
     @Test
     void testKeyTokensInFlowSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
-        check("---\n" +
-                "[\n" +
-                "  flow: sequence, with, key: value, mappings\n" +
-                "]\n", conf);
+        check("""
+              ---
+              [
+                flow: sequence, with, key: value, mappings
+              ]
+              """, conf);
     }
 }

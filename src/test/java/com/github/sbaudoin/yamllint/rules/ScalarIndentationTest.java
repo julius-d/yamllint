@@ -31,30 +31,50 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
                 "document-start: disable");
-        check("multi\n" +
-                "line\n", conf);
-        check("multi\n" +
-                " line\n", conf);
-        check("- multi\n" +
-                "  line\n", conf);
-        check("- multi\n" +
-                "   line\n", conf);
-        check("a key: multi\n" +
-                "       line\n", conf);
-        check("a key: multi\n" +
-                "  line\n", conf);
-        check("a key: multi\n" +
-                "        line\n", conf);
-        check("a key:\n" +
-                "  multi\n" +
-                "  line\n", conf);
-        check("- C code: void main() {\n" +
-                "              printf(\"foo\");\n" +
-                "          }\n", conf);
-        check("- C code:\n" +
-                "    void main() {\n" +
-                "        printf(\"foo\");\n" +
-                "    }\n", conf);
+        check("""
+              multi
+              line
+              """, conf);
+        check("""
+              multi
+               line
+              """, conf);
+        check("""
+              - multi
+                line
+              """, conf);
+        check("""
+              - multi
+                 line
+              """, conf);
+        check("""
+              a key: multi
+                     line
+              """, conf);
+        check("""
+              a key: multi
+                line
+              """, conf);
+        check("""
+              a key: multi
+                      line
+              """, conf);
+        check("""
+              a key:
+                multi
+                line
+              """, conf);
+        check("""
+              - C code: void main() {
+                            printf("foo");
+                        }
+              """, conf);
+        check("""
+              - C code:
+                  void main() {
+                      printf("foo");
+                  }
+              """, conf);
     }
 
     @Test
@@ -63,24 +83,38 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("multi\n" +
-                " line\n", conf, getLintProblem(2, 2));
-        check("- multi\n" +
-                "   line\n", conf, getLintProblem(2, 4));
-        check("a key: multi\n" +
-                "  line\n", conf, getLintProblem(2, 3));
-        check("a key: multi\n" +
-                "        line\n", conf, getLintProblem(2, 9));
-        check("a key:\n" +
-                "  multi\n" +
-                "   line\n", conf, getLintProblem(3, 4));
-        check("- C code: void main() {\n" +
-                "              printf(\"foo\");\n" +
-                "          }\n", conf, getLintProblem(2, 15));
-        check("- C code:\n" +
-                "    void main() {\n" +
-                "        printf(\"foo\");\n" +
-                "    }\n", conf, getLintProblem(3, 9));
+        check("""
+              multi
+               line
+              """, conf, getLintProblem(2, 2));
+        check("""
+              - multi
+                 line
+              """, conf, getLintProblem(2, 4));
+        check("""
+              a key: multi
+                line
+              """, conf, getLintProblem(2, 3));
+        check("""
+              a key: multi
+                      line
+              """, conf, getLintProblem(2, 9));
+        check("""
+              a key:
+                multi
+                 line
+              """, conf, getLintProblem(3, 4));
+        check("""
+              - C code: void main() {
+                            printf("foo");
+                        }
+              """, conf, getLintProblem(2, 15));
+        check("""
+              - C code:
+                  void main() {
+                      printf("foo");
+                  }
+              """, conf, getLintProblem(3, 9));
     }
 
     @Test
@@ -89,32 +123,48 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
                 "document-start: disable");
-        check("\"multi\n" +
-                " line\"\n", conf);
-        check("- \"multi\n" +
-                "   line\"\n", conf);
-        check("a key: \"multi\n" +
-                "        line\"\n", conf);
-        check("a key:\n" +
-                "  \"multi\n" +
-                "   line\"\n", conf);
-        check("- jinja2: \"{% if ansible is defined %}\n" +
-                "             {{ ansible }}\n" +
-                "           {% else %}\n" +
-                "             {{ chef }}\n" +
-                "           {% endif %}\"\n", conf);
-        check("- jinja2:\n" +
-                "    \"{% if ansible is defined %}\n" +
-                "       {{ ansible }}\n" +
-                "     {% else %}\n" +
-                "       {{ chef }}\n" +
-                "     {% endif %}\"\n", conf);
-        check("[\"this is a very long line\n" +
-                "  that needs to be split\",\n" +
-                " \"other line\"]\n", conf);
-        check("[\"multi\n" +
-                "  line 1\", \"multi\n" +
-                "            line 2\"]\n", conf);
+        check("""
+              "multi
+               line"
+              """, conf);
+        check("""
+              - "multi
+                 line"
+              """, conf);
+        check("""
+              a key: "multi
+                      line"
+              """, conf);
+        check("""
+              a key:
+                "multi
+                 line"
+              """, conf);
+        check("""
+              - jinja2: "{% if ansible is defined %}
+                           {{ ansible }}
+                         {% else %}
+                           {{ chef }}
+                         {% endif %}"
+              """, conf);
+        check("""
+              - jinja2:
+                  "{% if ansible is defined %}
+                     {{ ansible }}
+                   {% else %}
+                     {{ chef }}
+                   {% endif %}"
+              """, conf);
+        check("""
+              ["this is a very long line
+                that needs to be split",
+               "other line"]
+              """, conf);
+        check("""
+              ["multi
+                line 1", "multi
+                          line 2"]
+              """, conf);
     }
 
     @Test
@@ -123,57 +173,91 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("\"multi\n" +
-                "line\"\n", conf, getLintProblem(2, 1));
-        check("\"multi\n" +
-                "  line\"\n", conf, getLintProblem(2, 3));
-        check("- \"multi\n" +
-                "  line\"\n", conf, getLintProblem(2, 3));
-        check("- \"multi\n" +
-                "    line\"\n", conf, getLintProblem(2, 5));
-        check("a key: \"multi\n" +
-                "  line\"\n", conf, getLintProblem(2, 3));
-        check("a key: \"multi\n" +
-                "       line\"\n", conf, getLintProblem(2, 8));
-        check("a key: \"multi\n" +
-                "         line\"\n", conf, getLintProblem(2, 10));
-        check("a key:\n" +
-                "  \"multi\n" +
-                "  line\"\n", conf, getLintProblem(3, 3));
-        check("a key:\n" +
-                "  \"multi\n" +
-                "    line\"\n", conf, getLintProblem(3, 5));
-        check("- jinja2: \"{% if ansible is defined %}\n" +
-                "             {{ ansible }}\n" +
-                "           {% else %}\n" +
-                "             {{ chef }}\n" +
-                "           {% endif %}\"\n", conf,
+        check("""
+              "multi
+              line"
+              """, conf, getLintProblem(2, 1));
+        check("""
+              "multi
+                line"
+              """, conf, getLintProblem(2, 3));
+        check("""
+              - "multi
+                line"
+              """, conf, getLintProblem(2, 3));
+        check("""
+              - "multi
+                  line"
+              """, conf, getLintProblem(2, 5));
+        check("""
+              a key: "multi
+                line"
+              """, conf, getLintProblem(2, 3));
+        check("""
+              a key: "multi
+                     line"
+              """, conf, getLintProblem(2, 8));
+        check("""
+              a key: "multi
+                       line"
+              """, conf, getLintProblem(2, 10));
+        check("""
+              a key:
+                "multi
+                line"
+              """, conf, getLintProblem(3, 3));
+        check("""
+              a key:
+                "multi
+                  line"
+              """, conf, getLintProblem(3, 5));
+        check("""
+              - jinja2: "{% if ansible is defined %}
+                           {{ ansible }}
+                         {% else %}
+                           {{ chef }}
+                         {% endif %}"
+              """, conf,
                 getLintProblem(2, 14), getLintProblem(4, 14));
-        check("- jinja2:\n" +
-                "    \"{% if ansible is defined %}\n" +
-                "       {{ ansible }}\n" +
-                "     {% else %}\n" +
-                "       {{ chef }}\n" +
-                "     {% endif %}\"\n", conf,
+        check("""
+              - jinja2:
+                  "{% if ansible is defined %}
+                     {{ ansible }}
+                   {% else %}
+                     {{ chef }}
+                   {% endif %}"
+              """, conf,
                 getLintProblem(3, 8), getLintProblem(5, 8));
-        check("[\"this is a very long line\n" +
-                "  that needs to be split\",\n" +
-                " \"other line\"]\n", conf);
-        check("[\"this is a very long line\n" +
-                " that needs to be split\",\n" +
-                " \"other line\"]\n", conf, getLintProblem(2, 2));
-        check("[\"this is a very long line\n" +
-                "   that needs to be split\",\n" +
-                " \"other line\"]\n", conf, getLintProblem(2, 4));
-        check("[\"multi\n" +
-                "  line 1\", \"multi\n" +
-                "            line 2\"]\n", conf);
-        check("[\"multi\n" +
-                "  line 1\", \"multi\n" +
-                "           line 2\"]\n", conf, getLintProblem(3, 12));
-        check("[\"multi\n" +
-                "  line 1\", \"multi\n" +
-                "             line 2\"]\n", conf, getLintProblem(3, 14));
+        check("""
+              ["this is a very long line
+                that needs to be split",
+               "other line"]
+              """, conf);
+        check("""
+              ["this is a very long line
+               that needs to be split",
+               "other line"]
+              """, conf, getLintProblem(2, 2));
+        check("""
+              ["this is a very long line
+                 that needs to be split",
+               "other line"]
+              """, conf, getLintProblem(2, 4));
+        check("""
+              ["multi
+                line 1", "multi
+                          line 2"]
+              """, conf);
+        check("""
+              ["multi
+                line 1", "multi
+                         line 2"]
+              """, conf, getLintProblem(3, 12));
+        check("""
+              ["multi
+                line 1", "multi
+                           line 2"]
+              """, conf, getLintProblem(3, 14));
     }
 
     @Test
@@ -182,39 +266,53 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
                 "document-start: disable");
-        check(">\n" +
-                "  multi\n" +
-                "  line\n", conf);
-        check("- >\n" +
-                "    multi\n" +
-                "    line\n", conf);
-        check("- key: >\n" +
-                "    multi\n" +
-                "    line\n", conf);
-        check("- key:\n" +
-                "    >\n" +
-                "      multi\n" +
-                "      line\n", conf);
-        check("- ? >\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  : >\n" +
-                "      multi-line\n" +
-                "      value\n", conf);
-        check("- ?\n" +
-                "    >\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  :\n" +
-                "    >\n" +
-                "      multi-line\n" +
-                "      value\n", conf);
-        check("- jinja2: >\n" +
-                "    {% if ansible is defined %}\n" +
-                "      {{ ansible }}\n" +
-                "    {% else %}\n" +
-                "      {{ chef }}\n" +
-                "    {% endif %}\n", conf);
+        check("""
+              >
+                multi
+                line
+              """, conf);
+        check("""
+              - >
+                  multi
+                  line
+              """, conf);
+        check("""
+              - key: >
+                  multi
+                  line
+              """, conf);
+        check("""
+              - key:
+                  >
+                    multi
+                    line
+              """, conf);
+        check("""
+              - ? >
+                    multi-line
+                    key
+                : >
+                    multi-line
+                    value
+              """, conf);
+        check("""
+              - ?
+                  >
+                    multi-line
+                    key
+                :
+                  >
+                    multi-line
+                    value
+              """, conf);
+        check("""
+              - jinja2: >
+                  {% if ansible is defined %}
+                    {{ ansible }}
+                  {% else %}
+                    {{ chef }}
+                  {% endif %}
+              """, conf);
     }
 
     @Test
@@ -223,41 +321,55 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check(">\n" +
-                "  multi\n" +
-                "   line\n", conf, getLintProblem(3, 4));
-        check("- >\n" +
-                "    multi\n" +
-                "     line\n", conf, getLintProblem(3, 6));
-        check("- key: >\n" +
-                "    multi\n" +
-                "     line\n", conf, getLintProblem(3, 6));
-        check("- key:\n" +
-                "    >\n" +
-                "      multi\n" +
-                "       line\n", conf, getLintProblem(4, 8));
-        check("- ? >\n" +
-                "      multi-line\n" +
-                "       key\n" +
-                "  : >\n" +
-                "      multi-line\n" +
-                "       value\n", conf,
+        check("""
+              >
+                multi
+                 line
+              """, conf, getLintProblem(3, 4));
+        check("""
+              - >
+                  multi
+                   line
+              """, conf, getLintProblem(3, 6));
+        check("""
+              - key: >
+                  multi
+                   line
+              """, conf, getLintProblem(3, 6));
+        check("""
+              - key:
+                  >
+                    multi
+                     line
+              """, conf, getLintProblem(4, 8));
+        check("""
+              - ? >
+                    multi-line
+                     key
+                : >
+                    multi-line
+                     value
+              """, conf,
                 getLintProblem(3, 8), getLintProblem(6, 8));
-        check("- ?\n" +
-                "    >\n" +
-                "      multi-line\n" +
-                "       key\n" +
-                "  :\n" +
-                "    >\n" +
-                "      multi-line\n" +
-                "       value\n", conf,
+        check("""
+              - ?
+                  >
+                    multi-line
+                     key
+                :
+                  >
+                    multi-line
+                     value
+              """, conf,
                 getLintProblem(4, 8), getLintProblem(8, 8));
-        check("- jinja2: >\n" +
-                "    {% if ansible is defined %}\n" +
-                "      {{ ansible }}\n" +
-                "    {% else %}\n" +
-                "      {{ chef }}\n" +
-                "    {% endif %}\n", conf,
+        check("""
+              - jinja2: >
+                  {% if ansible is defined %}
+                    {{ ansible }}
+                  {% else %}
+                    {{ chef }}
+                  {% endif %}
+              """, conf,
                 getLintProblem(3, 7), getLintProblem(5, 7));
     }
 
@@ -267,39 +379,53 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
                 "document-start: disable");
-        check("|\n" +
-                "  multi\n" +
-                "  line\n", conf);
-        check("- |\n" +
-                "    multi\n" +
-                "    line\n", conf);
-        check("- key: |\n" +
-                "    multi\n" +
-                "    line\n", conf);
-        check("- key:\n" +
-                "    |\n" +
-                "      multi\n" +
-                "      line\n", conf);
-        check("- ? |\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  : |\n" +
-                "      multi-line\n" +
-                "      value\n", conf);
-        check("- ?\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  :\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "      value\n", conf);
-        check("- jinja2: |\n" +
-                "    {% if ansible is defined %}\n" +
-                "     {{ ansible }}\n" +
-                "    {% else %}\n" +
-                "      {{ chef }}\n" +
-                "    {% endif %}\n", conf);
+        check("""
+              |
+                multi
+                line
+              """, conf);
+        check("""
+              - |
+                  multi
+                  line
+              """, conf);
+        check("""
+              - key: |
+                  multi
+                  line
+              """, conf);
+        check("""
+              - key:
+                  |
+                    multi
+                    line
+              """, conf);
+        check("""
+              - ? |
+                    multi-line
+                    key
+                : |
+                    multi-line
+                    value
+              """, conf);
+        check("""
+              - ?
+                  |
+                    multi-line
+                    key
+                :
+                  |
+                    multi-line
+                    value
+              """, conf);
+        check("""
+              - jinja2: |
+                  {% if ansible is defined %}
+                   {{ ansible }}
+                  {% else %}
+                    {{ chef }}
+                  {% endif %}
+              """, conf);
     }
 
     @Test
@@ -308,41 +434,55 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("|\n" +
-                "  multi\n" +
-                "   line\n", conf, getLintProblem(3, 4));
-        check("- |\n" +
-                "    multi\n" +
-                "     line\n", conf, getLintProblem(3, 6));
-        check("- key: |\n" +
-                "    multi\n" +
-                "     line\n", conf, getLintProblem(3, 6));
-        check("- key:\n" +
-                "    |\n" +
-                "      multi\n" +
-                "       line\n", conf, getLintProblem(4, 8));
-        check("- ? |\n" +
-                "      multi-line\n" +
-                "       key\n" +
-                "  : |\n" +
-                "      multi-line\n" +
-                "       value\n", conf,
+        check("""
+              |
+                multi
+                 line
+              """, conf, getLintProblem(3, 4));
+        check("""
+              - |
+                  multi
+                   line
+              """, conf, getLintProblem(3, 6));
+        check("""
+              - key: |
+                  multi
+                   line
+              """, conf, getLintProblem(3, 6));
+        check("""
+              - key:
+                  |
+                    multi
+                     line
+              """, conf, getLintProblem(4, 8));
+        check("""
+              - ? |
+                    multi-line
+                     key
+                : |
+                    multi-line
+                     value
+              """, conf,
                 getLintProblem(3, 8), getLintProblem(6, 8));
-        check("- ?\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "       key\n" +
-                "  :\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "       value\n", conf,
+        check("""
+              - ?
+                  |
+                    multi-line
+                     key
+                :
+                  |
+                    multi-line
+                     value
+              """, conf,
                 getLintProblem(4, 8), getLintProblem(8, 8));
-        check("- jinja2: |\n" +
-                "    {% if ansible is defined %}\n" +
-                "      {{ ansible }}\n" +
-                "    {% else %}\n" +
-                "      {{ chef }}\n" +
-                "    {% endif %}\n", conf,
+        check("""
+              - jinja2: |
+                  {% if ansible is defined %}
+                    {{ ansible }}
+                  {% else %}
+                    {{ chef }}
+                  {% endif %}
+              """, conf,
                 getLintProblem(3, 7), getLintProblem(5, 7));
     }
 
@@ -355,23 +495,29 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("- long text: very \"long\"\n" +
-                "             'string' with\n" +
-                "\n" +
-                "             paragraph gap, \\n and\n" +
-                "             spaces.\n", conf);
-        check("- long text: very \"long\"\n" +
-                "    'string' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.\n", conf,
+        check("""
+              - long text: very "long"
+                           'string' with
+              
+                           paragraph gap, \\n and
+                           spaces.
+              """, conf);
+        check("""
+              - long text: very "long"
+                  'string' with
+              
+                  paragraph gap, \\n and
+                  spaces.
+              """, conf,
                 getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("- long text:\n" +
-                "    very \"long\"\n" +
-                "    'string' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.\n", conf);
+        check("""
+              - long text:
+                  very "long"
+                  'string' with
+              
+                  paragraph gap, \\n and
+                  spaces.
+              """, conf);
     }
 
     @Test
@@ -380,29 +526,37 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("- long text: \"very \\\"long\\\"\n" +
-                "              'string' with\n" +
-                "\n" +
-                "              paragraph gap, \\n and\n" +
-                "              spaces.\"\n", conf);
-        check("- long text: \"very \\\"long\\\"\n" +
-                "    'string' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.\"\n", conf,
+        check("""
+              - long text: "very \\"long\\"
+                            'string' with
+              
+                            paragraph gap, \\n and
+                            spaces."
+              """, conf);
+        check("""
+              - long text: "very \\"long\\"
+                  'string' with
+              
+                  paragraph gap, \\n and
+                  spaces."
+              """, conf,
                 getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("- long text: \"very \\\"long\\\"\n" +
-                "'string' with\n" +
-                "\n" +
-                "paragraph gap, \\n and\n" +
-                "spaces.\"\n", conf,
+        check("""
+              - long text: "very \\"long\\"
+              'string' with
+              
+              paragraph gap, \\n and
+              spaces."
+              """, conf,
                 getLintProblem(2, 1), getLintProblem(4, 1), getLintProblem(5, 1));
-        check("- long text:\n" +
-                "    \"very \\\"long\\\"\n" +
-                "     \'string\' with\n" +
-                "\n" +
-                "     paragraph gap, \\n and\n" +
-                "     spaces.\"\n", conf);
+        check("""
+              - long text:
+                  "very \\"long\\"
+                   \'string\' with
+              
+                   paragraph gap, \\n and
+                   spaces."
+              """, conf);
     }
 
     @Test
@@ -411,29 +565,37 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("- long text: 'very \"long\"\n" +
-                "              ''string'' with\n" +
-                "\n" +
-                "              paragraph gap, \\n and\n" +
-                "              spaces.'\n", conf);
-        check("- long text: 'very \"long\"\n" +
-                "    ''string'' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.'\n", conf,
+        check("""
+              - long text: 'very "long"
+                            ''string'' with
+              
+                            paragraph gap, \\n and
+                            spaces.'
+              """, conf);
+        check("""
+              - long text: 'very "long"
+                  ''string'' with
+              
+                  paragraph gap, \\n and
+                  spaces.'
+              """, conf,
                 getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("- long text: 'very \"long\"\n" +
-                "''string'' with\n" +
-                "\n" +
-                "paragraph gap, \\n and\n" +
-                "spaces.'\n", conf,
+        check("""
+              - long text: 'very "long"
+              ''string'' with
+              
+              paragraph gap, \\n and
+              spaces.'
+              """, conf,
                 getLintProblem(2, 1), getLintProblem(4, 1), getLintProblem(5, 1));
-        check("- long text:\n" +
-                "    'very \"long\"\n" +
-                "     ''string'' with\n" +
-                "\n" +
-                "     paragraph gap, \\n and\n" +
-                "     spaces.'\n", conf);
+        check("""
+              - long text:
+                  'very "long"
+                   ''string'' with
+              
+                   paragraph gap, \\n and
+                   spaces.'
+              """, conf);
     }
 
     @Test
@@ -442,18 +604,22 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("- long text: >\n" +
-                "    very \"long\"\n" +
-                "    'string' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.\n", conf);
-        check("- long text: >\n" +
-                "    very \"long\"\n" +
-                "     'string' with\n" +
-                "\n" +
-                "      paragraph gap, \\n and\n" +
-                "       spaces.\n", conf,
+        check("""
+              - long text: >
+                  very "long"
+                  'string' with
+              
+                  paragraph gap, \\n and
+                  spaces.
+              """, conf);
+        check("""
+              - long text: >
+                  very "long"
+                   'string' with
+              
+                    paragraph gap, \\n and
+                     spaces.
+              """, conf,
                 getLintProblem(3, 6), getLintProblem(5, 7), getLintProblem(6, 8));
     }
 
@@ -463,18 +629,22 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("- long text: |\n" +
-                "    very \"long\"\n" +
-                "    'string' with\n" +
-                "\n" +
-                "    paragraph gap, \\n and\n" +
-                "    spaces.\n", conf);
-        check("- long text: |\n" +
-                "    very \"long\"\n" +
-                "     'string' with\n" +
-                "\n" +
-                "      paragraph gap, \\n and\n" +
-                "       spaces.\n", conf,
+        check("""
+              - long text: |
+                  very "long"
+                  'string' with
+              
+                  paragraph gap, \\n and
+                  spaces.
+              """, conf);
+        check("""
+              - long text: |
+                  very "long"
+                   'string' with
+              
+                    paragraph gap, \\n and
+                     spaces.
+              """, conf,
                 getLintProblem(3, 6), getLintProblem(5, 7), getLintProblem(6, 8));
     }
 
@@ -484,36 +654,60 @@ class ScalarIndentationTest extends RuleTester {
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
                 "document-start: disable");
-        check("multi\n" +
-                "line\n", conf);
-        check("multi\n" +
-                " line\n", conf, getLintProblem(2, 2));
-        check("- multi\n" +
-                "  line\n", conf);
-        check("- multi\n" +
-                "   line\n", conf, getLintProblem(2, 4));
-        check("a key: multi\n" +
-                "  line\n", conf, getLintProblem(2, 3));
-        check("a key: multi\n" +
-                "        line\n", conf, getLintProblem(2, 9));
-        check("a key:\n" +
-                "  multi\n" +
-                "   line\n", conf, getLintProblem(3, 4));
-        check("- C code: void main() {\n" +
-                "              printf(\"foo\");\n" +
-                "          }\n", conf, getLintProblem(2, 15));
-        check("- C code:\n" +
-                "    void main() {\n" +
-                "        printf(\"foo\");\n" +
-                "    }\n", conf, getLintProblem(3, 9));
-        check(">\n" +
-                "  multi\n" +
-                "  line\n", conf);
-        check(">\n" +
-                "     multi\n" +
-                "     line\n", conf);
-        check(">\n" +
-                "     multi\n" +
-                "      line\n", conf, getLintProblem(3, 7));
+        check("""
+              multi
+              line
+              """, conf);
+        check("""
+              multi
+               line
+              """, conf, getLintProblem(2, 2));
+        check("""
+              - multi
+                line
+              """, conf);
+        check("""
+              - multi
+                 line
+              """, conf, getLintProblem(2, 4));
+        check("""
+              a key: multi
+                line
+              """, conf, getLintProblem(2, 3));
+        check("""
+              a key: multi
+                      line
+              """, conf, getLintProblem(2, 9));
+        check("""
+              a key:
+                multi
+                 line
+              """, conf, getLintProblem(3, 4));
+        check("""
+              - C code: void main() {
+                            printf("foo");
+                        }
+              """, conf, getLintProblem(2, 15));
+        check("""
+              - C code:
+                  void main() {
+                      printf("foo");
+                  }
+              """, conf, getLintProblem(3, 9));
+        check("""
+              >
+                multi
+                line
+              """, conf);
+        check("""
+              >
+                   multi
+                   line
+              """, conf);
+        check("""
+              >
+                   multi
+                    line
+              """, conf, getLintProblem(3, 7));
     }
 }

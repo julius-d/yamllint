@@ -23,107 +23,137 @@ class CommentsIndentationTest extends RuleTester {
     @Test
     void testDisable() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: disable");
-        check("---\n" +
-                " # line 1\n" +
-                "# line 2\n" +
-                "  # line 3\n" +
-                "  # line 4\n" +
-                "\n" +
-                "obj:\n" +
-                " # these\n" +
-                "   # are\n" +
-                "  # [good]\n" +
-                "# bad\n" +
-                "      # comments\n" +
-                "  a: b\n" +
-                "\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "  # comments\n" +
-                "\n" +
-                "obj2:\n" +
-                "  b: 2\n" +
-                "\n" +
-                "# empty\n" +
-                "#\n" +
-                "# comment\n" +
-                "...\n", conf);
+        check("""
+              ---
+               # line 1
+              # line 2
+                # line 3
+                # line 4
+              
+              obj:
+               # these
+                 # are
+                # [good]
+              # bad
+                    # comments
+                a: b
+              
+              obj1:
+                a: 1
+                # comments
+              
+              obj2:
+                b: 2
+              
+              # empty
+              #
+              # comment
+              ...
+              """, conf);
     }
 
     @Test
     void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
-        check("---\n" +
-                "# line 1\n" +
-                "# line 2\n", conf);
-        check("---\n" +
-                " # line 1\n" +
-                "# line 2\n", conf, getLintProblem(2, 2));
-        check("---\n" +
-                "  # line 1\n" +
-                "  # line 2\n", conf, getLintProblem(2, 3));
-        check("---\n" +
-                "obj:\n" +
-                "  # normal\n" +
-                "  a: b\n", conf);
-        check("---\n" +
-                "obj:\n" +
-                " # bad\n" +
-                "  a: b\n", conf, getLintProblem(3, 2));
-        check("---\n" +
-                "obj:\n" +
-                "# bad\n" +
-                "  a: b\n", conf, getLintProblem(3, 1));
-        check("---\n" +
-                "obj:\n" +
-                "   # bad\n" +
-                "  a: b\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "obj:\n" +
-                " # these\n" +
-                "   # are\n" +
-                "  # [good]\n" +
-                "# bad\n" +
-                "      # comments\n" +
-                "  a: b\n", conf,
+        check("""
+              ---
+              # line 1
+              # line 2
+              """, conf);
+        check("""
+              ---
+               # line 1
+              # line 2
+              """, conf, getLintProblem(2, 2));
+        check("""
+              ---
+                # line 1
+                # line 2
+              """, conf, getLintProblem(2, 3));
+        check("""
+              ---
+              obj:
+                # normal
+                a: b
+              """, conf);
+        check("""
+              ---
+              obj:
+               # bad
+                a: b
+              """, conf, getLintProblem(3, 2));
+        check("""
+              ---
+              obj:
+              # bad
+                a: b
+              """, conf, getLintProblem(3, 1));
+        check("""
+              ---
+              obj:
+                 # bad
+                a: b
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              obj:
+               # these
+                 # are
+                # [good]
+              # bad
+                    # comments
+                a: b
+              """, conf,
                 getLintProblem(3, 2), getLintProblem(4, 4),
                 getLintProblem(6, 1), getLintProblem(7, 7));
-        check("---\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "  # the following line is disabled\n" +
-                "  # b: 2\n", conf);
-        check("---\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "  # b: 2\n" +
-                "\n" +
-                "obj2:\n" +
-                "  b: 2\n", conf);
-        check("---\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "  # b: 2\n" +
-                "# this object is useless\n" +
-                "obj2: \"no\"\n", conf);
-        check("---\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "# this object is useless\n" +
-                "  # b: 2\n" +
-                "obj2: \"no\"\n", conf, getLintProblem(5, 3));
-        check("---\n" +
-                "obj1:\n" +
-                "  a: 1\n" +
-                "  # comments\n" +
-                "  b: 2\n", conf);
-        check("---\n" +
-                "my list for today:\n" +
-                "  - todo 1\n" +
-                "  - todo 2\n" +
-                "  # commented for now\n" +
-                "  # - todo 3\n" +
-                "...\n", conf);
+        check("""
+              ---
+              obj1:
+                a: 1
+                # the following line is disabled
+                # b: 2
+              """, conf);
+        check("""
+              ---
+              obj1:
+                a: 1
+                # b: 2
+              
+              obj2:
+                b: 2
+              """, conf);
+        check("""
+              ---
+              obj1:
+                a: 1
+                # b: 2
+              # this object is useless
+              obj2: "no"
+              """, conf);
+        check("""
+              ---
+              obj1:
+                a: 1
+              # this object is useless
+                # b: 2
+              obj2: "no"
+              """, conf, getLintProblem(5, 3));
+        check("""
+              ---
+              obj1:
+                a: 1
+                # comments
+                b: 2
+              """, conf);
+        check("""
+              ---
+              my list for today:
+                - todo 1
+                - todo 2
+                # commented for now
+                # - todo 3
+              ...
+              """, conf);
     }
 
     @Test
@@ -144,27 +174,37 @@ class CommentsIndentationTest extends RuleTester {
     @Test
     void testEmptyComment() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
-        check("---\n" +
-                "# hey\n" +
-                "# normal\n" +
-                "#\n", conf);
-        check("---\n" +
-                "# hey\n" +
-                "# normal\n" +
-                " #\n", conf, getLintProblem(4, 2));
+        check("""
+              ---
+              # hey
+              # normal
+              #
+              """, conf);
+        check("""
+              ---
+              # hey
+              # normal
+               #
+              """, conf, getLintProblem(4, 2));
     }
 
     @Test
     void testInlineComment() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
-        check("---\n" +
-                "- a  # inline\n" +
-                "# ok\n", conf);
-        check("---\n" +
-                "- a  # inline\n" +
-                " # not ok\n", conf, getLintProblem(3, 2));
-        check("---\n" +
-                " # not ok\n" +
-                "- a  # inline\n", conf, getLintProblem(2, 2));
+        check("""
+              ---
+              - a  # inline
+              # ok
+              """, conf);
+        check("""
+              ---
+              - a  # inline
+               # not ok
+              """, conf, getLintProblem(3, 2));
+        check("""
+              ---
+               # not ok
+              - a  # inline
+              """, conf, getLintProblem(2, 2));
     }
 }

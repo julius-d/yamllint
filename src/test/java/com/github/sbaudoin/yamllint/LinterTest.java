@@ -46,30 +46,37 @@ class LinterTest {
 
     @Test
     void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
-        String s = "---\n" +
-                "- hétérogénéité\n" +
-                "# 19.99\n";
+        String s = """
+                   ---
+                   - hétérogénéité
+                   # 19.99
+                   """;
         assertEquals(0, Linter.run(s, getFakeConfig()).size());
         assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
         assertEquals(0, Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig()).size());
 
-        s = "---\n" +
-                "- お早う御座います。\n" +
-                "# الأَبْجَدِيَّة العَرَبِيَّة\n";
+        s = """
+            ---
+            - お早う御座います。
+            # الأَبْجَدِيَّة العَرَبِيَّة
+            """;
         assertEquals(0, Linter.run(s, getFakeConfig()).size());
         assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
     }
 
     @Test
     void testRunWithIgnore() throws IOException, YamlLintConfigException {
-        YamlLintConfig conf = new YamlLintConfig("rules:\n" +
-                "  indentation:\n" +
-                "    spaces: 2\n" +
-                "    indent-sequences: true\n" +
-                "    check-multi-line-strings: false\n" +
-                "ignore: |\n" +
-                "  .*\\.txt$\n" +
-                "  foo.bar\n");
+        YamlLintConfig conf = new YamlLintConfig(
+                """
+                rules:
+                  indentation:
+                    spaces: 2
+                    indent-sequences: true
+                    check-multi-line-strings: false
+                ignore: |
+                  .*\\.txt$
+                  foo.bar
+                """);
         assertEquals(0, Linter.run(conf, new File("/my/file.txt")).size());
         assertEquals(0, Linter.run(conf, new File("foo.bar")).size());
     }

@@ -23,12 +23,14 @@ class FloatValuesTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("float-values: disable");
-        check("---\n" +
-                "- 0.0\n" +
-                "- .NaN\n" +
-                "- .INF\n" +
-                "- .1\n" +
-                "- 10e-6\n",
+        check("""
+              ---
+              - 0.0
+              - .NaN
+              - .INF
+              - .1
+              - 10e-6
+              """,
                 conf);
     }
 
@@ -39,17 +41,19 @@ class FloatValuesTest extends RuleTester {
                 "  forbid-scientific-notation: false",
                 "  forbid-nan: false",
                 "  forbid-inf: false");
-        check("---\n" +
-                "- 0.0\n" +
-                "- .1\n" +
-                "- '.1'\n" +
-                "- string.1\n" +
-                "- .1string\n" +
-                "- !custom_tag .2\n" +
-                "- &angle1 0.0\n" +
-                "- *angle1\n" +
-                "- &angle2 .3\n" +
-                "- *angle2\n",
+        check("""
+              ---
+              - 0.0
+              - .1
+              - '.1'
+              - string.1
+              - .1string
+              - !custom_tag .2
+              - &angle1 0.0
+              - *angle1
+              - &angle2 .3
+              - *angle2
+              """,
                 conf,
                 getLintProblem(3, 3), getLintProblem(10, 11));
     }
@@ -61,20 +65,22 @@ class FloatValuesTest extends RuleTester {
                 "  forbid-scientific-notation: true",
                 "  forbid-nan: false",
                 "  forbid-inf: false");
-        check("---\n" +
-                "- 10e6\n" +
-                "- 10e-6\n" +
-                "- 0.00001\n" +
-                "- '10e-6'\n" +
-                "- string10e-6\n" +
-                "- 10e-6string\n" +
-                "- !custom_tag 10e-6\n" +
-                "- &angle1 0.000001\n" +
-                "- *angle1\n" +
-                "- &angle2 10e-6\n" +
-                "- *angle2\n" +
-                "- &angle3 10e6\n" +
-                "- *angle3\n",
+        check("""
+              ---
+              - 10e6
+              - 10e-6
+              - 0.00001
+              - '10e-6'
+              - string10e-6
+              - 10e-6string
+              - !custom_tag 10e-6
+              - &angle1 0.000001
+              - *angle1
+              - &angle2 10e-6
+              - *angle2
+              - &angle3 10e6
+              - *angle3
+              """,
                 conf,
                 getLintProblem(2, 3),
                 getLintProblem(3, 3),
@@ -89,15 +95,17 @@ class FloatValuesTest extends RuleTester {
                 "  forbid-scientific-notation: false",
                 "  forbid-nan: true",
                 "  forbid-inf: false");
-        check("---\n" +
-                "- .NaN\n" +
-                "- .NAN\n" +
-                "- '.NaN'\n" +
-                "- a.NaN\n" +
-                "- .NaNa\n" +
-                "- !custom_tag .NaN\n" +
-                "- &angle .nan\n" +
-                "- *angle\n",
+        check("""
+              ---
+              - .NaN
+              - .NAN
+              - '.NaN'
+              - a.NaN
+              - .NaNa
+              - !custom_tag .NaN
+              - &angle .nan
+              - *angle
+              """,
                 conf,
                 getLintProblem(2, 3),
                 getLintProblem(3, 3),
@@ -111,19 +119,21 @@ class FloatValuesTest extends RuleTester {
                 "  forbid-scientific-notation: false",
                 "  forbid-nan: false",
                 "  forbid-inf: true");
-        check("---\n" +
-                "- .inf\n" +
-                "- .INF\n" +
-                "- -.inf\n" +
-                "- -.INF\n" +
-                "- '.inf'\n" +
-                "- ∞.infinity\n" +
-                "- .infinity∞\n" +
-                "- !custom_tag .inf\n" +
-                "- &angle .inf\n" +
-                "- *angle\n" +
-                "- &angle -.inf\n" +
-                "- *angle\n",
+        check("""
+              ---
+              - .inf
+              - .INF
+              - -.inf
+              - -.INF
+              - '.inf'
+              - ∞.infinity
+              - .infinity∞
+              - !custom_tag .inf
+              - &angle .inf
+              - *angle
+              - &angle -.inf
+              - *angle
+              """,
                 conf,
                 getLintProblem(2, 3),
                 getLintProblem(3, 3),

@@ -40,8 +40,9 @@ class NewLineAtEndOfFileTest extends RuleTester {
         check("\n", conf);
         check("word", conf, getLintProblem(1, 5));
         check("Sentence.\n", conf);
-        check("---\n" +
-        "yaml: document\n" +
-        "...", conf, getLintProblem(3, 4));
+        check("""
+              ---
+              yaml: document
+              ...""", conf, getLintProblem(3, 4));
     }
 }

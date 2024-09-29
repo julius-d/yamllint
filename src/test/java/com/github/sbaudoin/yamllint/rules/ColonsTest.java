@@ -23,257 +23,333 @@ class ColonsTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: disable");
-        check("---\n" +
-                "object:\n" +
-                "  k1 : v1\n" +
-                "obj2:\n" +
-                "  k2     :\n" +
-                "    - 8\n" +
-                "  k3:\n" +
-                "    val\n" +
-                "  property   : value\n" +
-                "  prop2      : val2\n" +
-                "  propriété  : [valeur]\n" +
-                "  o:\n" +
-                "    k1: [v1, v2]\n" +
-                "  p:\n" +
-                "    - k3: >\n" +
-                "        val\n" +
-                "    - o: {k1: v1}\n" +
-                "    - p: kdjf\n" +
-                "    - q: val0\n" +
-                "    - q2:\n" +
-                "        - val1\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k1:   v1\n" +
-                "obj2:\n" +
-                "  k2:\n" +
-                "    - 8\n" +
-                "  k3:\n" +
-                "    val\n" +
-                "  property:     value\n" +
-                "  prop2:        val2\n" +
-                "  propriété:    [valeur]\n" +
-                "  o:\n" +
-                "    k1:  [v1, v2]\n", conf);
-        check("---\n" +
-                "obj:\n" +
-                "  p:\n" +
-                "    - k1: >\n" +
-                "        val\n" +
-                "    - k3:  >\n" +
-                "        val\n" +
-                "    - o: {k1: v1}\n" +
-                "    - o:  {k1: v1}\n" +
-                "    - q2:\n" +
-                "        - val1\n" +
-                "...\n", conf);
-        check("---\n" +
-                "a: {b: {c:  d, e : f}}\n", conf);
+        check("""
+              ---
+              object:
+                k1 : v1
+              obj2:
+                k2     :
+                  - 8
+                k3:
+                  val
+                property   : value
+                prop2      : val2
+                propriété  : [valeur]
+                o:
+                  k1: [v1, v2]
+                p:
+                  - k3: >
+                      val
+                  - o: {k1: v1}
+                  - p: kdjf
+                  - q: val0
+                  - q2:
+                      - val1
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                k1:   v1
+              obj2:
+                k2:
+                  - 8
+                k3:
+                  val
+                property:     value
+                prop2:        val2
+                propriété:    [valeur]
+                o:
+                  k1:  [v1, v2]
+              """, conf);
+        check("""
+              ---
+              obj:
+                p:
+                  - k1: >
+                      val
+                  - k3:  >
+                      val
+                  - o: {k1: v1}
+                  - o:  {k1: v1}
+                  - q2:
+                      - val1
+              ...
+              """, conf);
+        check("""
+              ---
+              a: {b: {c:  d, e : f}}
+              """, conf);
     }
 
     @Test
     void testBeforeEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: -1}");
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "  k2: v2\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k1 :\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "  k2: v2\n" +
-                "...\n", conf, getLintProblem(3, 5));
-        check("---\n" +
-                "lib :\n" +
-                "  - var\n" +
-                "...\n", conf, getLintProblem(2, 4));
-        check("---\n" +
-                "- lib :\n" +
-                "    - var\n" +
-                "...\n", conf, getLintProblem(2, 6));
-        check("---\n" +
-                "a: {b: {c : d, e : f}}\n", conf,
+        check("""
+              ---
+              object:
+                k1:
+                  - a
+                  - b
+                k2: v2
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                k1 :
+                  - a
+                  - b
+                k2: v2
+              ...
+              """, conf, getLintProblem(3, 5));
+        check("""
+              ---
+              lib :
+                - var
+              ...
+              """, conf, getLintProblem(2, 4));
+        check("""
+              ---
+              - lib :
+                  - var
+              ...
+              """, conf, getLintProblem(2, 6));
+        check("""
+              ---
+              a: {b: {c : d, e : f}}
+              """, conf,
                 getLintProblem(2, 10), getLintProblem(2, 17));
     }
 
     @Test
     void testBeforeMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 3, max-spaces-after: -1}");
-        check("---\n" +
-                "object :\n" +
-                "  k1   :\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "  k2  : v2\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object :\n" +
-                "  k1    :\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "  k2  : v2\n" +
-                "...\n", conf, getLintProblem(3, 8));
+        check("""
+              ---
+              object :
+                k1   :
+                  - a
+                  - b
+                k2  : v2
+              ...
+              """, conf);
+        check("""
+              ---
+              object :
+                k1    :
+                  - a
+                  - b
+                k2  : v2
+              ...
+              """, conf, getLintProblem(3, 8));
     }
 
     @Test
     void testBeforeWithExplicitBlockMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("---\n" +
-                "object:\n" +
-                "  ? key\n" +
-                "  : value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object :\n" +
-                "  ? key\n" +
-                "  : value\n" +
-                "...\n", conf, getLintProblem(2, 7));
-        check("---\n" +
-                "? >\n" +
-                "    multi-line\n" +
-                "    key\n" +
-                ": >\n" +
-                "    multi-line\n" +
-                "    value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- ? >\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  : >\n" +
-                "      multi-line\n" +
-                "      value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- ? >\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  :  >\n" +
-                "       multi-line\n" +
-                "       value\n" +
-                "...\n", conf, getLintProblem(5, 5));
+        check("""
+              ---
+              object:
+                ? key
+                : value
+              ...
+              """, conf);
+        check("""
+              ---
+              object :
+                ? key
+                : value
+              ...
+              """, conf, getLintProblem(2, 7));
+        check("""
+              ---
+              ? >
+                  multi-line
+                  key
+              : >
+                  multi-line
+                  value
+              ...
+              """, conf);
+        check("""
+              ---
+              - ? >
+                    multi-line
+                    key
+                : >
+                    multi-line
+                    value
+              ...
+              """, conf);
+        check("""
+              ---
+              - ? >
+                    multi-line
+                    key
+                :  >
+                     multi-line
+                     value
+              ...
+              """, conf, getLintProblem(5, 5));
     }
 
     @Test
     void testAfterEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("---\n" +
-                "key: value\n", conf);
-        check("---\n" +
-                "key:  value\n", conf, getLintProblem(2, 6));
-        check("---\n" +
-                "object:\n" +
-                "  k1:  [a, b]\n" +
-                "  k2: string\n", conf, getLintProblem(3, 7));
-        check("---\n" +
-                "object:\n" +
-                "  k1: [a, b]\n" +
-                "  k2:  string\n", conf, getLintProblem(4, 7));
-        check("---\n" +
-                "object:\n" +
-                "  other: {key:  value}\n" +
-                "...\n", conf, getLintProblem(3, 16));
-        check("---\n" +
-                "a: {b: {c:  d, e :  f}}\n", conf,
+        check("""
+              ---
+              key: value
+              """, conf);
+        check("""
+              ---
+              key:  value
+              """, conf, getLintProblem(2, 6));
+        check("""
+              ---
+              object:
+                k1:  [a, b]
+                k2: string
+              """, conf, getLintProblem(3, 7));
+        check("""
+              ---
+              object:
+                k1: [a, b]
+                k2:  string
+              """, conf, getLintProblem(4, 7));
+        check("""
+              ---
+              object:
+                other: {key:  value}
+              ...
+              """, conf, getLintProblem(3, 16));
+        check("""
+              ---
+              a: {b: {c:  d, e :  f}}
+              """, conf,
                 getLintProblem(2, 12), getLintProblem(2, 20));
     }
 
     @Test
     void testAfterEnabledQuestionMark() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("---\n" +
-                "? key\n" +
-                ": value\n", conf);
-        check("---\n" +
-                "?  key\n" +
-                ": value\n", conf, getLintProblem(2, 3));
-        check("---\n" +
-                "?  key\n" +
-                ":  value\n", conf, getLintProblem(2, 3), getLintProblem(3, 3));
-        check("---\n" +
-                "- ?  key\n" +
-                "  :  value\n", conf, getLintProblem(2, 5), getLintProblem(3, 5));
+        check("""
+              ---
+              ? key
+              : value
+              """, conf);
+        check("""
+              ---
+              ?  key
+              : value
+              """, conf, getLintProblem(2, 3));
+        check("""
+              ---
+              ?  key
+              :  value
+              """, conf, getLintProblem(2, 3), getLintProblem(3, 3));
+        check("""
+              ---
+              - ?  key
+                :  value
+              """, conf, getLintProblem(2, 5), getLintProblem(3, 5));
     }
 
     @Test
     void testAfterMax() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 3}");
-        check("---\n" +
-                "object:\n" +
-                "  k1:  [a, b]\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k1:    [a, b]\n", conf, getLintProblem(3, 9));
-        check("---\n" +
-                "object:\n" +
-                "  k2:  string\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k2:    string\n", conf, getLintProblem(3, 9));
-        check("---\n" +
-                "object:\n" +
-                "  other: {key:  value}\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  other: {key:    value}\n" +
-                "...\n", conf, getLintProblem(3, 18));
+        check("""
+              ---
+              object:
+                k1:  [a, b]
+              """, conf);
+        check("""
+              ---
+              object:
+                k1:    [a, b]
+              """, conf, getLintProblem(3, 9));
+        check("""
+              ---
+              object:
+                k2:  string
+              """, conf);
+        check("""
+              ---
+              object:
+                k2:    string
+              """, conf, getLintProblem(3, 9));
+        check("""
+              ---
+              object:
+                other: {key:  value}
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                other: {key:    value}
+              ...
+              """, conf, getLintProblem(3, 18));
     }
 
     @Test
     void testAfterWithExplicitBlockMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("---\n" +
-                "object:\n" +
-                "  ? key\n" +
-                "  : value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  ? key\n" +
-                "  :  value\n" +
-                "...\n", conf, getLintProblem(4, 5));
+        check("""
+              ---
+              object:
+                ? key
+                : value
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                ? key
+                :  value
+              ...
+              """, conf, getLintProblem(4, 5));
     }
 
     @Test
     void testAfterDoNotConfoundWithTrailingSpace() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 1, max-spaces-after: 1}",
                 "trailing-spaces: disable");
-        check("---\n" +
-                "trailing:     \n" +
-                "  - spaces\n", conf);
+        check("""
+              ---
+              trailing:    \s
+                - spaces
+              """, conf);
     }
 
     @Test
     void testBothBeforeAndAfter() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("---\n" +
-                "obj:\n" +
-                "  string: text\n" +
-                "  k:\n" +
-                "    - 8\n" +
-                "  k3:\n" +
-                "    val\n" +
-                "  property: [value]\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k1 :  v1\n", conf, getLintProblem(3, 5), getLintProblem(3, 8));
-        check("---\n" +
-                "obj:\n" +
-                "  string:  text\n" +
-                "  k :\n" +
-                "    - 8\n" +
-                "  k3:\n" +
-                "    val\n" +
-                "  property: {a: 1, b:  2, c : 3}\n", conf,
+        check("""
+              ---
+              obj:
+                string: text
+                k:
+                  - 8
+                k3:
+                  val
+                property: [value]
+              """, conf);
+        check("""
+              ---
+              object:
+                k1 :  v1
+              """, conf, getLintProblem(3, 5), getLintProblem(3, 8));
+        check("""
+              ---
+              obj:
+                string:  text
+                k :
+                  - 8
+                k3:
+                  val
+                property: {a: 1, b:  2, c : 3}
+              """, conf,
                 getLintProblem(3, 11), getLintProblem(4, 4),
                 getLintProblem(8, 23), getLintProblem(8, 28));
     }
@@ -286,14 +362,16 @@ class ColonsTest extends RuleTester {
     @Test
     void testWithAliasAsKey() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("---\n" +
-                "- anchor: &a key\n" +
-                "- *a: 42\n" +
-                "- {*a: 42}\n" +
-                "- *a : 42\n" +
-                "- {*a : 42}\n" +
-                "- *a  : 42\n" +
-                "- {*a  : 42}\n",
+        check("""
+              ---
+              - anchor: &a key
+              - *a: 42
+              - {*a: 42}
+              - *a : 42
+              - {*a : 42}
+              - *a  : 42
+              - {*a  : 42}
+              """,
                 conf,
                 getLintProblem(7, 6), getLintProblem(8, 7));
     }

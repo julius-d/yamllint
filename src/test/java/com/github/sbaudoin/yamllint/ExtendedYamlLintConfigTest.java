@@ -16,13 +16,18 @@
 package com.github.sbaudoin.yamllint;
 
 import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ExtendedYamlLintConfigTest {
     @Test
@@ -66,13 +71,19 @@ class ExtendedYamlLintConfigTest {
     @Test
     @SuppressWarnings("unchecked")
     void testExtendAddRule() throws YamlLintConfigException {
-        YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n");
-        YamlLintConfig newConf = new YamlLintConfig("rules:\n" +
-                "  hyphens:\n" +
-                "    max-spaces-after: 2\n");
+        YamlLintConfig oldConf = new YamlLintConfig
+                ("""
+                 rules:
+                   colons:
+                     max-spaces-before: 0
+                     max-spaces-after: 1
+                 """);
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                rules:
+                  hyphens:
+                    max-spaces-after: 2
+                """);
         newConf.extend(oldConf);
 
         assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
@@ -88,14 +99,20 @@ class ExtendedYamlLintConfigTest {
     @Test
     @SuppressWarnings("unchecked")
     void testExtendRemoveRule() throws YamlLintConfigException {
-        YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n" +
-                "  hyphens:\n" +
-                "    max-spaces-after: 2\n");
-        YamlLintConfig newConf = new YamlLintConfig("rules:\n" +
-                "  colons: disable\n");
+        YamlLintConfig oldConf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 0
+                    max-spaces-after: 1
+                  hyphens:
+                    max-spaces-after: 2
+                """);
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                rules:
+                  colons: disable
+                """);
         newConf.extend(oldConf);
 
         assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
@@ -109,16 +126,22 @@ class ExtendedYamlLintConfigTest {
     @Test
     @SuppressWarnings("unchecked")
     void testExtendEditRule() throws YamlLintConfigException {
-        YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n" +
-                "  hyphens:\n" +
-                "    max-spaces-after: 2\n");
-        YamlLintConfig newConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 3\n" +
-                "    max-spaces-after: 4\n");
+        YamlLintConfig oldConf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 0
+                    max-spaces-after: 1
+                  hyphens:
+                    max-spaces-after: 2
+                """);
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 3
+                    max-spaces-after: 4
+                """);
         newConf.extend(oldConf);
 
         assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
@@ -134,14 +157,20 @@ class ExtendedYamlLintConfigTest {
     @Test
     @SuppressWarnings("unchecked")
     void testExtendReenableRule() throws YamlLintConfigException {
-        YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n" +
-                "  hyphens: disable\n");
-        YamlLintConfig newConf = new YamlLintConfig("rules:\n" +
-                "  hyphens:\n" +
-                "    max-spaces-after: 2\n");
+        YamlLintConfig oldConf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 0
+                    max-spaces-after: 1
+                  hyphens: disable
+                """);
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                rules:
+                  hyphens:
+                    max-spaces-after: 2
+                """);
         newConf.extend(oldConf);
 
         assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
@@ -156,14 +185,20 @@ class ExtendedYamlLintConfigTest {
 
     @Test
     void testExtendWithIgnore() throws YamlLintConfigException {
-        YamlLintConfig oldConf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n" +
-                "ignore: foo.bar\n");
-        YamlLintConfig newConf = new YamlLintConfig("rules:\n" +
-                "  hyphens:\n" +
-                "    max-spaces-after: 2\n");
+        YamlLintConfig oldConf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 0
+                    max-spaces-after: 1
+                ignore: foo.bar
+                """);
+        YamlLintConfig newConf = new YamlLintConfig(
+                """
+                rules:
+                  hyphens:
+                    max-spaces-after: 2
+                """);
 
         assertFalse(newConf.isFileIgnored("foo.bar"));
         newConf.extend(oldConf);

@@ -23,57 +23,77 @@ class KeyOrderingTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: disable");
-        check("---\n" +
-                "block mapping:\n" +
-                "  secondkey: a\n" +
-                "  firstkey: b\n", conf);
-        check("---\n" +
-                "flow mapping:\n" +
-                "  {secondkey: a, firstkey: b}\n", conf);
-        check("---\n" +
-                "second: before_first\n" +
-                "at: root\n", conf);
-        check("---\n" +
-                "nested but OK:\n" +
-                "  second: {first: 1}\n" +
-                "  third:\n" +
-                "    second: 2\n", conf);
+        check("""
+              ---
+              block mapping:
+                secondkey: a
+                firstkey: b
+              """, conf);
+        check("""
+              ---
+              flow mapping:
+                {secondkey: a, firstkey: b}
+              """, conf);
+        check("""
+              ---
+              second: before_first
+              at: root
+              """, conf);
+        check("""
+              ---
+              nested but OK:
+                second: {first: 1}
+                third:
+                  second: 2
+              """, conf);
     }
 
     @Test
     void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
-        check("---\n" +
-                "block mapping:\n" +
-                "  secondkey: a\n" +
-                "  firstkey: b\n", conf,
+        check("""
+              ---
+              block mapping:
+                secondkey: a
+                firstkey: b
+              """, conf,
                 getLintProblem(4, 3));
-        check("---\n" +
-                "flow mapping:\n" +
-                "  {secondkey: a, firstkey: b}\n", conf,
+        check("""
+              ---
+              flow mapping:
+                {secondkey: a, firstkey: b}
+              """, conf,
                 getLintProblem(3, 18));
-        check("---\n" +
-                "second: before_first\n" +
-                "at: root\n", conf,
+        check("""
+              ---
+              second: before_first
+              at: root
+              """, conf,
                 getLintProblem(3, 1));
-        check("---\n" +
-                "nested but OK:\n" +
-                "  second: {first: 1}\n" +
-                "  third:\n" +
-                "    second: 2\n", conf);
+        check("""
+              ---
+              nested but OK:
+                second: {first: 1}
+                third:
+                  second: 2
+              """, conf);
     }
 
     @Test
     void testWordLength() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
-        check("---\n" +
-                "a: 1\n" +
-                "ab: 1\n" +
-                "abc: 1\n", conf);
-        check("---\n" +
-                "a: 1\n" +
-                "abc: 1\n" +
-                "ab: 1\n", conf,
+        check("""
+              ---
+              a: 1
+              ab: 1
+              abc: 1
+              """, conf);
+        check("""
+              ---
+              a: 1
+              abc: 1
+              ab: 1
+              """, conf,
                 getLintProblem(4, 1));
     }
 
@@ -81,51 +101,65 @@ class KeyOrderingTest extends RuleTester {
     void testKeyDuplicates() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-duplicates: disable",
                 "key-ordering: enable");
-        check("---\n" +
-                "key: 1\n" +
-                "key: 2\n", conf);
+        check("""
+              ---
+              key: 1
+              key: 2
+              """, conf);
     }
 
     @Test
     void testCase() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
-        check("---\n" +
-                "T-shirt: 1\n" +
-                "T-shirts: 2\n" +
-                "t-shirt: 3\n" +
-                "t-shirts: 4\n", conf);
-        check("---\n" +
-                "T-shirt: 1\n" +
-                "t-shirt: 2\n" +
-                "T-shirts: 3\n" +
-                "t-shirts: 4\n", conf,
+        check("""
+              ---
+              T-shirt: 1
+              T-shirts: 2
+              t-shirt: 3
+              t-shirts: 4
+              """, conf);
+        check("""
+              ---
+              T-shirt: 1
+              t-shirt: 2
+              T-shirts: 3
+              t-shirts: 4
+              """, conf,
                 getLintProblem(4, 1));
     }
 
     @Test
     void testAccents() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
-        check("---\n" +
-                "hair: true\n" +
-                "hais: true\n" +
-                "haïr: true\n" +
-                "haïssable: true\n", conf);
-        check("---\n" +
-                "haïr: true\n" +
-                "hais: true\n", conf,
+        check("""
+              ---
+              hair: true
+              hais: true
+              haïr: true
+              haïssable: true
+              """, conf);
+        check("""
+              ---
+              haïr: true
+              hais: true
+              """, conf,
                 getLintProblem(3, 1));
-        check("---\n" +
-                "haïr: true\n" +
-                "hais: true\n", conf,
+        check("""
+              ---
+              haïr: true
+              hais: true
+              """, conf,
                 getLintProblem(3, 1));
     }
 
     @Test
     void testKeyTokensInFlowSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("key-ordering: enable");
-        check("---\n" +
-                "[\n" +
-                "  key: value, mappings, in, flow: sequence\n" +
-                "]\n", conf);
+        check("""
+              ---
+              [
+                key: value, mappings, in, flow: sequence
+              ]
+              """, conf);
     }
 }

@@ -23,67 +23,101 @@ class BracesTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("braces: disable");
-        check("---\n" +
-                "dict1: {}\n" +
-                "dict2: { }\n" +
-                "dict3: {   a: 1, b}\n" +
-                "dict4: {a: 1, b, c: 3 }\n" +
-                "dict5: {a: 1, b, c: 3 }\n" +
-                "dict6: {  a: 1, b, c: 3 }\n" +
-                "dict7: {   a: 1, b, c: 3 }\n", conf);
+        check("""
+              ---
+              dict1: {}
+              dict2: { }
+              dict3: {   a: 1, b}
+              dict4: {a: 1, b, c: 3 }
+              dict5: {a: 1, b, c: 3 }
+              dict6: {  a: 1, b, c: 3 }
+              dict7: {   a: 1, b, c: 3 }
+              """, conf);
     }
 
     @Test
     void testForbid() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("braces:", "  forbid: false");
-        check("---\n" +
-                "dict: {}\n", conf);
-        check("---\n" +
-                "dict: {a}\n", conf);
-        check("---\n" +
-                "dict: {a: 1}\n", conf);
-        check("---\n" +
-                "dict: {\n" +
-                "  a: 1\n" +
-                "}\n", conf);
+        check("""
+              ---
+              dict: {}
+              """, conf);
+        check("""
+              ---
+              dict: {a}
+              """, conf);
+        check("""
+              ---
+              dict: {a: 1}
+              """, conf);
+        check("""
+              ---
+              dict: {
+                a: 1
+              }
+              """, conf);
 
         conf = getConfig("braces:", "  forbid: true");
-        check("---\n" +
-                "dict:\n" +
-                "  a: 1\n", conf);
-        check("---\n" +
-                "dict: {}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {a}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {a: 1}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {\n" +
-                "  a: 1\n" +
-                "}\n", conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict:
+                a: 1
+              """, conf);
+        check("""
+              ---
+              dict: {}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {a}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {a: 1}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {
+                a: 1
+              }
+              """, conf, getLintProblem(2, 8));
 
         conf = getConfig("braces:", "  forbid: non-empty");
-        check("---\n" +
-                "dict:\n" +
-                "  a: 1\n", conf);
-        check("---\n" +
-                "dict: {}\n", conf);
-        check("---\n" +
-                "dict: {\n" +
-                "}\n", conf);
-        check("---\n" +
-                "dict: {\n" +
-                "# commented: value\n" +
-                "# another: value2\n" +
-                "}\n", conf);
-        check("---\n" +
-                "dict: {a}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {a: 1}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {\n" +
-                "  a: 1\n" +
-                "}\n", conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict:
+                a: 1
+              """, conf);
+        check("""
+              ---
+              dict: {}
+              """, conf);
+        check("""
+              ---
+              dict: {
+              }
+              """, conf);
+        check("""
+              ---
+              dict: {
+              # commented: value
+              # another: value2
+              }
+              """, conf);
+        check("""
+              ---
+              dict: {a}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {a: 1}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {
+                a: 1
+              }
+              """, conf, getLintProblem(2, 8));
     }
 
     @Test
@@ -93,39 +127,55 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: 0",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {}\n", conf);
+        check("""
+              ---
+              dict: {}
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: 1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {}\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: { }\n", conf);
-        check("---\n" +
-                "dict: {a: 1, b}\n", conf,
+        check("""
+              ---
+              dict: {}
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: { }
+              """, conf);
+        check("""
+              ---
+              dict: {a: 1, b}
+              """, conf,
                 getLintProblem(2, 8), getLintProblem(2, 15));
-        check("---\n" +
-                "dict: { a: 1, b }\n", conf);
-        check("---\n" +
-                "dict: {\n" +
-                "  a: 1,\n" +
-                "  b\n" +
-                "}\n", conf);
+        check("""
+              ---
+              dict: { a: 1, b }
+              """, conf);
+        check("""
+              ---
+              dict: {
+                a: 1,
+                b
+              }
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: 3",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: { a: 1, b }\n", conf,
+        check("""
+              ---
+              dict: { a: 1, b }
+              """, conf,
                 getLintProblem(2, 9), getLintProblem(2, 17));
-        check("---\n" +
-                "dict: {   a: 1, b   }\n", conf);
+        check("""
+              ---
+              dict: {   a: 1, b   }
+              """, conf);
     }
 
     @Test
@@ -135,33 +185,49 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {}\n", conf);
-        check("---\n" +
-                "dict: { }\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {a: 1, b}\n", conf);
-        check("---\n" +
-                "dict: { a: 1, b }\n", conf,
+        check("""
+              ---
+              dict: {}
+              """, conf);
+        check("""
+              ---
+              dict: { }
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {a: 1, b}
+              """, conf);
+        check("""
+              ---
+              dict: { a: 1, b }
+              """, conf,
                 getLintProblem(2, 8), getLintProblem(2, 16));
-        check("---\n" +
-                "dict: {   a: 1, b   }\n", conf,
+        check("""
+              ---
+              dict: {   a: 1, b   }
+              """, conf,
                 getLintProblem(2, 10), getLintProblem(2, 20));
-        check("---\n" +
-                "dict: {\n" +
-                "  a: 1,\n" +
-                "  b\n" +
-                "}\n", conf);
+        check("""
+              ---
+              dict: {
+                a: 1,
+                b
+              }
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: 3",
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {   a: 1, b   }\n", conf);
-        check("---\n" +
-                "dict: {    a: 1, b     }\n", conf,
+        check("""
+              ---
+              dict: {   a: 1, b   }
+              """, conf);
+        check("""
+              ---
+              dict: {    a: 1, b     }
+              """, conf,
                 getLintProblem(2, 11), getLintProblem(2, 23));
     }
 
@@ -172,32 +238,46 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: 0",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {}\n", conf);
-        check("---\n" +
-                "dict: { }\n", conf, getLintProblem(2, 8));
-        check("---\n" +
-                "dict: {   a: 1, b}\n", conf, getLintProblem(2, 10));
+        check("""
+              ---
+              dict: {}
+              """, conf);
+        check("""
+              ---
+              dict: { }
+              """, conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {   a: 1, b}
+              """, conf, getLintProblem(2, 10));
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: 1",
                 "  min-spaces-inside: 1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {a: 1, b, c: 3 }\n", conf, getLintProblem(2, 8));
+        check("""
+              ---
+              dict: {a: 1, b, c: 3 }
+              """, conf, getLintProblem(2, 8));
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: 2",
                 "  min-spaces-inside: 0",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "dict: {a: 1, b, c: 3 }\n", conf);
-        check("---\n" +
-                "dict: {  a: 1, b, c: 3 }\n", conf);
-        check("---\n" +
-                "dict: {   a: 1, b, c: 3 }\n", conf, getLintProblem(2, 10));
+        check("""
+              ---
+              dict: {a: 1, b, c: 3 }
+              """, conf);
+        check("""
+              ---
+              dict: {  a: 1, b, c: 3 }
+              """, conf);
+        check("""
+              ---
+              dict: {   a: 1, b, c: 3 }
+              """, conf, getLintProblem(2, 10));
     }
 
     @Test
@@ -207,28 +287,38 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 0",
                 "  min-spaces-inside-empty: 0");
-        check("---\n" +
-                "array: {}\n", conf);
+        check("""
+              ---
+              array: {}
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: 1");
-        check("---\n" +
-                "array: {}\n", conf, getLintProblem(2, 9));
-        check("---\n" +
-                "array: { }\n", conf);
+        check("""
+              ---
+              array: {}
+              """, conf, getLintProblem(2, 9));
+        check("""
+              ---
+              array: { }
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: -1",
                 "  min-spaces-inside-empty: 3");
-        check("---\n" +
-                "array: {}\n", conf, getLintProblem(2, 9));
-        check("---\n" +
-                "array: {   }\n", conf);
+        check("""
+              ---
+              array: {}
+              """, conf, getLintProblem(2, 9));
+        check("""
+              ---
+              array: {   }
+              """, conf);
     }
 
     @Test
@@ -238,34 +328,50 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 0",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "array: {}\n", conf);
-        check("---\n" +
-                "array: { }\n", conf, getLintProblem(2, 9));
+        check("""
+              ---
+              array: {}
+              """, conf);
+        check("""
+              ---
+              array: { }
+              """, conf, getLintProblem(2, 9));
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 1",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "array: {}\n", conf);
-        check("---\n" +
-                "array: { }\n", conf);
-        check("---\n" +
-                "array: {  }\n", conf, getLintProblem(2, 10));
+        check("""
+              ---
+              array: {}
+              """, conf);
+        check("""
+              ---
+              array: { }
+              """, conf);
+        check("""
+              ---
+              array: {  }
+              """, conf, getLintProblem(2, 10));
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 3",
                 "  min-spaces-inside-empty: -1");
-        check("---\n" +
-                "array: {}\n", conf);
-        check("---\n" +
-                "array: {   }\n", conf);
-        check("---\n" +
-                "array: {    }\n", conf, getLintProblem(2, 12));
+        check("""
+              ---
+              array: {}
+              """, conf);
+        check("""
+              ---
+              array: {   }
+              """, conf);
+        check("""
+              ---
+              array: {    }
+              """, conf, getLintProblem(2, 12));
     }
 
     @Test
@@ -275,14 +381,22 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 2",
                 "  min-spaces-inside-empty: 1");
-        check("---\n" +
-                "array: {}\n", conf, getLintProblem(2, 9));
-        check("---\n" +
-                "array: { }\n", conf);
-        check("---\n" +
-                "array: {  }\n", conf);
-        check("---\n" +
-                "array: {   }\n", conf, getLintProblem(2, 11));
+        check("""
+              ---
+              array: {}
+              """, conf, getLintProblem(2, 9));
+        check("""
+              ---
+              array: { }
+              """, conf);
+        check("""
+              ---
+              array: {  }
+              """, conf);
+        check("""
+              ---
+              array: {   }
+              """, conf, getLintProblem(2, 11));
     }
 
     @Test
@@ -292,15 +406,23 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: 1",
                 "  max-spaces-inside-empty: 0",
                 "  min-spaces-inside-empty: 0");
-        check("---\n" +
-                "array: { a: 1, b }\n", conf);
-        check("---\n" +
-                        "array: {a: 1, b}\n", conf,
+        check("""
+              ---
+              array: { a: 1, b }
+              """, conf);
+        check("""
+              ---
+              array: {a: 1, b}
+              """, conf,
                 getLintProblem(2, 9), getLintProblem(2, 16));
-        check("---\n" +
-                "array: {}\n", conf);
-        check("---\n" +
-                        "array: { }\n", conf,
+        check("""
+              ---
+              array: {}
+              """, conf);
+        check("""
+              ---
+              array: { }
+              """, conf,
                 getLintProblem(2, 9));
 
         conf = getConfig("braces:",
@@ -308,34 +430,52 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: -1",
                 "  max-spaces-inside-empty: 1",
                 "  min-spaces-inside-empty: 1");
-        check("---\n" +
-                        "array: { a: 1, b }\n", conf,
+        check("""
+              ---
+              array: { a: 1, b }
+              """, conf,
                 getLintProblem(2, 9), getLintProblem(2, 17));
-        check("---\n" +
-                "array: {a: 1, b}\n", conf);
-        check("---\n" +
-                        "array: {}\n", conf,
+        check("""
+              ---
+              array: {a: 1, b}
+              """, conf);
+        check("""
+              ---
+              array: {}
+              """, conf,
                 getLintProblem(2, 9));
-        check("---\n" +
-                "array: { }\n", conf);
+        check("""
+              ---
+              array: { }
+              """, conf);
 
         conf = getConfig("braces:",
                 "  max-spaces-inside: 2",
                 "  min-spaces-inside: 1",
                 "  max-spaces-inside-empty: 1",
                 "  min-spaces-inside-empty: 1");
-        check("---\n" +
-                "array: { a: 1, b  }\n", conf);
-        check("---\n" +
-                        "array: {a: 1, b   }\n", conf,
+        check("""
+              ---
+              array: { a: 1, b  }
+              """, conf);
+        check("""
+              ---
+              array: {a: 1, b   }
+              """, conf,
                 getLintProblem(2, 9), getLintProblem(2, 18));
-        check("---\n" +
-                        "array: {}\n", conf,
+        check("""
+              ---
+              array: {}
+              """, conf,
                 getLintProblem(2, 9));
-        check("---\n" +
-                "array: { }\n", conf);
-        check("---\n" +
-                        "array: {   }\n", conf,
+        check("""
+              ---
+              array: { }
+              """, conf);
+        check("""
+              ---
+              array: {   }
+              """, conf,
                 getLintProblem(2, 11));
 
         conf = getConfig("braces:",
@@ -343,15 +483,23 @@ class BracesTest extends RuleTester {
                 "  min-spaces-inside: 1",
                 "  max-spaces-inside-empty: 1",
                 "  min-spaces-inside-empty: 1");
-        check("---\n" +
-                "array: { a: 1, b }\n", conf);
-        check("---\n" +
-                "array: {a: 1, b}\n", conf,
+        check("""
+              ---
+              array: { a: 1, b }
+              """, conf);
+        check("""
+              ---
+              array: {a: 1, b}
+              """, conf,
                 getLintProblem(2, 9), getLintProblem(2, 16));
-        check("---\n" +
-                "array: {}\n", conf,
+        check("""
+              ---
+              array: {}
+              """, conf,
                 getLintProblem(2, 9));
-        check("---\n" +
-                "array: { }\n", conf);
+        check("""
+              ---
+              array: { }
+              """, conf);
     }
 }

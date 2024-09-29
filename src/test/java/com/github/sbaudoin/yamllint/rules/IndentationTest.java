@@ -23,126 +23,144 @@ class IndentationTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: disable");
-        check("---\n" +
-                "object:\n" +
-                "   k1: v1\n" +
-                "obj2:\n" +
-                " k2:\n" +
-                "     - 8\n" +
-                " k3:\n" +
-                "           val\n" +
-                "...\n", conf);
-        check("---\n" +
-                "  o:\n" +
-                "    k1: v1\n" +
-                "  p:\n" +
-                "   k3:\n" +
-                "       val\n" +
-                "...\n", conf);
-        check("---\n" +
-                "     - o:\n" +
-                "         k1: v1\n" +
-                "     - p: kdjf\n" +
-                "     - q:\n" +
-                "        k3:\n" +
-                "              - val\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+                 k1: v1
+              obj2:
+               k2:
+                   - 8
+               k3:
+                         val
+              ...
+              """, conf);
+        check("""
+              ---
+                o:
+                  k1: v1
+                p:
+                 k3:
+                     val
+              ...
+              """, conf);
+        check("""
+              ---
+                   - o:
+                       k1: v1
+                   - p: kdjf
+                   - q:
+                      k3:
+                            - val
+              ...
+              """, conf);
     }
 
     @Test
     void testOneSpace() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 1, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                " k1:\n" +
-                " - a\n" +
-                " - b\n" +
-                " k2: v2\n" +
-                " k3:\n" +
-                " - name: Unix\n" +
-                "   date: 1969\n" +
-                " - name: Linux\n" +
-                "   date: 1991\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+               k1:
+               - a
+               - b
+               k2: v2
+               k3:
+               - name: Unix
+                 date: 1969
+               - name: Linux
+                 date: 1991
+              ...
+              """, conf);
 
         conf = getConfig("indentation: {spaces: 1, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                " k1:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                " k2: v2\n" +
-                " k3:\n" +
-                "  - name: Unix\n" +
-                "    date: 1969\n" +
-                "  - name: Linux\n" +
-                "    date: 1991\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+               k1:
+                - a
+                - b
+               k2: v2
+               k3:
+                - name: Unix
+                  date: 1969
+                - name: Linux
+                  date: 1991
+              ...
+              """, conf);
     }
 
     @Test
     void testTwoSpaces() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                "  k2: v2\n" +
-                "  k3:\n" +
-                "  - name: Unix\n" +
-                "    date: 1969\n" +
-                "  - name: Linux\n" +
-                "    date: 1991\n" +
-                "  k4:\n" +
-                "  -\n" +
-                "  k5: v3\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+                k1:
+                - a
+                - b
+                k2: v2
+                k3:
+                - name: Unix
+                  date: 1969
+                - name: Linux
+                  date: 1991
+                k4:
+                -
+                k5: v3
+              ...
+              """, conf);
 
         conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "  k2: v2\n" +
-                "  k3:\n" +
-                "    - name: Unix\n" +
-                "      date: 1969\n" +
-                "    - name: Linux\n" +
-                "      date: 1991\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+                k1:
+                  - a
+                  - b
+                k2: v2
+                k3:
+                  - name: Unix
+                    date: 1969
+                  - name: Linux
+                    date: 1991
+              ...
+              """, conf);
     }
 
     @Test
     void testThreeSpaces() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 3, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "   k1:\n" +
-                "   - a\n" +
-                "   - b\n" +
-                "   k2: v2\n" +
-                "   k3:\n" +
-                "   - name: Unix\n" +
-                "     date: 1969\n" +
-                "   - name: Linux\n" +
-                "     date: 1991\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+                 k1:
+                 - a
+                 - b
+                 k2: v2
+                 k3:
+                 - name: Unix
+                   date: 1969
+                 - name: Linux
+                   date: 1991
+              ...
+              """, conf);
 
         conf = getConfig("indentation: {spaces: 3, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "   k1:\n" +
-                "      - a\n" +
-                "      - b\n" +
-                "   k2: v2\n" +
-                "   k3:\n" +
-                "      - name: Unix\n" +
-                "        date: 1969\n" +
-                "      - name: Linux\n" +
-                "        date: 1991\n" +
-                "...\n", conf);
+        check("""
+              ---
+              object:
+                 k1:
+                    - a
+                    - b
+                 k2: v2
+                 k3:
+                    - name: Unix
+                      date: 1969
+                    - name: Linux
+                      date: 1991
+              ...
+              """, conf);
     }
 
     @Test
@@ -151,313 +169,381 @@ class IndentationTest extends RuleTester {
                 "              indent-sequences: whatever,",
                 "              check-multi-line-strings: false}",
                 "document-start: disable");
-        check("---\n" +
-                "object:\n" +
-                " k1:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                " k2: v2\n" +
-                " k3:\n" +
-                "  - name: Unix\n" +
-                "    date: 1969\n" +
-                "  - name: Linux\n" +
-                "    date: 1991\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                "  k2: v2\n" +
-                "  k3:\n" +
-                "  - name: Unix\n" +
-                "    date: 1969\n" +
-                "  - name: Linux\n" +
-                "    date: 1991\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "   k1:\n" +
-                "      - a\n" +
-                "      - b\n" +
-                "   k2: v2\n" +
-                "   k3:\n" +
-                "      - name: Unix\n" +
-                "        date: 1969\n" +
-                "      - name: Linux\n" +
-                "        date: 1991\n" +
-                "...\n", conf);
-        check("first is not indented:\n" +
-                "  value is indented\n", conf);
-        check("first is not indented:\n" +
-                "     value:\n" +
-                "          is indented\n", conf);
-        check("- first is already indented:\n" +
-                "    value is indented too\n", conf);
-        check("- first is already indented:\n" +
-                "       value:\n" +
-                "            is indented too\n", conf);
-        check("- first is already indented:\n" +
-                "       value:\n" +
-                "             is indented too\n", conf, getLintProblem(3, 14));
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                "  - c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                " - 1\n" +
-                " - 2\n" +
-                " - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf);
+        check("""
+              ---
+              object:
+               k1:
+                - a
+                - b
+               k2: v2
+               k3:
+                - name: Unix
+                  date: 1969
+                - name: Linux
+                  date: 1991
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                k1:
+                - a
+                - b
+                k2: v2
+                k3:
+                - name: Unix
+                  date: 1969
+                - name: Linux
+                  date: 1991
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                 k1:
+                    - a
+                    - b
+                 k2: v2
+                 k3:
+                    - name: Unix
+                      date: 1969
+                    - name: Linux
+                      date: 1991
+              ...
+              """, conf);
+        check("""
+              first is not indented:
+                value is indented
+              """, conf);
+        check("""
+              first is not indented:
+                   value:
+                        is indented
+              """, conf);
+        check("""
+              - first is already indented:
+                  value is indented too
+              """, conf);
+        check("""
+              - first is already indented:
+                     value:
+                          is indented too
+              """, conf);
+        check("""
+              - first is already indented:
+                     value:
+                           is indented too
+              """, conf, getLintProblem(3, 14));
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                - a
+                - b
+                - c
+              """, conf);
+        check("""
+              ---
+              list one:
+               - 1
+               - 2
+               - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf);
     }
 
     @Test
     void testConsistentSpacesAndIndentSequences() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(3, 1));
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getLintProblem(7, 1));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(3, 1));
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf, getLintProblem(7, 1));
 
         conf = getConfig("indentation: {spaces: consistent, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                "  - c\n", conf, getLintProblem(7, 3));
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getLintProblem(3, 3));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                - a
+                - b
+                - c
+              """, conf, getLintProblem(7, 3));
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf, getLintProblem(3, 3));
 
         conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: consistent,",
                 "              check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
-        check("---\n" +
-                "list one:\n" +
-                "    - 1\n" +
-                "    - 2\n" +
-                "    - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getLintProblem(7, 1));
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+                  - 1
+                  - 2
+                  - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf, getLintProblem(7, 1));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf);
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
 
         conf = getConfig("indentation: {spaces: consistent, indent-sequences: whatever, check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "    - 1\n" +
-                "    - 2\n" +
-                "    - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf);
+        check("""
+              ---
+              list one:
+                  - 1
+                  - 2
+                  - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf);
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf);
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
     }
 
     @Test
     void testIndentSequencesWhatever() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 4, indent-sequences: whatever, check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  - 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(3, 3));
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "  - a\n" +
-                "  - b\n" +
-                "  - c\n", conf, getLintProblem(7, 3));
-        check("---\n" +
-                "list:\n" +
-                "    - 1\n" +
-                "    - 2\n" +
-                "    - 3\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getSyntaxError(6, 1));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf);
+        check("""
+              ---
+              list one:
+                - 1
+                - 2
+                - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(3, 3));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                - a
+                - b
+                - c
+              """, conf, getLintProblem(7, 3));
+        check("""
+              ---
+              list:
+                  - 1
+                  - 2
+                  - 3
+              - a
+              - b
+              - c
+              """, conf, getSyntaxError(6, 1));
     }
 
     @Test
     void testIndentSequencesConsistent() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 4, indent-sequences: consistent, check-multi-line-strings: false}");
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list:\n" +
-                "    two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "    - 1\n" +
-                "    - 2\n" +
-                "    - 3\n" +
-                "list:\n" +
-                "    two:\n" +
-                "        - a\n" +
-                "        - b\n" +
-                "        - c\n", conf);
-        check("---\n" +
-                "list one:\n" +
-                "- 1\n" +
-                "- 2\n" +
-                "- 3\n" +
-                "list two:\n" +
-                "    - a\n" +
-                "    - b\n" +
-                "    - c\n", conf, getLintProblem(7, 5));
-        check("---\n" +
-                "list one:\n" +
-                "    - 1\n" +
-                "    - 2\n" +
-                "    - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getLintProblem(7, 1));
-        check("---\n" +
-                "list one:\n" +
-                " - 1\n" +
-                " - 2\n" +
-                " - 3\n" +
-                "list two:\n" +
-                "- a\n" +
-                "- b\n" +
-                "- c\n", conf, getLintProblem(3, 2), getLintProblem(7, 1));
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list:
+                  two:
+                  - a
+                  - b
+                  - c
+              """, conf);
+        check("""
+              ---
+              list one:
+                  - 1
+                  - 2
+                  - 3
+              list:
+                  two:
+                      - a
+                      - b
+                      - c
+              """, conf);
+        check("""
+              ---
+              list one:
+              - 1
+              - 2
+              - 3
+              list two:
+                  - a
+                  - b
+                  - c
+              """, conf, getLintProblem(7, 5));
+        check("""
+              ---
+              list one:
+                  - 1
+                  - 2
+                  - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf, getLintProblem(7, 1));
+        check("""
+              ---
+              list one:
+               - 1
+               - 2
+               - 3
+              list two:
+              - a
+              - b
+              - c
+              """, conf, getLintProblem(3, 2), getLintProblem(7, 1));
     }
 
     @Test
@@ -465,52 +551,76 @@ class IndentationTest extends RuleTester {
         // flow: [ ...
         // ]
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "    y,\n" +
-                "    z: 1}\n", conf);
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "   y,\n" +
-                "    z: 1}\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "     y,\n" +
-                "    z: 1}\n", conf, getLintProblem(3, 6));
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "  y, z: 1}\n", conf, getLintProblem(3, 3));
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "    y, z: 1\n" +
-                "}\n", conf);
-        check("---\n" +
-                "a: {x: 1,\n" +
-                "  y, z: 1\n" +
-                "}\n", conf, getLintProblem(3, 3));
-        check("---\n" +
-                "a: [x,\n" +
-                "    y,\n" +
-                "    z]\n", conf);
-        check("---\n" +
-                "a: [x,\n" +
-                "   y,\n" +
-                "    z]\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "a: [x,\n" +
-                "     y,\n" +
-                "    z]\n", conf, getLintProblem(3, 6));
-        check("---\n" +
-                "a: [x,\n" +
-                "  y, z]\n", conf, getLintProblem(3, 3));
-        check("---\n" +
-                "a: [x,\n" +
-                "    y, z\n" +
-                "]\n", conf);
-        check("---\n" +
-                "a: [x,\n" +
-                "  y, z\n" +
-                "]\n", conf, getLintProblem(3, 3));
+        check("""
+              ---
+              a: {x: 1,
+                  y,
+                  z: 1}
+              """, conf);
+        check("""
+              ---
+              a: {x: 1,
+                 y,
+                  z: 1}
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              a: {x: 1,
+                   y,
+                  z: 1}
+              """, conf, getLintProblem(3, 6));
+        check("""
+              ---
+              a: {x: 1,
+                y, z: 1}
+              """, conf, getLintProblem(3, 3));
+        check("""
+              ---
+              a: {x: 1,
+                  y, z: 1
+              }
+              """, conf);
+        check("""
+              ---
+              a: {x: 1,
+                y, z: 1
+              }
+              """, conf, getLintProblem(3, 3));
+        check("""
+              ---
+              a: [x,
+                  y,
+                  z]
+              """, conf);
+        check("""
+              ---
+              a: [x,
+                 y,
+                  z]
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              a: [x,
+                   y,
+                  z]
+              """, conf, getLintProblem(3, 6));
+        check("""
+              ---
+              a: [x,
+                y, z]
+              """, conf, getLintProblem(3, 3));
+        check("""
+              ---
+              a: [x,
+                  y, z
+              ]
+              """, conf);
+        check("""
+              ---
+              a: [x,
+                y, z
+              ]
+              """, conf, getLintProblem(3, 3));
     }
 
     @Test
@@ -519,99 +629,131 @@ class IndentationTest extends RuleTester {
         //   ...
         // ]
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "a: {\n" +
-                "  x: 1,\n" +
-                "  y, z: 1\n" +
-                "}\n", conf);
-        check("---\n" +
-                "a: {\n" +
-                "  x: 1,\n" +
-                "  y, z: 1}\n", conf);
-        check("---\n" +
-                "a: {\n" +
-                "   x: 1,\n" +
-                "  y, z: 1\n" +
-                "}\n", conf, getLintProblem(4, 3));
-        check("---\n" +
-                "a: {\n" +
-                "  x: 1,\n" +
-                "  y, z: 1\n" +
-                "  }\n", conf, getLintProblem(5, 3));
-        check("---\n" +
-                "a: [\n" +
-                "  x,\n" +
-                "  y, z\n" +
-                "]\n", conf);
-        check("---\n" +
-                "a: [\n" +
-                "  x,\n" +
-                "  y, z]\n", conf);
-        check("---\n" +
-                "a: [\n" +
-                "   x,\n" +
-                "  y, z\n" +
-                "]\n", conf, getLintProblem(4, 3));
-        check("---\n" +
-                "a: [\n" +
-                "  x,\n" +
-                "  y, z\n" +
-                "  ]\n", conf, getLintProblem(5, 3));
-        check("---\n" +
-                "obj: {\n" +
-                "  a: 1,\n" +
-                "   b: 2,\n" +
-                " c: 3\n" +
-                "}\n", conf, getLintProblem(4, 4), getLintProblem(5, 2));
-        check("---\n" +
-                "list: [\n" +
-                "  1,\n" +
-                "   2,\n" +
-                " 3\n" +
-                "]\n", conf, getLintProblem(4, 4), getLintProblem(5, 2));
-        check("---\n" +
-                "top:\n" +
-                "  rules: [\n" +
-                "    1, 2,\n" +
-                "  ]\n", conf);
-        check("---\n" +
-                "top:\n" +
-                "  rules: [\n" +
-                "    1, 2,\n" +
-                "]\n" +
-                "  rulez: [\n" +
-                "    1, 2,\n" +
-                "    ]\n", conf, getLintProblem(5, 1), getLintProblem(8, 5));
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    here: {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "    }\n", conf);
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    here: {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "      }\n" +
-                "    there: {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "  }\n", conf, getLintProblem(7, 7), getLintProblem(11, 3));
+        check("""
+              ---
+              a: {
+                x: 1,
+                y, z: 1
+              }
+              """, conf);
+        check("""
+              ---
+              a: {
+                x: 1,
+                y, z: 1}
+              """, conf);
+        check("""
+              ---
+              a: {
+                 x: 1,
+                y, z: 1
+              }
+              """, conf, getLintProblem(4, 3));
+        check("""
+              ---
+              a: {
+                x: 1,
+                y, z: 1
+                }
+              """, conf, getLintProblem(5, 3));
+        check("""
+              ---
+              a: [
+                x,
+                y, z
+              ]
+              """, conf);
+        check("""
+              ---
+              a: [
+                x,
+                y, z]
+              """, conf);
+        check("""
+              ---
+              a: [
+                 x,
+                y, z
+              ]
+              """, conf, getLintProblem(4, 3));
+        check("""
+              ---
+              a: [
+                x,
+                y, z
+                ]
+              """, conf, getLintProblem(5, 3));
+        check("""
+              ---
+              obj: {
+                a: 1,
+                 b: 2,
+               c: 3
+              }
+              """, conf, getLintProblem(4, 4), getLintProblem(5, 2));
+        check("""
+              ---
+              list: [
+                1,
+                 2,
+               3
+              ]
+              """, conf, getLintProblem(4, 4), getLintProblem(5, 2));
+        check("""
+              ---
+              top:
+                rules: [
+                  1, 2,
+                ]
+              """, conf);
+        check("""
+              ---
+              top:
+                rules: [
+                  1, 2,
+              ]
+                rulez: [
+                  1, 2,
+                  ]
+              """, conf, getLintProblem(5, 1), getLintProblem(8, 5));
+        check("""
+              ---
+              top:
+                rules:
+                  here: {
+                    foo: 1,
+                    bar: 2
+                  }
+              """, conf);
+        check("""
+              ---
+              top:
+                rules:
+                  here: {
+                    foo: 1,
+                    bar: 2
+                    }
+                  there: {
+                    foo: 1,
+                    bar: 2
+                }
+              """, conf, getLintProblem(7, 7), getLintProblem(11, 3));
 
         conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "a: {\n" +
-                "   x: 1,\n" +
-                "  y, z: 1\n" +
-                "}\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "a: [\n" +
-                "   x,\n" +
-                "  y, z\n" +
-                "]\n", conf, getLintProblem(3, 4));
+        check("""
+              ---
+              a: {
+                 x: 1,
+                y, z: 1
+              }
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              a: [
+                 x,
+                y, z
+              ]
+              """, conf, getLintProblem(3, 4));
     }
 
     @Test
@@ -621,125 +763,159 @@ class IndentationTest extends RuleTester {
         //     ...
         //   ]
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "    }\n", conf);
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    {\n" +
-                "       foo: 1,\n" +
-                "      bar: 2\n" +
-                "    }\n", conf, getLintProblem(5, 8));
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "   {\n" +
-                "     foo: 1,\n" +
-                "     bar: 2\n" +
-                "   }\n", conf, getLintProblem(4, 4));
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "   }\n", conf, getLintProblem(7, 4));
-        check("---\n" +
-                "top:\n" +
-                "  rules:\n" +
-                "    {\n" +
-                "      foo: 1,\n" +
-                "      bar: 2\n" +
-                "     }\n", conf, getLintProblem(7, 6));
-        check("---\n" +
-                "top:\n" +
-                "  [\n" +
-                "    a, b, c\n" +
-                "  ]\n", conf);
-        check("---\n" +
-                "top:\n" +
-                "  [\n" +
-                "     a, b, c\n" +
-                "  ]\n", conf, getLintProblem(4, 6));
-        check("---\n" +
-                "top:\n" +
-                "   [\n" +
-                "     a, b, c\n" +
-                "   ]\n", conf, getLintProblem(4, 6));
-        check("---\n" +
-                "top:\n" +
-                "  [\n" +
-                "    a, b, c\n" +
-                "   ]\n", conf, getLintProblem(5, 4));
-        check("---\n" +
-                "top:\n" +
-                "  rules: [\n" +
-                "    {\n" +
-                "      foo: 1\n" +
-                "    },\n" +
-                "    {\n" +
-                "      foo: 2,\n" +
-                "      bar: [\n" +
-                "        a, b, c\n" +
-                "      ],\n" +
-                "    },\n" +
-                "  ]\n", conf);
-        check("---\n" +
-                "top:\n" +
-                "  rules: [\n" +
-                "    {\n" +
-                "     foo: 1\n" +
-                "     },\n" +
-                "    {\n" +
-                "      foo: 2,\n" +
-                "        bar: [\n" +
-                "          a, b, c\n" +
-                "      ],\n" +
-                "    },\n" +
-                "]\n", conf, getLintProblem(5, 6), getLintProblem(6, 6),
+        check("""
+              ---
+              top:
+                rules:
+                  {
+                    foo: 1,
+                    bar: 2
+                  }
+              """, conf);
+        check("""
+              ---
+              top:
+                rules:
+                  {
+                     foo: 1,
+                    bar: 2
+                  }
+              """, conf, getLintProblem(5, 8));
+        check("""
+              ---
+              top:
+                rules:
+                 {
+                   foo: 1,
+                   bar: 2
+                 }
+              """, conf, getLintProblem(4, 4));
+        check("""
+              ---
+              top:
+                rules:
+                  {
+                    foo: 1,
+                    bar: 2
+                 }
+              """, conf, getLintProblem(7, 4));
+        check("""
+              ---
+              top:
+                rules:
+                  {
+                    foo: 1,
+                    bar: 2
+                   }
+              """, conf, getLintProblem(7, 6));
+        check("""
+              ---
+              top:
+                [
+                  a, b, c
+                ]
+              """, conf);
+        check("""
+              ---
+              top:
+                [
+                   a, b, c
+                ]
+              """, conf, getLintProblem(4, 6));
+        check("""
+              ---
+              top:
+                 [
+                   a, b, c
+                 ]
+              """, conf, getLintProblem(4, 6));
+        check("""
+              ---
+              top:
+                [
+                  a, b, c
+                 ]
+              """, conf, getLintProblem(5, 4));
+        check("""
+              ---
+              top:
+                rules: [
+                  {
+                    foo: 1
+                  },
+                  {
+                    foo: 2,
+                    bar: [
+                      a, b, c
+                    ],
+                  },
+                ]
+              """, conf);
+        check("""
+              ---
+              top:
+                rules: [
+                  {
+                   foo: 1
+                   },
+                  {
+                    foo: 2,
+                      bar: [
+                        a, b, c
+                    ],
+                  },
+              ]
+              """, conf, getLintProblem(5, 6), getLintProblem(6, 6),
                 getLintProblem(9, 9), getLintProblem(11, 7), getLintProblem(13, 1));
     }
 
     @Test
     void testUnderIndented() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: consistent, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                " val: 1\n" +
-                "...\n", conf, getLintProblem(3, 2));
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "   - a\n" +
-                "...\n", conf, getLintProblem(4, 4));
-        check("---\n" +
-                "object:\n" +
-                "  k3:\n" +
-                "    - name: Unix\n" +
-                "     date: 1969\n" +
-                "...\n", conf, getSyntaxError(5, 6));
+        check("""
+              ---
+              object:
+               val: 1
+              ...
+              """, conf, getLintProblem(3, 2));
+        check("""
+              ---
+              object:
+                k1:
+                 - a
+              ...
+              """, conf, getLintProblem(4, 4));
+        check("""
+              ---
+              object:
+                k3:
+                  - name: Unix
+                   date: 1969
+              ...
+              """, conf, getSyntaxError(5, 6));
 
         conf = getConfig("indentation: {spaces: 4, indent-sequences: consistent, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "   val: 1\n" +
-                "...\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "- el1\n" +
-                "- el2:\n" +
-                "   - subel\n" +
-                "...\n", conf, getLintProblem(4, 4));
-        check("---\n" +
-                "object:\n" +
-                "    k3:\n" +
-                "        - name: Linux\n" +
-                "         date: 1991\n" +
-                "...\n", conf, getSyntaxError(5, 10));
+        check("""
+              ---
+              object:
+                 val: 1
+              ...
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              - el1
+              - el2:
+                 - subel
+              ...
+              """, conf, getLintProblem(4, 4));
+        check("""
+              ---
+              object:
+                  k3:
+                      - name: Linux
+                       date: 1991
+              ...
+              """, conf, getSyntaxError(5, 10));
 
         conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
         check("---\n" +
@@ -761,60 +937,80 @@ class IndentationTest extends RuleTester {
     @Test
     void testOverIndented() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: consistent, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "   val: 1\n" +
-                "...\n", conf, getLintProblem(3, 4));
-        check("---\n" +
-                "object:\n" +
-                "  k1:\n" +
-                "     - a\n" +
-                "...\n", conf, getLintProblem(4, 6));
-        check("---\n" +
-                "object:\n" +
-                "  k3:\n" +
-                "    - name: Unix\n" +
-                "       date: 1969\n" +
-                "...\n", conf, getSyntaxError(5, 12));
+        check("""
+              ---
+              object:
+                 val: 1
+              ...
+              """, conf, getLintProblem(3, 4));
+        check("""
+              ---
+              object:
+                k1:
+                   - a
+              ...
+              """, conf, getLintProblem(4, 6));
+        check("""
+              ---
+              object:
+                k3:
+                  - name: Unix
+                     date: 1969
+              ...
+              """, conf, getSyntaxError(5, 12));
 
         conf = getConfig("indentation: {spaces: 4, indent-sequences: consistent, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "     val: 1\n" +
-                "...\n", conf, getLintProblem(3, 6));
-        check("---\n" +
-                " object:\n" +
-                "     val: 1\n" +
-                "...\n", conf, getLintProblem(2, 2));
-        check("---\n" +
-                "- el1\n" +
-                "- el2:\n" +
-                "     - subel\n" +
-                "...\n", conf, getLintProblem(4, 6));
-        check("---\n" +
-                "- el1\n" +
-                "- el2:\n" +
-                "              - subel\n" +
-                "...\n", conf, getLintProblem(4, 15));
-        check("---\n" +
-                "  - el1\n" +
-                "  - el2:\n" +
-                "        - subel\n" +
-                "...\n", conf,
+        check("""
+              ---
+              object:
+                   val: 1
+              ...
+              """, conf, getLintProblem(3, 6));
+        check("""
+              ---
+               object:
+                   val: 1
+              ...
+              """, conf, getLintProblem(2, 2));
+        check("""
+              ---
+              - el1
+              - el2:
+                   - subel
+              ...
+              """, conf, getLintProblem(4, 6));
+        check("""
+              ---
+              - el1
+              - el2:
+                            - subel
+              ...
+              """, conf, getLintProblem(4, 15));
+        check("""
+              ---
+                - el1
+                - el2:
+                      - subel
+              ...
+              """, conf,
                 getLintProblem(2, 3));
-        check("---\n" +
-                "object:\n" +
-                "    k3:\n" +
-                "        - name: Linux\n" +
-                "           date: 1991\n" +
-                "...\n", conf, getSyntaxError(5, 16));
+        check("""
+              ---
+              object:
+                  k3:
+                      - name: Linux
+                         date: 1991
+              ...
+              """, conf, getSyntaxError(5, 16));
 
         conf = getConfig("indentation: {spaces: 4, indent-sequences: whatever, check-multi-line-strings: false}");
-        check("---\n" +
-                "  - el1\n" +
-                "  - el2:\n" +
-                "    - subel\n" +
-                "...\n", conf,
+        check("""
+              ---
+                - el1
+                - el2:
+                  - subel
+              ...
+              """, conf,
                 getLintProblem(2, 3));
 
         conf = getConfig("indentation: {spaces: 2, indent-sequences: false, check-multi-line-strings: false}");
@@ -837,82 +1033,108 @@ class IndentationTest extends RuleTester {
     @Test
     void testMultiLines() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "long_string: >\n" +
-                "  bla bla blah\n" +
-                "  blah bla bla\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- long_string: >\n" +
-                "    bla bla blah\n" +
-                "    blah bla bla\n" +
-                "...\n", conf);
-        check("---\n" +
-                "obj:\n" +
-                "  - long_string: >\n" +
-                "      bla bla blah\n" +
-                "      blah bla bla\n" +
-                "...\n", conf);
+        check("""
+              ---
+              long_string: >
+                bla bla blah
+                blah bla bla
+              ...
+              """, conf);
+        check("""
+              ---
+              - long_string: >
+                  bla bla blah
+                  blah bla bla
+              ...
+              """, conf);
+        check("""
+              ---
+              obj:
+                - long_string: >
+                    bla bla blah
+                    blah bla bla
+              ...
+              """, conf);
     }
 
     @Test
     void testEmptyValue() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "key1:\n" +
-                "key2: not empty\n" +
-                "key3:\n" +
-                "...\n", conf);
-        check("---\n" +
-                "-\n" +
-                "- item 2\n" +
-                "-\n" +
-                "...\n", conf);
+        check("""
+              ---
+              key1:
+              key2: not empty
+              key3:
+              ...
+              """, conf);
+        check("""
+              ---
+              -
+              - item 2
+              -
+              ...
+              """, conf);
     }
 
     @Test
     void testNestedCollections() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "- o:\n" +
-                "  k1: v1\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- o:\n" +
-                " k1: v1\n" +
-                "...\n", conf, getSyntaxError(3, 2));
-        check("---\n" +
-                "- o:\n" +
-                "   k1: v1\n" +
-                "...\n", conf, getLintProblem(3, 4));
+        check("""
+              ---
+              - o:
+                k1: v1
+              ...
+              """, conf);
+        check("""
+              ---
+              - o:
+               k1: v1
+              ...
+              """, conf, getSyntaxError(3, 2));
+        check("""
+              ---
+              - o:
+                 k1: v1
+              ...
+              """, conf, getLintProblem(3, 4));
 
         conf = getConfig("indentation: {spaces: 4, indent-sequences: true, check-multi-line-strings: false}");
-                check("---\n" +
-                "- o:\n" +
-                "      k1: v1\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- o:\n" +
-                "     k1: v1\n" +
-                "...\n", conf, getLintProblem(3, 6));
-        check("---\n" +
-                "- o:\n" +
-                "       k1: v1\n" +
-                "...\n", conf, getLintProblem(3, 8));
-        check("---\n" +
-                "- - - - item\n" +
-                "    - elem 1\n" +
-                "    - elem 2\n" +
-                "    - - - - - very nested: a\n" +
-                "              key: value\n" +
-                "...\n", conf);
-        check("---\n" +
-                " - - - - item\n" +
-                "     - elem 1\n" +
-                "     - elem 2\n" +
-                "     - - - - - very nested: a\n" +
-                "               key: value\n" +
-                "...\n", conf, getLintProblem(2, 2));
+        check("""
+              ---
+              - o:
+                    k1: v1
+              ...
+              """, conf);
+        check("""
+              ---
+              - o:
+                   k1: v1
+              ...
+              """, conf, getLintProblem(3, 6));
+        check("""
+              ---
+              - o:
+                     k1: v1
+              ...
+              """, conf, getLintProblem(3, 8));
+        check("""
+              ---
+              - - - - item
+                  - elem 1
+                  - elem 2
+                  - - - - - very nested: a
+                            key: value
+              ...
+              """, conf);
+        check("""
+              ---
+               - - - - item
+                   - elem 1
+                   - elem 2
+                   - - - - - very nested: a
+                             key: value
+              ...
+              """, conf, getLintProblem(2, 2));
     }
 
     @Test
@@ -923,62 +1145,76 @@ class IndentationTest extends RuleTester {
         // https://github.com/adrienverge/yamllint/issues/485.
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true}");
-        check("---\n" +
-                "- item:\n" +
-                "  - elem\n" +
-                "- item:\n" +
-                "    - elem\n" +
-                "...\n", conf, getLintProblem(3, 3));
+        check("""
+              ---
+              - item:
+                - elem
+              - item:
+                  - elem
+              ...
+              """, conf, getLintProblem(3, 3));
         conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: false}");
-        check("---\n" +
-                "- item:\n" +
-                "  - elem\n" +
-                "- item:\n" +
-                "    - elem\n" +
-                "...\n", conf, getLintProblem(5, 5));
+        check("""
+              ---
+              - item:
+                - elem
+              - item:
+                  - elem
+              ...
+              """, conf, getLintProblem(5, 5));
         conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: consistent}");
-        check("---\n" +
-                "- item:\n" +
-                "  - elem\n" +
-                "- item:\n" +
-                "    - elem\n" +
-                "...\n", conf, getLintProblem(5, 5));
+        check("""
+              ---
+              - item:
+                - elem
+              - item:
+                  - elem
+              ...
+              """, conf, getLintProblem(5, 5));
         conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: whatever}");
-        check("---\n" +
-                "- item:\n" +
-                "  - elem\n" +
-                "- item:\n" +
-                "    - elem\n" +
-                "...\n", conf);
+        check("""
+              ---
+              - item:
+                - elem
+              - item:
+                  - elem
+              ...
+              """, conf);
     }
 
     @Test
     void testReturn() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "a:\n" +
-                "  b:\n" +
-                "    c:\n" +
-                "  d:\n" +
-                "    e:\n" +
-                "      f:\n" +
-                "g:\n" +
-                "...\n", conf);
-        check("---\n" +
-                "a:\n" +
-                "  b:\n" +
-                "    c:\n" +
-                "   d:\n" +
-                "...\n", conf, getSyntaxError(5, 4));
-        check("---\n" +
-                "a:\n" +
-                "  b:\n" +
-                "    c:\n" +
-                " d:\n" +
-                "...\n", conf, getSyntaxError(5, 2));
+        check("""
+              ---
+              a:
+                b:
+                  c:
+                d:
+                  e:
+                    f:
+              g:
+              ...
+              """, conf);
+        check("""
+              ---
+              a:
+                b:
+                  c:
+                 d:
+              ...
+              """, conf, getSyntaxError(5, 4));
+        check("""
+              ---
+              a:
+                b:
+                  c:
+               d:
+              ...
+              """, conf, getSyntaxError(5, 2));
     }
 
     @Test
@@ -991,278 +1227,378 @@ class IndentationTest extends RuleTester {
     @Test
     void testExplicitBlockMappings() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "object:\n" +
-                "    ? key\n" +
-                "    : value\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "    ? key\n" +
-                "    :\n" +
-                "        value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "    ?\n" +
-                "        key\n" +
-                "    : value\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "    ?\n" +
-                "        key\n" +
-                "    :\n" +
-                "        value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- ? key\n" +
-                "  : value\n", conf);
-        check("---\n" +
-                "- ? key\n" +
-                "  :\n" +
-                "      value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "- ?\n" +
-                "      key\n" +
-                "  : value\n", conf);
-        check("---\n" +
-                "- ?\n" +
-                "      key\n" +
-                "  :\n" +
-                "      value\n" +
-                "...\n", conf);
-        check("---\n" +
-                "object:\n" +
-                "    ? key\n" +
-                "    :\n" +
-                "       value\n" +
-                "...\n", conf, getLintProblem(5, 8));
-        check("---\n" +
-                "- - ?\n" +
-                "       key\n" +
-                "    :\n" +
-                "      value\n" +
-                "...\n", conf, getLintProblem(5, 7));
-        check("---\n" +
-                "object:\n" +
-                "    ?\n" +
-                "       key\n" +
-                "    :\n" +
-                "         value\n" +
-                "...\n", conf, getLintProblem(4, 8), getLintProblem(6, 10));
-        check("---\n" +
-                "object:\n" +
-                "    ?\n" +
-                "         key\n" +
-                "    :\n" +
-                "       value\n" +
-                "...\n", conf, getLintProblem(4, 10), getLintProblem(6, 8));
+        check("""
+              ---
+              object:
+                  ? key
+                  : value
+              """, conf);
+        check("""
+              ---
+              object:
+                  ? key
+                  :
+                      value
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                  ?
+                      key
+                  : value
+              """, conf);
+        check("""
+              ---
+              object:
+                  ?
+                      key
+                  :
+                      value
+              ...
+              """, conf);
+        check("""
+              ---
+              - ? key
+                : value
+              """, conf);
+        check("""
+              ---
+              - ? key
+                :
+                    value
+              ...
+              """, conf);
+        check("""
+              ---
+              - ?
+                    key
+                : value
+              """, conf);
+        check("""
+              ---
+              - ?
+                    key
+                :
+                    value
+              ...
+              """, conf);
+        check("""
+              ---
+              object:
+                  ? key
+                  :
+                     value
+              ...
+              """, conf, getLintProblem(5, 8));
+        check("""
+              ---
+              - - ?
+                     key
+                  :
+                    value
+              ...
+              """, conf, getLintProblem(5, 7));
+        check("""
+              ---
+              object:
+                  ?
+                     key
+                  :
+                       value
+              ...
+              """, conf, getLintProblem(4, 8), getLintProblem(6, 10));
+        check("""
+              ---
+              object:
+                  ?
+                       key
+                  :
+                     value
+              ...
+              """, conf, getLintProblem(4, 10), getLintProblem(6, 8));
     }
 
     @Test
     void testClearSequenceItem() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "-\n" +
-                "  string\n" +
-                "-\n" +
-                "  map: ping\n" +
-                "-\n" +
-                "  - sequence\n" +
-                "  -\n" +
-                "    nested\n" +
-                "  -\n" +
-                "    >\n" +
-                "      multi\n" +
-                "      line\n" +
-                "...\n", conf);
-        check("---\n" +
-                "-\n" +
-                " string\n" +
-                "-\n" +
-                "   string\n", conf, getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                " map: ping\n" +
-                "-\n" +
-                "   map: ping\n", conf, getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                " - sequence\n" +
-                "-\n" +
-                "   - sequence\n", conf, getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                "  -\n" +
-                "   nested\n" +
-                "  -\n" +
-                "     nested\n", conf, getLintProblem(4, 4), getLintProblem(6, 6));
-        check("---\n" +
-                "-\n" +
-                "  -\n" +
-                "     >\n" +
-                "      multi\n" +
-                "      line\n" +
-                "...\n", conf, getLintProblem(4, 6));
+        check("""
+              ---
+              -
+                string
+              -
+                map: ping
+              -
+                - sequence
+                -
+                  nested
+                -
+                  >
+                    multi
+                    line
+              ...
+              """, conf);
+        check("""
+              ---
+              -
+               string
+              -
+                 string
+              """, conf, getLintProblem(5, 4));
+        check("""
+              ---
+              -
+               map: ping
+              -
+                 map: ping
+              """, conf, getLintProblem(5, 4));
+        check("""
+              ---
+              -
+               - sequence
+              -
+                 - sequence
+              """, conf, getLintProblem(5, 4));
+        check("""
+              ---
+              -
+                -
+                 nested
+                -
+                   nested
+              """, conf, getLintProblem(4, 4), getLintProblem(6, 6));
+        check("""
+              ---
+              -
+                -
+                   >
+                    multi
+                    line
+              ...
+              """, conf, getLintProblem(4, 6));
 
         conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "-\n" +
-                " string\n" +
-                "-\n" +
-                "   string\n", conf, getLintProblem(3, 2), getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                " map: ping\n" +
-                "-\n" +
-                "   map: ping\n", conf, getLintProblem(3, 2), getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                " - sequence\n" +
-                "-\n" +
-                "   - sequence\n", conf, getLintProblem(3, 2), getLintProblem(5, 4));
-        check("---\n" +
-                "-\n" +
-                "  -\n" +
-                "   nested\n" +
-                "  -\n" +
-                "     nested\n", conf, getLintProblem(4, 4), getLintProblem(6, 6));
+        check("""
+              ---
+              -
+               string
+              -
+                 string
+              """, conf, getLintProblem(3, 2), getLintProblem(5, 4));
+        check("""
+              ---
+              -
+               map: ping
+              -
+                 map: ping
+              """, conf, getLintProblem(3, 2), getLintProblem(5, 4));
+        check("""
+              ---
+              -
+               - sequence
+              -
+                 - sequence
+              """, conf, getLintProblem(3, 2), getLintProblem(5, 4));
+        check("""
+              ---
+              -
+                -
+                 nested
+                -
+                   nested
+              """, conf, getLintProblem(4, 4), getLintProblem(6, 6));
     }
 
     @Test
     void testAnchors() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "key: &anchor value\n", conf);
-        check("---\n" +
-                "key: &anchor\n" +
-                "  value\n", conf);
-        check("---\n" +
-                "- &anchor value\n", conf);
-        check("---\n" +
-                "- &anchor\n" +
-                "  value\n", conf);
-        check("---\n" +
-                "key: &anchor [1,\n" +
-                "              2]\n", conf);
-        check("---\n" +
-                "key: &anchor\n" +
-                "  [1,\n" +
-                "   2]\n", conf);
-        check("---\n" +
-                "key: &anchor\n" +
-                "  - 1\n" +
-                "  - 2\n", conf);
-        check("---\n" +
-                "- &anchor [1,\n" +
-                "           2]\n", conf);
-        check("---\n" +
-                "- &anchor\n" +
-                "  [1,\n" +
-                "   2]\n", conf);
-        check("---\n" +
-                "- &anchor\n" +
-                "  - 1\n" +
-                "  - 2\n", conf);
-        check("---\n" +
-                "key:\n" +
-                "  &anchor1\n" +
-                "  value\n", conf);
-        check("---\n" +
-                "pre:\n" +
-                "  &anchor1 0\n" +
-                "&anchor2 key:\n" +
-                "  value\n", conf);
-        check("---\n" +
-                "machine0:\n" +
-                "  /etc/hosts: &ref-etc-hosts\n" +
-                "    content:\n" +
-                "      - 127.0.0.1: localhost\n" +
-                "      - ::1: localhost\n" +
-                "    mode: 0644\n" +
-                "machine1:\n" +
-                "  /etc/hosts: *ref-etc-hosts\n", conf);
-        check("---\n" +
-                "list:\n" +
-                "  - k: v\n" +
-                "  - &a truc\n" +
-                "  - &b\n" +
-                "    truc\n" +
-                "  - k: *a\n", conf);
+        check("""
+              ---
+              key: &anchor value
+              """, conf);
+        check("""
+              ---
+              key: &anchor
+                value
+              """, conf);
+        check("""
+              ---
+              - &anchor value
+              """, conf);
+        check("""
+              ---
+              - &anchor
+                value
+              """, conf);
+        check("""
+              ---
+              key: &anchor [1,
+                            2]
+              """, conf);
+        check("""
+              ---
+              key: &anchor
+                [1,
+                 2]
+              """, conf);
+        check("""
+              ---
+              key: &anchor
+                - 1
+                - 2
+              """, conf);
+        check("""
+              ---
+              - &anchor [1,
+                         2]
+              """, conf);
+        check("""
+              ---
+              - &anchor
+                [1,
+                 2]
+              """, conf);
+        check("""
+              ---
+              - &anchor
+                - 1
+                - 2
+              """, conf);
+        check("""
+              ---
+              key:
+                &anchor1
+                value
+              """, conf);
+        check("""
+              ---
+              pre:
+                &anchor1 0
+              &anchor2 key:
+                value
+              """, conf);
+        check("""
+              ---
+              machine0:
+                /etc/hosts: &ref-etc-hosts
+                  content:
+                    - 127.0.0.1: localhost
+                    - ::1: localhost
+                  mode: 0644
+              machine1:
+                /etc/hosts: *ref-etc-hosts
+              """, conf);
+        check("""
+              ---
+              list:
+                - k: v
+                - &a truc
+                - &b
+                  truc
+                - k: *a
+              """, conf);
     }
 
     @Test
     void testTags() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
-        check("---\n" +
-                "-\n" +
-                "  \"flow in block\"\n" +
-                "- >\n" +
-                "    Block scalar\n" +
-                "- !!map  # Block collection\n" +
-                "  foo: bar\n", conf);
+        check("""
+              ---
+              -
+                "flow in block"
+              - >
+                  Block scalar
+              - !!map  # Block collection
+                foo: bar
+              """, conf);
 
         conf = getConfig("indentation: {spaces: consistent, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "sequence: !!seq\n" +
-                "- entry\n" +
-                "- !!seq\n" +
-                "  - nested\n", conf);
-        check("---\n" +
-                "mapping: !!map\n" +
-                "  foo: bar\n" +
-                "Block style: !!map\n" +
-                "  Clark: Evans\n" +
-                "  Ingy: döt Net\n" +
-                "  Oren: Ben-Kiki\n", conf);
-        check("---\n" +
-                "Flow style: !!map {Clark: Evans, Ingy: döt Net}\n" +
-                "Block style: !!seq\n" +
-                "- Clark Evans\n" +
-                "- Ingy döt Net\n", conf);
+        check("""
+              ---
+              sequence: !!seq
+              - entry
+              - !!seq
+                - nested
+              """, conf);
+        check("""
+              ---
+              mapping: !!map
+                foo: bar
+              Block style: !!map
+                Clark: Evans
+                Ingy: döt Net
+                Oren: Ben-Kiki
+              """, conf);
+        check("""
+              ---
+              Flow style: !!map {Clark: Evans, Ingy: döt Net}
+              Block style: !!seq
+              - Clark Evans
+              - Ingy döt Net
+              """, conf);
     }
 
     @Test
     void testFlowsImbrication() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: false, check-multi-line-strings: false}");
-        check("---\n" +
-                "[val]: value\n", conf);
-        check("---\n" +
-                "{key}: value\n", conf);
-        check("---\n" +
-                "{key: val}: value\n", conf);
-        check("---\n" +
-                "[[val]]: value\n", conf);
-        check("---\n" +
-                "{{key}}: value\n", conf);
-        check("---\n" +
-                "{{key: val1}: val2}: value\n", conf);
-        check("---\n" +
-                "- [val, {{key: val}: val}]: value\n" +
-                "- {[val,\n" +
-                "    {{key: val}: val}]}\n" +
-                "- {[val,\n" +
-                "    {{key: val,\n" +
-                "      key2}}]}\n" +
-                "- {{{{{moustaches}}}}}\n" +
-                "- {{{{{moustache,\n" +
-                "       moustache},\n" +
-                "      moustache}},\n" +
-                "    moustache}}\n", conf);
-        check("---\n" +
-                "- {[val,\n" +
-                "     {{key: val}: val}]}\n",
+        check("""
+              ---
+              [val]: value
+              """, conf);
+        check("""
+              ---
+              {key}: value
+              """, conf);
+        check("""
+              ---
+              {key: val}: value
+              """, conf);
+        check("""
+              ---
+              [[val]]: value
+              """, conf);
+        check("""
+              ---
+              {{key}}: value
+              """, conf);
+        check("""
+              ---
+              {{key: val1}: val2}: value
+              """, conf);
+        check("""
+              ---
+              - [val, {{key: val}: val}]: value
+              - {[val,
+                  {{key: val}: val}]}
+              - {[val,
+                  {{key: val,
+                    key2}}]}
+              - {{{{{moustaches}}}}}
+              - {{{{{moustache,
+                     moustache},
+                    moustache}},
+                  moustache}}
+              """, conf);
+        check("""
+              ---
+              - {[val,
+                   {{key: val}: val}]}
+              """,
                 conf, getLintProblem(3, 6));
-        check("---\n" +
-                "- {[val,\n" +
-                "    {{key: val,\n" +
-                "     key2}}]}\n",
+        check("""
+              ---
+              - {[val,
+                  {{key: val,
+                   key2}}]}
+              """,
                 conf, getLintProblem(4, 6));
-        check("---\n" +
-                "- {{{{{moustache,\n" +
-                "       moustache},\n" +
-                "       moustache}},\n" +
-                "   moustache}}\n",
+        check("""
+              ---
+              - {{{{{moustache,
+                     moustache},
+                     moustache}},
+                 moustache}}
+              """,
                 conf, getLintProblem(4, 8), getLintProblem(5, 4));
     }
 }
