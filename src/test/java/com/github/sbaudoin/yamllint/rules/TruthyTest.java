@@ -23,31 +23,41 @@ class TruthyTest extends RuleTester {
     @Test
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: disable");
-        check("---\n" +
-                "1: True\n", conf);
-        check("---\n" +
-                "True: 1\n", conf);
+        check("""
+              ---
+              1: True
+              """, conf);
+        check("""
+              ---
+              True: 1
+              """, conf);
     }
 
     @Test
     void testEnabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy: enable");
-        check("---\n" +
-                "1: True\n" +
-                "True: 1\n",
+        check("""
+              ---
+              1: True
+              True: 1
+              """,
                 conf, getLintProblem(2, 4), getLintProblem(3, 1));
-        check("---\n" +
-                "1: \"True\"\n" +
-                "\"True\": 1\n", conf);
-        check("---\n" +
-                "[\n" +
-                "  true, false,\n" +
-                "  \"false\", \"FALSE\",\n" +
-                "  \"true\", \"True\",\n" +
-                "  True, FALSE,\n" +
-                "  on, OFF,\n" +
-                "  NO, Yes\n" +
-                "]\n", conf,
+        check("""
+              ---
+              1: "True"
+              "True": 1
+              """, conf);
+        check("""
+              ---
+              [
+                true, false,
+                "false", "FALSE",
+                "true", "True",
+                True, FALSE,
+                on, OFF,
+                NO, Yes
+              ]
+              """, conf,
                 getLintProblem(6, 3), getLintProblem(6, 9),
                 getLintProblem(7, 3), getLintProblem(7, 7),
                 getLintProblem(8, 3), getLintProblem(8, 7));
@@ -57,17 +67,21 @@ class TruthyTest extends RuleTester {
     void testDifferentAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\"]");
-        check("---\n" +
-                "key1: foo\n" +
-                "key2: yes\n" +
-                "key3: bar\n" +
-                "key4: no\n", conf);
-        check("---\n" +
-                "key1: true\n" +
-                "key2: Yes\n" +
-                "key3: false\n" +
-                "key4: no\n" +
-                "key5: yes\n",
+        check("""
+              ---
+              key1: foo
+              key2: yes
+              key3: bar
+              key4: no
+              """, conf);
+        check("""
+              ---
+              key1: true
+              key2: Yes
+              key3: false
+              key4: no
+              key5: yes
+              """,
                 conf,
                 getLintProblem(2, 7), getLintProblem(3, 7),
                 getLintProblem(4, 7));
@@ -77,17 +91,21 @@ class TruthyTest extends RuleTester {
     void testCombinedAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\", \"true\", \"false\"]");
-        check("---\n" +
-                "key1: foo\n" +
-                "key2: yes\n" +
-                "key3: bar\n" +
-                "key4: no\n", conf);
-        check("---\n" +
-                "key1: true\n" +
-                "key2: Yes\n" +
-                "key3: false\n" +
-                "key4: no\n" +
-                "key5: yes\n",
+        check("""
+              ---
+              key1: foo
+              key2: yes
+              key3: bar
+              key4: no
+              """, conf);
+        check("""
+              ---
+              key1: true
+              key2: Yes
+              key3: false
+              key4: no
+              key5: yes
+              """,
                 conf, getLintProblem(3, 7));
     }
 
@@ -95,14 +113,18 @@ class TruthyTest extends RuleTester {
     void testNoAllowedValues() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: []");
-        check("---\n" +
-                "key1: foo\n" +
-                "key2: bar\n", conf);
-        check("---\n" +
-                "key1: true\n" +
-                "key2: yes\n" +
-                "key3: false\n" +
-                "key4: no\n", conf,
+        check("""
+              ---
+              key1: foo
+              key2: bar
+              """, conf);
+        check("""
+              ---
+              key1: true
+              key2: yes
+              key3: false
+              key4: no
+              """, conf,
                 getLintProblem(2, 7), getLintProblem(3, 7),
                 getLintProblem(4, 7), getLintProblem(5, 7));
     }
@@ -133,29 +155,31 @@ class TruthyTest extends RuleTester {
                 "  allowed-values: []",
                 "  check-keys: false",
                 "key-duplicates: disable");
-        check("---\n" +
-                "YES: 0\n" +
-                "Yes: 0\n" +
-                "yes: 0\n" +
-                "No: 0\n" +
-                "No: 0\n" +
-                "no: 0\n" +
-                "TRUE: 0\n" +
-                "True: 0\n" +
-                "true: 0\n" +
-                "FALSE: 0\n" +
-                "False: 0\n" +
-                "false: 0\n" +
-                "ON: 0\n" +
-                "On: 0\n" +
-                "on: 0\n" +
-                "OFF: 0\n" +
-                "Off: 0\n" +
-                "off: 0\n" +
-                "YES:\n" +
-                "  Yes:\n" +
-                "    yes:\n" +
-                "      on: 0\n",
+        check("""
+              ---
+              YES: 0
+              Yes: 0
+              yes: 0
+              No: 0
+              No: 0
+              no: 0
+              TRUE: 0
+              True: 0
+              true: 0
+              FALSE: 0
+              False: 0
+              false: 0
+              ON: 0
+              On: 0
+              on: 0
+              OFF: 0
+              Off: 0
+              off: 0
+              YES:
+                Yes:
+                  yes:
+                    on: 0
+              """,
                 conf);
     }
 }

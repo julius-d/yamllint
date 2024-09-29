@@ -424,12 +424,16 @@ public final class Cli {
                     pw,
                     width,
                     syntax,
-                    "\nA linter for YAML files. yamllint does not only check for syntax validity, but " +
-                            "for weirdnesses like key repetition and cosmetic problems such as lines " +
-                            "length, trailing spaces, indentation, etc.\n\n" +
-                            "Positional arguments:\n" +
-                            " FILE_OR_DIR                      the files to check or - to read from the standard input\n\n" +
-                            "Optional arguments:",
+                    """
+                    
+                    A linter for YAML files. yamllint does not only check for syntax validity, but \
+                    for weirdnesses like key repetition and cosmetic problems such as lines \
+                    length, trailing spaces, indentation, etc.
+                    
+                    Positional arguments:
+                     FILE_OR_DIR                      the files to check or - to read from the standard input
+                    
+                    Optional arguments:""",
                     options,
                     HelpFormatter.DEFAULT_LEFT_PAD,
                     HelpFormatter.DEFAULT_DESC_PAD,

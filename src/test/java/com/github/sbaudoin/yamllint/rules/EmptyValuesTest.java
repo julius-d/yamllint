@@ -25,22 +25,34 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: disable",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                "foo:\n", conf);
-        check("---\n" +
-                "foo:\n" +
-                " bar:\n", conf);
-        check("---\n" +
-                "{a:}\n", conf);
-        check("---\n" +
-                "foo: {a:}\n", conf);
-        check("---\n" +
-                "- {a:}\n" +
-                "- {a:, b: 2}\n" +
-                "- {a: 1, b:}\n" +
-                "- {a: 1, b: , }\n", conf);
-        check("---\n" +
-                "{a: {b: , c: {d: 4, e:}}, f:}\n", conf);
+        check("""
+              ---
+              foo:
+              """, conf);
+        check("""
+              ---
+              foo:
+               bar:
+              """, conf);
+        check("""
+              ---
+              {a:}
+              """, conf);
+        check("""
+              ---
+              foo: {a:}
+              """, conf);
+        check("""
+              ---
+              - {a:}
+              - {a:, b: 2}
+              - {a: 1, b:}
+              - {a: 1, b: , }
+              """, conf);
+        check("""
+              ---
+              {a: {b: , c: {d: 4, e:}}, f:}
+              """, conf);
     }
 
     @Test
@@ -48,11 +60,15 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n", conf);
-        check("---\n" +
-                "foo:\n" +
-                "bar: aaa\n", conf);
+        check("""
+              ---
+              foo:
+              """, conf);
+        check("""
+              ---
+              foo:
+              bar: aaa
+              """, conf);
     }
 
     @Test
@@ -60,13 +76,19 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "implicitly-null:\n", conf, getLintProblem(2, 17));
-        check("---\n" +
-                        "implicitly-null:with-colons:in-key:\n", conf,
+        check("""
+              ---
+              implicitly-null:
+              """, conf, getLintProblem(2, 17));
+        check("""
+              ---
+              implicitly-null:with-colons:in-key:
+              """, conf,
                 getLintProblem(2, 36));
-        check("---\n" +
-                        "implicitly-null:with-colons:in-key2:\n", conf,
+        check("""
+              ---
+              implicitly-null:with-colons:in-key2:
+              """, conf,
                 getLintProblem(2, 37));
     }
 
@@ -75,10 +97,12 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                        "foo:\n" +
-                        "bar:\n" +
-                        "foobar:\n", conf,
+        check("""
+              ---
+              foo:
+              bar:
+              foobar:
+              """, conf,
                 getLintProblem(2, 5),
                 getLintProblem(3, 5),
                 getLintProblem(4, 8));
@@ -89,9 +113,11 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                "...\n", conf, getLintProblem(2, 5));
+        check("""
+              ---
+              foo:
+              ...
+              """, conf, getLintProblem(2, 5));
     }
 
     @Test
@@ -99,10 +125,12 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                "bar:\n" +
-                " aaa\n", conf, getLintProblem(2, 5));
+        check("""
+              ---
+              foo:
+              bar:
+               aaa
+              """, conf, getLintProblem(2, 5));
     }
 
     @Test
@@ -110,10 +138,12 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                " bar:\n" +
-                "aaa: bbb\n", conf, getLintProblem(3, 6));
+        check("""
+              ---
+              foo:
+               bar:
+              aaa: bbb
+              """, conf, getLintProblem(3, 6));
     }
 
     @Test
@@ -123,12 +153,16 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                "foo: {a:}\n", conf);
-        check("---\n" +
-                "- {a:, b: 2}\n" +
-                "- {a: 1, b:}\n" +
-                "- {a: 1, b: , }\n", conf);
+        check("""
+              ---
+              foo: {a:}
+              """, conf);
+        check("""
+              ---
+              - {a:, b: 2}
+              - {a: 1, b:}
+              - {a: 1, b: , }
+              """, conf);
     }
 
     @Test
@@ -136,9 +170,11 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                "  -\n", conf);
+        check("""
+              ---
+              foo:
+                -
+              """, conf);
     }
 
     @Test
@@ -146,25 +182,41 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                " bar:\n" +
-                "  aaa\n", conf);
-        check("---\n" +
-                "explicitly-null: null\n", conf);
-        check("---\n" +
-                "explicitly-null:with-colons:in-key: null\n", conf);
-        check("---\n" +
-                "false-null: nulL\n", conf);
-        check("---\n" +
-                "empty-string: \"\"\n", conf);
-        check("---\n" +
-                "nullable-boolean: false\n", conf);
-        check("---\n" +
-                "nullable-int: 0\n", conf);
-        check("---\n" +
-                "First occurrence: &anchor Foo\n" +
-                "Second occurrence: *anchor\n", conf);
+        check("""
+              ---
+              foo:
+               bar:
+                aaa
+              """, conf);
+        check("""
+              ---
+              explicitly-null: null
+              """, conf);
+        check("""
+              ---
+              explicitly-null:with-colons:in-key: null
+              """, conf);
+        check("""
+              ---
+              false-null: nulL
+              """, conf);
+        check("""
+              ---
+              empty-string: ""
+              """, conf);
+        check("""
+              ---
+              nullable-boolean: false
+              """, conf);
+        check("""
+              ---
+              nullable-int: 0
+              """, conf);
+        check("""
+              ---
+              First occurrence: &anchor Foo
+              Second occurrence: *anchor
+              """, conf);
     }
 
     @Test
@@ -172,12 +224,18 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: true,",
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "null-alias: ~\n", conf);
-        check("---\n" +
-                "null-key1: {?: val}\n", conf);
-        check("---\n" +
-                "null-key2: {? !!null \"\": val}\n", conf);
+        check("""
+              ---
+              null-alias: ~
+              """, conf);
+        check("""
+              ---
+              null-key1: {?: val}
+              """, conf);
+        check("""
+              ---
+              null-key2: {? !!null "": val}
+              """, conf);
     }
 
     @Test
@@ -186,10 +244,12 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-flow-mappings: false," +
                 "               forbid-in-block-sequences: false}",
                 "comments: disable");
-        check("---\n" +
-                        "empty:  # comment\n" +
-                        "foo:\n" +
-                        "  bar: # comment\n", conf,
+        check("""
+              ---
+              empty:  # comment
+              foo:
+                bar: # comment
+              """, conf,
                 getLintProblem(2, 7),
                 getLintProblem(4, 7));
     }
@@ -201,17 +261,25 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                "{a:}\n", conf);
-        check("---\n" +
-                "foo: {a:}\n", conf);
-        check("---\n" +
-                "- {a:}\n" +
-                "- {a:, b: 2}\n" +
-                "- {a: 1, b:}\n" +
-                "- {a: 1, b: , }\n", conf);
-        check("---\n" +
-                "{a: {b: , c: {d: 4, e:}}, f:}\n", conf);
+        check("""
+              ---
+              {a:}
+              """, conf);
+        check("""
+              ---
+              foo: {a:}
+              """, conf);
+        check("""
+              ---
+              - {a:}
+              - {a:, b: 2}
+              - {a: 1, b:}
+              - {a: 1, b: , }
+              """, conf);
+        check("""
+              ---
+              {a: {b: , c: {d: 4, e:}}, f:}
+              """, conf);
     }
 
     @Test
@@ -221,23 +289,31 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                        "{a:}\n", conf,
+        check("""
+              ---
+              {a:}
+              """, conf,
                 getLintProblem(2, 4));
-        check("---\n" +
-                        "foo: {a:}\n", conf,
+        check("""
+              ---
+              foo: {a:}
+              """, conf,
                 getLintProblem(2, 9));
-        check("---\n" +
-                        "- {a:}\n" +
-                        "- {a:, b: 2}\n" +
-                        "- {a: 1, b:}\n" +
-                        "- {a: 1, b: , }\n", conf,
+        check("""
+              ---
+              - {a:}
+              - {a:, b: 2}
+              - {a: 1, b:}
+              - {a: 1, b: , }
+              """, conf,
                 getLintProblem(2, 6),
                 getLintProblem(3, 6),
                 getLintProblem(4, 12),
                 getLintProblem(5, 12));
-        check("---\n" +
-                        "{a: {b: , c: {d: 4, e:}}, f:}\n", conf,
+        check("""
+              ---
+              {a: {b: , c: {d: 4, e:}}, f:}
+              """, conf,
                 getLintProblem(2, 8),
                 getLintProblem(2, 23),
                 getLintProblem(2, 29));
@@ -250,22 +326,26 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                        "foo: {\n" +
-                        "  a:\n" +
-                        "}\n", conf,
+        check("""
+              ---
+              foo: {
+                a:
+              }
+              """, conf,
                 getLintProblem(3, 5));
-        check("---\n" +
-                        "{\n" +
-                        "  a: {\n" +
-                        "    b: ,\n" +
-                        "    c: {\n" +
-                        "      d: 4,\n" +
-                        "      e:\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  f:\n" +
-                        "}\n", conf,
+        check("""
+              ---
+              {
+                a: {
+                  b: ,
+                  c: {
+                    d: 4,
+                    e:
+                  }
+                },
+                f:
+              }
+              """, conf,
                 getLintProblem(4, 7),
                 getLintProblem(7, 9),
                 getLintProblem(10, 5));
@@ -278,14 +358,22 @@ class EmptyValuesTest extends RuleTester {
                 "               forbid-in-block-sequences: false}",
                 "braces: disable",
                 "commas: disable");
-        check("---\n" +
-                "{explicit-null: null}\n", conf);
-        check("---\n" +
-                "{null-alias: ~}\n", conf);
-        check("---\n" +
-                "null-key1: {?: val}\n", conf);
-        check("---\n" +
-                "null-key2: {? !!null \"\": val}\n", conf);
+        check("""
+              ---
+              {explicit-null: null}
+              """, conf);
+        check("""
+              ---
+              {null-alias: ~}
+              """, conf);
+        check("""
+              ---
+              null-key1: {?: val}
+              """, conf);
+        check("""
+              ---
+              null-key2: {? !!null "": val}
+              """, conf);
     }
 
     @Test
@@ -296,17 +384,19 @@ class EmptyValuesTest extends RuleTester {
                 "braces: disable",
                 "commas: disable",
                 "comments: disable");
-        check("---\n" +
-                        "{\n" +
-                        "  a: {\n" +
-                        "    b: ,  # comment\n" +
-                        "    c: {\n" +
-                        "      d: 4,  # comment\n" +
-                        "      e:  # comment\n" +
-                        "    }\n" +
-                        "  },\n" +
-                        "  f:  # comment\n" +
-                        "}\n", conf,
+        check("""
+              ---
+              {
+                a: {
+                  b: ,  # comment
+                  c: {
+                    d: 4,  # comment
+                    e:  # comment
+                  }
+                },
+                f:  # comment
+              }
+              """, conf,
                 getLintProblem(4, 7),
                 getLintProblem(7, 9),
                 getLintProblem(10, 5));
@@ -317,98 +407,135 @@ class EmptyValuesTest extends RuleTester {
         YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false," +
                 "               forbid-in-flow-mappings: false,\n" +
                 "               forbid-in-block-sequences: false}");
-        check("---\n" +
-                "foo:\n" +
-                "  - bar\n" +
-                "  -\n", conf);
-        check("---\n" +
-                "foo:\n" +
-                "  -\n", conf);
+        check("""
+              ---
+              foo:
+                - bar
+                -
+              """, conf);
+        check("""
+              ---
+              foo:
+                -
+              """, conf);
     }
 
     @Test
     void testInBlockSequencesPrimativeItem() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
-                "               forbid-in-flow-mappings: false,\n" +
-                "               forbid-in-block-sequences: true}");
-        check("---\n" +
-                "foo:\n" +
-                "  -\n", conf,
+        YamlLintConfig conf = getConfig("""
+                                        empty-values: {forbid-in-block-mappings: false,
+                                                       forbid-in-flow-mappings: false,
+                                                       forbid-in-block-sequences: true}""");
+        check("""
+              ---
+              foo:
+                -
+              """, conf,
                 getLintProblem(3, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - bar\n" +
-                "  -\n", conf,
+        check("""
+              ---
+              foo:
+                - bar
+                -
+              """, conf,
                 getLintProblem(4, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - 1\n" +
-                "  - 2\n" +
-                "  -\n", conf,
+        check("""
+              ---
+              foo:
+                - 1
+                - 2
+                -
+              """, conf,
                 getLintProblem(5, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - true\n", conf);
+        check("""
+              ---
+              foo:
+                - true
+              """, conf);
     }
 
     @Test
     void test_in_block_sequences_complex_objects() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
-                "               forbid-in-flow-mappings: false,\n" +
-                "               forbid-in-block-sequences: true}");
-        check("---\n" +
-                "foo:\n" +
-                "  - a: 1\n", conf);
-        check("---\n" +
-                "foo:\n" +
-                "  - a: 1\n" +
-                "  -\n", conf,
+        YamlLintConfig conf = getConfig("""
+                                        empty-values: {forbid-in-block-mappings: false,
+                                                       forbid-in-flow-mappings: false,
+                                                       forbid-in-block-sequences: true}""");
+        check("""
+              ---
+              foo:
+                - a: 1
+              """, conf);
+        check("""
+              ---
+              foo:
+                - a: 1
+                -
+              """, conf,
                 getLintProblem(4, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - a: 1\n" +
-                "    b: 2\n" +
-                "  -\n", conf,
+        check("""
+              ---
+              foo:
+                - a: 1
+                  b: 2
+                -
+              """, conf,
                 getLintProblem(5, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - a: 1\n" +
-                "  - b: 2\n" +
-                "  -\n", conf,
+        check("""
+              ---
+              foo:
+                - a: 1
+                - b: 2
+                -
+              """, conf,
                 getLintProblem(5, 4));
-        check("---\n" +
-                "foo:\n" +
-                "  - - a\n" +
-                "    - b: 2\n" +
-                "    -\n", conf,
+        check("""
+              ---
+              foo:
+                - - a
+                  - b: 2
+                  -
+              """, conf,
                 getLintProblem(5, 6));
-        check("---\n" +
-                "foo:\n" +
-                "  - - a\n" +
-                "    - b: 2\n" +
-                "  -\n", conf,
+        check("""
+              ---
+              foo:
+                - - a
+                  - b: 2
+                -
+              """, conf,
                 getLintProblem(5, 4));
     }
 
     @Test
     void testInBlockSequencesVariousExplicitNull() throws YamlLintConfigException {
-        YamlLintConfig conf = getConfig("empty-values: {forbid-in-block-mappings: false,\n" +
-                "               forbid-in-flow-mappings: false,\n" +
-                "               forbid-in-block-sequences: true}");
-        check("---\n" +
-                "foo:\n" +
-                "  - null\n", conf);
-        check("---\n" +
-                "- null\n", conf);
-        check("---\n" +
-                "foo:\n" +
-                "  - bar: null\n" +
-                "  - null\n", conf);
-        check("---\n" +
-                "- null\n" +
-                "- null\n", conf);
-        check("---\n" +
-                "- - null\n" +
-                "  - null\n", conf);
+        YamlLintConfig conf = getConfig("""
+                                        empty-values: {forbid-in-block-mappings: false,
+                                                       forbid-in-flow-mappings: false,
+                                                       forbid-in-block-sequences: true}""");
+        check("""
+              ---
+              foo:
+                - null
+              """, conf);
+        check("""
+              ---
+              - null
+              """, conf);
+        check("""
+              ---
+              foo:
+                - bar: null
+                - null
+              """, conf);
+        check("""
+              ---
+              - null
+              - null
+              """, conf);
+        check("""
+              ---
+              - - null
+                - null
+              """, conf);
     }
 }

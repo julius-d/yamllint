@@ -24,9 +24,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class SimpleYamlLintConfigTest {
     @Test
@@ -64,10 +73,13 @@ class SimpleYamlLintConfigTest {
     @Test
     @SuppressWarnings("unchecked")
     void testParseConfig() throws YamlLintConfigException {
-        YamlLintConfig conf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n");
+        YamlLintConfig conf = new YamlLintConfig(
+                """
+                rules:
+                  colons:
+                    max-spaces-before: 0
+                    max-spaces-after: 1
+                """);
 
         assertEquals(new HashSet(Arrays.asList("colons")), conf.ruleConf.keySet());
         assertTrue(conf.getRuleConf("colons") instanceof Map);
@@ -104,8 +116,10 @@ class SimpleYamlLintConfigTest {
     @Test
     void testUnknownRule() {
         try {
-            new YamlLintConfig("rules:\n" +
-                    "  this-one-does-not-exist: enable\n");
+            new YamlLintConfig("""
+                               rules:
+                                 this-one-does-not-exist: enable
+                               """);
             fail("Unknown rule not identified");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: no such rule: \"this-one-does-not-exist\"", e.getMessage());
@@ -115,11 +129,13 @@ class SimpleYamlLintConfigTest {
     @Test
     void testUnknownOption() {
         try {
-            new YamlLintConfig("rules:\n" +
-                    "  colons:\n" +
-                    "    max-spaces-before: 0\n" +
-                    "    max-spaces-after: 1\n" +
-                    "    abcdef: yes\n");
+            new YamlLintConfig("""
+                               rules:
+                                 colons:
+                                   max-spaces-before: 0
+                                   max-spaces-after: 1
+                                   abcdef: yes
+                               """);
             fail("Unknown option not identified");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: unknown option \"abcdef\" for rule \"colons\"", e.getMessage());
@@ -128,36 +144,45 @@ class SimpleYamlLintConfigTest {
 
     @Test
     void testYesNoForBooleans() throws YamlLintConfigException {
-        YamlLintConfig conf = new YamlLintConfig("rules:\n" +
-                "  indentation:\n" +
-                "    spaces: 2\n" +
-                "    indent-sequences: true\n" +
-                "    check-multi-line-strings: false\n");
+        YamlLintConfig conf = new YamlLintConfig(
+                """
+                rules:
+                  indentation:
+                    spaces: 2
+                    indent-sequences: true
+                    check-multi-line-strings: false
+                """);
         assertEquals(true, ((Map)conf.getRuleConf("indentation")).get("indent-sequences"));
         assertEquals(false, ((Map)conf.getRuleConf("indentation")).get("check-multi-line-strings"));
 
-        conf = new YamlLintConfig("rules:\n" +
-                "  indentation:\n" +
-                "    spaces: 2\n" +
-                "    indent-sequences: yes\n" +
-                "    check-multi-line-strings: false\n");
+        conf = new YamlLintConfig("""
+                                  rules:
+                                    indentation:
+                                      spaces: 2
+                                      indent-sequences: yes
+                                      check-multi-line-strings: false
+                                  """);
         assertEquals(true, ((Map)conf.getRuleConf("indentation")).get("indent-sequences"));
         assertEquals(false, ((Map)conf.getRuleConf("indentation")).get("check-multi-line-strings"));
 
-        conf = new YamlLintConfig("rules:\n" +
-                "  indentation:\n" +
-                "    spaces: 2\n" +
-                "    indent-sequences: whatever\n" +
-                "    check-multi-line-strings: false\n");
+        conf = new YamlLintConfig("""
+                                  rules:
+                                    indentation:
+                                      spaces: 2
+                                      indent-sequences: whatever
+                                      check-multi-line-strings: false
+                                  """);
         assertEquals("whatever", ((Map)conf.getRuleConf("indentation")).get("indent-sequences"));
         assertEquals(false, ((Map)conf.getRuleConf("indentation")).get("check-multi-line-strings"));
 
         try {
-            new YamlLintConfig("rules:\n" +
-                    "  indentation:\n" +
-                    "    spaces: 2\n" +
-                    "    indent-sequences: YES!\n" +
-                    "    check-multi-line-strings: false\n");
+            new YamlLintConfig("""
+                               rules:
+                                 indentation:
+                                   spaces: 2
+                                   indent-sequences: YES!
+                                   check-multi-line-strings: false
+                               """);
             fail("Invalid option value accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(e.getMessage().startsWith("invalid config: option \"indent-sequences\" of \"indentation\" should be in "));
@@ -314,11 +339,13 @@ class SimpleYamlLintConfigTest {
     @Test
     void testMutuallyExclusiveIgnoreKeys() {
         try {
-            new YamlLintConfig("extends: default\n" +
-                    "ignore-from-file: .gitignore\n" +
-                    "ignore: |\n" +
-                    "  *.dont-lint-me.yaml\n" +
-                    "  /bin/\n");
+            new YamlLintConfig("""
+                               extends: default
+                               ignore-from-file: .gitignore
+                               ignore: |
+                                 *.dont-lint-me.yaml
+                                 /bin/
+                               """);
             fail("Invalid conf accepted");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: ignore and ignore-from-file keys cannot be used together", e.getMessage());
@@ -327,40 +354,47 @@ class SimpleYamlLintConfigTest {
 
     @Test
     void testIgnore() throws YamlLintConfigException {
-        YamlLintConfig conf = new YamlLintConfig("rules:\n" +
-                "  indentation:\n" +
-                "    spaces: 2\n" +
-                "    indent-sequences: true\n" +
-                "    check-multi-line-strings: false\n" +
-                "ignore: |\n" +
-                "  .*\\.txt$\n" +
-                "  foo.bar\n");
+        YamlLintConfig conf = new YamlLintConfig(
+                """
+                rules:
+                  indentation:
+                    spaces: 2
+                    indent-sequences: true
+                    check-multi-line-strings: false
+                ignore: |
+                  .*\\.txt$
+                  foo.bar
+                """);
         assertTrue(conf.isFileIgnored("/my/file.txt"));
         assertTrue(conf.isFileIgnored("foo.bar"));
         assertFalse(conf.isFileIgnored("/anything/that/matches/nothing.doc"));
         assertFalse(conf.isFileIgnored("/foo.bar"));
 
         try {
-            new YamlLintConfig("rules:\n" +
-                    "  indentation:\n" +
-                    "    spaces: 2\n" +
-                    "    indent-sequences: true\n" +
-                    "    check-multi-line-strings: false\n" +
-                    "ignore:\n" +
-                    "  - \".*\\.txt$\"\n" +
-                    "  - foo.bar\n");
+            new YamlLintConfig("""
+                               rules:
+                                 indentation:
+                                   spaces: 2
+                                   indent-sequences: true
+                                   check-multi-line-strings: false
+                               ignore:
+                                 - ".*\\.txt$"
+                                 - foo.bar
+                               """);
             fail("Invalid ignore syntax accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
         }
 
         try {
-            new YamlLintConfig("rules:\n" +
-                    "  indentation:\n" +
-                    "    spaces: 2\n" +
-                    "    indent-sequences: true\n" +
-                    "    check-multi-line-strings: false\n" +
-                    "ignore: 3\n");
+            new YamlLintConfig("""
+                               rules:
+                                 indentation:
+                                   spaces: 2
+                                   indent-sequences: true
+                                   check-multi-line-strings: false
+                               ignore: 3
+                               """);
             fail("Invalid ignore syntax accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -370,8 +404,10 @@ class SimpleYamlLintConfigTest {
     @Test
     void testIgnoreFromFileDoesNotExist() {
         try {
-            new YamlLintConfig("extends: default\n" +
-                    "ignore-from-file: not_found_file\n");
+            new YamlLintConfig("""
+                               extends: default
+                               ignore-from-file: not_found_file
+                               """);
             fail("Invalid ignore-from-file configuration accepted");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: ignore-from-file contains an invalid file path", e.getMessage());
@@ -381,16 +417,20 @@ class SimpleYamlLintConfigTest {
     @Test
     void testIgnoreFromFileIncorrectType() {
         try {
-            new YamlLintConfig("extends: default\n" +
-                    "ignore-from-file: 0\n");
+            new YamlLintConfig("""
+                               extends: default
+                               ignore-from-file: 0
+                               """);
             fail("Invalid ignore-from-file syntax accepted");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: ignore-from-file should contain filename(s), either as a list or string", e.getMessage());
         }
 
         try {
-            new YamlLintConfig("extends: default\n" +
-                    "ignore-from-file: [0]\n");
+            new YamlLintConfig("""
+                               extends: default
+                               ignore-from-file: [0]
+                               """);
             fail("Invalid ignore-from-file syntax accepted");
         } catch (YamlLintConfigException e) {
             assertEquals("invalid config: ignore-from-file should contain filename(s), either as a list or string", e.getMessage());
@@ -416,11 +456,13 @@ class SimpleYamlLintConfigTest {
     @Test
     void testIsYamlFile() throws YamlLintConfigException {
         try {
-            new YamlLintConfig("yaml-files:\n" +
-                    "  indentation:\n" +
-                    "    spaces: 2\n" +
-                    "    indent-sequences: true\n" +
-                    "    check-multi-line-strings: false\n");
+            new YamlLintConfig("""
+                               yaml-files:
+                                 indentation:
+                                   spaces: 2
+                                   indent-sequences: true
+                                   check-multi-line-strings: false
+                               """);
             fail("Invalid yaml-files syntax accepted");
         } catch (YamlLintConfigException e) {
             assertTrue(true);
@@ -432,17 +474,21 @@ class SimpleYamlLintConfigTest {
         assertFalse(conf.isYamlFile("/anything/that/a.yaml/donot.match"));
         assertFalse(conf.isYamlFile("/foo.Yaml"));
 
-        conf = new YamlLintConfig("rules:\n" +
-                "  colons:\n" +
-                "    max-spaces-before: 0\n" +
-                "    max-spaces-after: 1\n");
+        conf = new YamlLintConfig("""
+                                  rules:
+                                    colons:
+                                      max-spaces-before: 0
+                                      max-spaces-after: 1
+                                  """);
         assertTrue(conf.isYamlFile("/my/file.yaml"));
         assertTrue(conf.isYamlFile("foo.yml"));
         assertFalse(conf.isYamlFile("/anything/that/a.yaml/donot.match"));
         assertFalse(conf.isYamlFile("/foo.Yaml"));
 
-        conf = new YamlLintConfig("yaml-files:\n" +
-                "  - .*\\.match$\n");
+        conf = new YamlLintConfig("""
+                                  yaml-files:
+                                    - .*\\.match$
+                                  """);
         assertFalse(conf.isYamlFile("/my/file.yaml"));
         assertFalse(conf.isYamlFile("foo.yml"));
         assertTrue(conf.isYamlFile("/anything/that/a.yaml/donot.match"));

@@ -47,10 +47,12 @@ class OctalValuesTest extends RuleTester {
         check("not-number: 0abc", conf);
         check("zero: 0", conf);
         check("hex-value: 0x10", conf);
-        check("number-values:\n" +
-                "  - 0.10\n" +
-                "  - .01\n" +
-                "  - 0e3\n", conf);
+        check("""
+              number-values:
+                - 0.10
+                - .01
+                - 0e3
+              """, conf);
         check("with-decimal-digits: 012345678", conf);
         check("with-decimal-digits: 012345679", conf);
     }
@@ -72,10 +74,12 @@ class OctalValuesTest extends RuleTester {
         check("not-number: 0oabc", conf);
         check("zero: 0", conf);
         check("hex-value: 0x10", conf);
-        check("number-values:\n" +
-                "  - 0.10\n" +
-                "  - .01\n" +
-                "  - 0e3\n", conf);
+        check("""
+              number-values:
+                - 0.10
+                - .01
+                - 0e3
+              """, conf);
         check("user-city: \"010\"", conf);
         check("with-decimal-digits: 0o012345678", conf);
         check("with-decimal-digits: 0o012345679", conf);

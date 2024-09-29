@@ -87,81 +87,109 @@ class LineLengthTest extends RuleTester {
     void testNonBreakableWord() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true, allow-non-breakable-inline-mappings: false}");
         check("---\n" + Format.repeat(30, "A") + "\n", conf);
-        check("---\n" +
-                "this:\n" +
-                "  is:\n" +
-                "    - a:\n" +
-                "        http://localhost/very/long/url\n" +
-                "...\n", conf);
-        check("---\n" +
-                "this:\n" +
-                "  is:\n" +
-                "    - a:\n" +
-                "        # http://localhost/very/long/url\n" +
-                "        comment\n" +
-                "...\n", conf);
-        check("---\n" +
-                "this:\n" +
-                "is:\n" +
-                "another:\n" +
-                "  - https://localhost/very/very/long/url\n" +
-                "...\n", conf);
-        check("---\n" +
-                "long_line: http://localhost/very/very/long/url\n", conf,
+        check("""
+              ---
+              this:
+                is:
+                  - a:
+                      http://localhost/very/long/url
+              ...
+              """, conf);
+        check("""
+              ---
+              this:
+                is:
+                  - a:
+                      # http://localhost/very/long/url
+                      comment
+              ...
+              """, conf);
+        check("""
+              ---
+              this:
+              is:
+              another:
+                - https://localhost/very/very/long/url
+              ...
+              """, conf);
+        check("""
+              ---
+              long_line: http://localhost/very/very/long/url
+              """, conf,
                 getLintProblem(2, 21));
 
         conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true}", "comments: enable");
-        check("---\n" +
-                "#######################################\n" +
-                "key: value\n", conf);
-        check("---\n" +
-                "# http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
-                "key:\n" +
-                "  subkey: value\n", conf);
-        check("---\n" +
-                "## http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
-                "key:\n" +
-                "  subkey: value\n", conf);
-        check("---\n" +
-                "# # http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
-                "key:\n" +
-                "  subkey: value\n", conf,
+        check("""
+              ---
+              #######################################
+              key: value
+              """, conf);
+        check("""
+              ---
+              # http://www.verylongurlurlurlurlurlurlurlurl.com
+              key:
+                subkey: value
+              """, conf);
+        check("""
+              ---
+              ## http://www.verylongurlurlurlurlurlurlurlurl.com
+              key:
+                subkey: value
+              """, conf);
+        check("""
+              ---
+              # # http://www.verylongurlurlurlurlurlurlurlurl.com
+              key:
+                subkey: value
+              """, conf,
                 getLintProblem(2, 21));
-        check("---\n" +
-                "#A http://www.verylongurlurlurlurlurlurlurlurl.com\n" +
-                "key:\n" +
-                "  subkey: value\n", conf,
+        check("""
+              ---
+              #A http://www.verylongurlurlurlurlurlurlurlurl.com
+              key:
+                subkey: value
+              """, conf,
                 getLintProblem(2, 2, "comments"), getLintProblem(2, 21, "line-length"));
 
         conf = getConfig("line-length: {max: 20, allow-non-breakable-words: false, allow-non-breakable-inline-mappings: false}");
         check("---\n" + Format.repeat(30, "A") + "\n", conf, getLintProblem(2, 21));
-        check("---\n" +
-                "this:\n" +
-                "  is:\n" +
-                "    - a:\n" +
-                "        http://localhost/very/long/url\n" +
-                "...\n", conf, getLintProblem(5, 21));
-        check("---\n" +
-                "this:\n" +
-                "  is:\n" +
-                "    - a:\n" +
-                "        # http://localhost/very/long/url\n" +
-                "        comment\n" +
-                "...\n", conf, getLintProblem(5, 21));
-        check("---\n" +
-                "this:\n" +
-                "is:\n" +
-                "another:\n" +
-                "  - https://localhost/very/very/long/url\n" +
-                "...\n", conf, getLintProblem(5, 21));
-        check("---\n" +
-                "long_line: http://localhost/very/very/long/url\n" +
-                "...\n", conf, getLintProblem(2, 21));
+        check("""
+              ---
+              this:
+                is:
+                  - a:
+                      http://localhost/very/long/url
+              ...
+              """, conf, getLintProblem(5, 21));
+        check("""
+              ---
+              this:
+                is:
+                  - a:
+                      # http://localhost/very/long/url
+                      comment
+              ...
+              """, conf, getLintProblem(5, 21));
+        check("""
+              ---
+              this:
+              is:
+              another:
+                - https://localhost/very/very/long/url
+              ...
+              """, conf, getLintProblem(5, 21));
+        check("""
+              ---
+              long_line: http://localhost/very/very/long/url
+              ...
+              """, conf, getLintProblem(2, 21));
 
         conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true, allow-non-breakable-inline-mappings: false}",
                 "trailing-spaces: disable");
-        check("---\n" +
-                "loooooooooong+word+and+some+space+at+the+end       \n",
+        check("""
+              ---
+              loooooooooong+word+and+some+space+at+the+end      \s
+              """,
                 conf, getLintProblem(2, 21));
     }
 
@@ -170,28 +198,40 @@ class LineLengthTest extends RuleTester {
         YamlLintConfig conf = getConfig("line-length: {max: 20," +
                 "              allow-non-breakable-inline-mappings: true," +
                 "              allow-non-breakable-words: true}");
-        check("---\n" +
-                "long_line: http://localhost/very/very/long/url\n" +
-                "long line: http://localhost/very/very/long/url\n", conf);
-        check("---\n" +
-                "- long line: http://localhost/very/very/long/url\n", conf);
-        check("---\n" +
-                "long_line: http://localhost/short/url + word\n" +
-                "long line: http://localhost/short/url + word\n",
+        check("""
+              ---
+              long_line: http://localhost/very/very/long/url
+              long line: http://localhost/very/very/long/url
+              """, conf);
+        check("""
+              ---
+              - long line: http://localhost/very/very/long/url
+              """, conf);
+        check("""
+              ---
+              long_line: http://localhost/short/url + word
+              long line: http://localhost/short/url + word
+              """,
                 conf, getLintProblem(2, 21), getLintProblem(3, 21));
 
         conf = getConfig("line-length: {max: 20," +
                 "              allow-non-breakable-inline-mappings: true," +
                 "              allow-non-breakable-words: true}",
                 "trailing-spaces: disable");
-        check("---\n" +
-                "long_line: and+some+space+at+the+end       \n",
+        check("""
+              ---
+              long_line: and+some+space+at+the+end      \s
+              """,
                 conf, getLintProblem(2, 21));
-        check("---\n" +
-                "long line: and+some+space+at+the+end       \n",
+        check("""
+              ---
+              long line: and+some+space+at+the+end      \s
+              """,
                 conf, getLintProblem(2, 21));
-        check("---\n" +
-                "- long line: and+some+space+at+the+end       \n",
+        check("""
+              ---
+              - long line: and+some+space+at+the+end      \s
+              """,
                 conf, getLintProblem(2, 21));
 
         // See https://github.com/adrienverge/yamllint/issues/21

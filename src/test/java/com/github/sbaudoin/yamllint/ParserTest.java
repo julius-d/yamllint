@@ -16,12 +16,21 @@
 package com.github.sbaudoin.yamllint;
 
 import org.junit.jupiter.api.Test;
-import org.yaml.snakeyaml.tokens.*;
+import org.yaml.snakeyaml.tokens.BlockMappingStartToken;
+import org.yaml.snakeyaml.tokens.DocumentStartToken;
+import org.yaml.snakeyaml.tokens.KeyToken;
+import org.yaml.snakeyaml.tokens.StreamStartToken;
+import org.yaml.snakeyaml.tokens.ValueToken;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class ParserTest {
@@ -45,11 +54,13 @@ class ParserTest {
         e = Parser.getLines("\n\n");
         assertEquals(3, e.size());
 
-        e = Parser.getLines("---\n" +
-                "this is line 1\n" +
-                "line 2\n" +
-                "\n" +
-                "3\n");
+        e = Parser.getLines("""
+                            ---
+                            this is line 1
+                            line 2
+                            
+                            3
+                            """);
         assertEquals(6, e.size());
         assertEquals(1, e.get(0).getLineNo());
         assertEquals("---", e.get(0).getContent());
@@ -57,9 +68,10 @@ class ParserTest {
         assertEquals("", e.get(3).getContent());
         assertEquals(6, e.get(5).getLineNo());
 
-        e = Parser.getLines("test with\n" +
-                "no newline\n" +
-                "at the end");
+        e = Parser.getLines("""
+                            test with
+                            no newline
+                            at the end""");
         assertEquals(3, e.size());
         assertEquals(3, e.get(2).getLineNo());
         assertEquals("at the end", e.get(2).getContent());
@@ -78,20 +90,24 @@ class ParserTest {
         assertEquals(((Parser.Token)e.get(1)).getCurr(), ((Parser.Token)e.get(0)).getNext());
         assertNull(((Parser.Token) e.get(1)).getNext());
 
-        e = Parser.getTokensOrComments("---\n" +
-                "k: v\n");
+        e = Parser.getTokensOrComments("""
+                                       ---
+                                       k: v
+                                       """);
         assertEquals(9, e.size());
         assertTrue(((Parser.Token)e.get(3)).getCurr() instanceof KeyToken);
         assertTrue(((Parser.Token)e.get(5)).getCurr() instanceof ValueToken);
 
-        e = Parser.getTokensOrComments("# start comment\n" +
-                "- a\n" +
-                "- key: val  # key=val\n" +
-                "# this is\n" +
-                "# a block     \n" +
-                "# comment\n" +
-                "- c\n" +
-                "# end comment\n");
+        e = Parser.getTokensOrComments("""
+                                       # start comment
+                                       - a
+                                       - key: val  # key=val
+                                       # this is
+                                       # a block    \s
+                                       # comment
+                                       - c
+                                       # end comment
+                                       """);
         assertEquals(21, e.size());
         assertTrue(e.get(1) instanceof Parser.Comment);
         assertEquals(new Parser.Comment(1, 1, "# start comment", 0, null, null, null), e.get(1));
@@ -108,26 +124,32 @@ class ParserTest {
         e = Parser.getTokensOrComments("# just comment");
         assertEquals(new Parser.Comment(1, 1, "# just comment", 0, null, null, null), e.get(1));
 
-        e = Parser.getTokensOrComments("\n" +
-                "   # indented comment\n");
+        e = Parser.getTokensOrComments("""
+                                       
+                                          # indented comment
+                                       """);
         assertEquals(new Parser.Comment(2, 4, "# indented comment", 0, null, null, null), e.get(1));
 
-        e = Parser.getTokensOrComments("\n" +
-                "# trailing spaces    \n");
+        e = Parser.getTokensOrComments("""
+                                       
+                                       # trailing spaces   \s
+                                       """);
         assertEquals(new Parser.Comment(2, 1, "# trailing spaces    ", 0, null, null, null), e.get(1));
 
-        e = Parser.getTokensOrComments("# block\n" +
-                "# comment\n" +
-                "- data   # inline comment\n" +
-                "# block\n" +
-                "# comment\n" +
-                "- k: v   # inline comment\n" +
-                "- [ l, ist\n" +
-                "]   # inline comment\n" +
-                "- { m: ap\n" +
-                "}   # inline comment\n" +
-                "# block comment\n" +
-                "- data   # inline comment\n").stream().filter(c -> c instanceof Parser.Comment).collect(Collectors.toList());
+        e = Parser.getTokensOrComments("""
+                                       # block
+                                       # comment
+                                       - data   # inline comment
+                                       # block
+                                       # comment
+                                       - k: v   # inline comment
+                                       - [ l, ist
+                                       ]   # inline comment
+                                       - { m: ap
+                                       }   # inline comment
+                                       # block comment
+                                       - data   # inline comment
+                                       """).stream().filter(c -> c instanceof Parser.Comment).collect(Collectors.toList());
         assertEquals(10, e.size());
         assertFalse(((Parser.Comment)e.get(0)).isInline());
         assertFalse(((Parser.Comment)e.get(1)).isInline());
@@ -143,8 +165,10 @@ class ParserTest {
 
     @Test
     void testGetTokensOrCommentsOrLines() {
-        List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines("---\n" +
-                "k: v  # k=v\n");
+        List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines("""
+                                                                 ---
+                                                                 k: v  # k=v
+                                                                 """);
         assertEquals(13, e.size());
         assertTrue(e.get(0) instanceof Parser.Token);
         assertTrue(((Parser.Token)e.get(0)).getCurr() instanceof StreamStartToken);
@@ -164,8 +188,10 @@ class ParserTest {
 
     @Test
     void testCommentEquals() {
-        String buffer = "---\n" +
-                "k: v  # k=v\n";
+        String buffer = """
+                        ---
+                        k: v  # k=v
+                        """;
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines(buffer);
         assertTrue(e.get(8) instanceof Parser.Comment);
         assertNotEquals(e.get(8), e.get(4));

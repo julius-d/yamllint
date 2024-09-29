@@ -15,6 +15,9 @@
  */
 package com.github.sbaudoin.yamllint.rules;
 
+import com.github.sbaudoin.yamllint.LintProblem;
+import com.github.sbaudoin.yamllint.Linter;
+import com.github.sbaudoin.yamllint.Parser;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.reader.StreamReader;
@@ -23,14 +26,19 @@ import org.yaml.snakeyaml.scanner.ScannerImpl;
 import org.yaml.snakeyaml.tokens.KeyToken;
 import org.yaml.snakeyaml.tokens.ScalarToken;
 import org.yaml.snakeyaml.tokens.Token;
-import com.github.sbaudoin.yamllint.LintProblem;
-import com.github.sbaudoin.yamllint.Linter;
-import com.github.sbaudoin.yamllint.Parser;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class RuleTest {
     @Test
@@ -138,9 +146,11 @@ class RuleTest {
     void testGetLineIndent() {
         Rule rule = getSimpleRule();
 
-        List<Token> tokens = getTokens("a: 1\n" +
-                "b:\n" +
-                "  - c: [2, 3, {d: 4}]\n");
+        List<Token> tokens = getTokens("""
+                                       a: 1
+                                       b:
+                                         - c: [2, 3, {d: 4}]
+                                       """);
 
         assertEquals("a", ((ScalarToken)tokens.get(3)).getValue());
         assertEquals(0, rule.getLineIndent(tokens.get(3)));
@@ -270,61 +280,68 @@ class RuleTest {
         assertEquals("value", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(1, rule.getRealEndLine(tokens.get(5)));
 
-        tokens = getTokens("long text:\n" +
-                "    'very \"long\"\n" +
-                "     ''string'' with\n" +
-                "\n" +
-                "     paragraph gap, \\n and\n" +
-                "     spaces.'\n" +
-                "other text: 'much shorter'");
+        tokens = getTokens("""
+                           long text:
+                               'very "long"
+                                ''string'' with
+                           
+                                paragraph gap, \\n and
+                                spaces.'
+                           other text: 'much shorter'""");
         assertEquals("very \"long\" 'string' with\nparagraph gap, \\n and spaces.", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(6, rule.getRealEndLine(tokens.get(5)));
 
-        tokens = getTokens("long text: >\n" +
-                "    very \"long\"\n" +
-                "     'string' with\n" +
-                "\n" +
-                "      paragraph gap, \\n and\n" +
-                "       spaces.\n" +
-                "other text: 'much shorter'");
+        tokens = getTokens("""
+                           long text: >
+                               very "long"
+                                'string' with
+                           
+                                 paragraph gap, \\n and
+                                  spaces.
+                           other text: 'much shorter'""");
         assertEquals("very \"long\"\n 'string' with\n\n  paragraph gap, \\n and\n   spaces.\n", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(6, rule.getRealEndLine(tokens.get(5)));
 
-        tokens = getTokens("key: |\n" +
-                "    multi\n" +
-                "    line\n" +
-                "key2: text");
+        tokens = getTokens("""
+                           key: |
+                               multi
+                               line
+                           key2: text""");
         assertEquals("multi\nline\n", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(3, rule.getRealEndLine(tokens.get(5)));
 
-        tokens = getTokens("key:\n" +
-                "    |\n" +
-                "      multi\n" +
-                "      line\n" +
-                "key2: text");
+        tokens = getTokens("""
+                           key:
+                               |
+                                 multi
+                                 line
+                           key2: text""");
         assertEquals("multi\nline\n", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(4, rule.getRealEndLine(tokens.get(5)));
 
-        tokens = getTokens("- ? |\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  : |\n" +
-                "      multi-line\n" +
-                "      value\n" +
-                "key2: text");
+        tokens = getTokens("""
+                           - ? |
+                                 multi-line
+                                 key
+                             : |
+                                 multi-line
+                                 value
+                           key2: text""");
         assertEquals("multi-line\nkey\n", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(3, rule.getRealEndLine(tokens.get(5)));
         assertEquals("multi-line\nvalue\n", ((ScalarToken)tokens.get(7)).getValue());
         assertEquals(6, rule.getRealEndLine(tokens.get(7)));
 
-        tokens = getTokens("- ?\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "      key\n" +
-                "  :\n" +
-                "    |\n" +
-                "      multi-line\n" +
-                "      value\n");
+        tokens = getTokens("""
+                           - ?
+                               |
+                                 multi-line
+                                 key
+                             :
+                               |
+                                 multi-line
+                                 value
+                           """);
         assertEquals("multi-line\nkey\n", ((ScalarToken)tokens.get(5)).getValue());
         assertEquals(4, rule.getRealEndLine(tokens.get(5)));
         assertEquals("multi-line\nvalue\n", ((ScalarToken)tokens.get(7)).getValue());

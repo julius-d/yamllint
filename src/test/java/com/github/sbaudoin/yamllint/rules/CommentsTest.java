@@ -24,23 +24,25 @@ class CommentsTest extends RuleTester {
     void testDisabled() throws YamlLintConfigException {
         YamlLintConfig conf = getConfig("comments: disable",
                 "comments-indentation: disable");
-        check("---\n" +
-                "#comment\n" +
-                "\n" +
-                "test: #    description\n" +
-                "  - foo  # bar\n" +
-                "  - hello #world\n" +
-                "\n" +
-                "# comment 2\n" +
-                "#comment 3\n" +
-                "  #comment 3 bis\n" +
-                "  #  comment 3 ter\n" +
-                "\n" +
-                "################################\n" +
-                "## comment 4\n" +
-                "##comment 5\n" +
-                "\n" +
-                "string: \"Une longue phrase.\" # this is French\n", conf);
+        check("""
+              ---
+              #comment
+              
+              test: #    description
+                - foo  # bar
+                - hello #world
+              
+              # comment 2
+              #comment 3
+                #comment 3 bis
+                #  comment 3 ter
+              
+              ################################
+              ## comment 4
+              ##comment 5
+              
+              string: "Une longue phrase." # this is French
+              """, conf);
     }
 
     @Test
@@ -49,36 +51,40 @@ class CommentsTest extends RuleTester {
                 "  require-starting-space: true",
                 "  min-spaces-from-content: -1",
                 "comments-indentation: disable");
-        check("---\n" +
-                "# comment\n" +
-                "\n" +
-                "test:  #     description\n" +
-                "  - foo  #   bar\n" +
-                "  - hello  # world\n" +
-                "\n" +
-                "# comment 2\n" +
-                "# comment 3\n" +
-                "  #  comment 3 bis\n" +
-                "  #  comment 3 ter\n" +
-                "\n" +
-                "################################\n" +
-                "## comment 4\n" +
-                "##  comment 5\n", conf);
-        check("---\n" +
-                "#comment\n" +
-                "\n" +
-                "test:  #    description\n" +
-                "  - foo  #  bar\n" +
-                "  - hello  #world\n" +
-                "\n" +
-                "# comment 2\n" +
-                "#comment 3\n" +
-                "  #comment 3 bis\n" +
-                "  #  comment 3 ter\n" +
-                "\n" +
-                "################################\n" +
-                "## comment 4\n" +
-                "##comment 5\n", conf,
+        check("""
+              ---
+              # comment
+              
+              test:  #     description
+                - foo  #   bar
+                - hello  # world
+              
+              # comment 2
+              # comment 3
+                #  comment 3 bis
+                #  comment 3 ter
+              
+              ################################
+              ## comment 4
+              ##  comment 5
+              """, conf);
+        check("""
+              ---
+              #comment
+              
+              test:  #    description
+                - foo  #  bar
+                - hello  #world
+              
+              # comment 2
+              #comment 3
+                #comment 3 bis
+                #  comment 3 ter
+              
+              ################################
+              ## comment 4
+              ##comment 5
+              """, conf,
                 getLintProblem(2, 2), getLintProblem(6, 13),
                 getLintProblem(9, 2), getLintProblem(10, 4),
                 getLintProblem(15, 3));
@@ -93,14 +99,17 @@ class CommentsTest extends RuleTester {
                 "document-start: disable");
         check("#!/bin/env my-interpreter\n", conf,
                 getLintProblem(1, 2));
-        check("# comment\n" +
-                "#!/bin/env my-interpreter\n", conf,
+        check("""
+              # comment
+              #!/bin/env my-interpreter
+              """, conf,
                 getLintProblem(2, 2));
-        check("#!/bin/env my-interpreter\n" +
-                "---\n" +
-                "#comment\n" +
-                "#!/bin/env my-interpreter\n" +
-                "", conf,
+        check("""
+              #!/bin/env my-interpreter
+              ---
+              #comment
+              #!/bin/env my-interpreter
+              """, conf,
                 getLintProblem(1, 2),
                 getLintProblem(3, 2),
                 getLintProblem(4, 2));
@@ -116,13 +125,17 @@ class CommentsTest extends RuleTester {
                 "comments-indentation: disable",
                 "document-start: disable");
         check("#!/bin/env my-interpreter\n", conf);
-        check("# comment\n" +
-                "#!/bin/env my-interpreter\n", conf,
+        check("""
+              # comment
+              #!/bin/env my-interpreter
+              """, conf,
                 getLintProblem(2, 2));
-        check("#!/bin/env my-interpreter\n" +
-                "---\n" +
-                "#comment\n" +
-                "#!/bin/env my-interpreter\n", conf,
+        check("""
+              #!/bin/env my-interpreter
+              ---
+              #comment
+              #!/bin/env my-interpreter
+              """, conf,
                 getLintProblem(3, 2), getLintProblem(4, 2));
         check("#! is a valid shebang too\n", conf);
         check("key:  #!/not/a/shebang\n", conf, getLintProblem(1, 8));
@@ -133,22 +146,26 @@ class CommentsTest extends RuleTester {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: false",
                 "  min-spaces-from-content: 2");
-        check("---\n" +
-                "# comment\n" +
-                "\n" +
-                "test:  #    description\n" +
-                "  - foo  #  bar\n" +
-                "  - hello  #world\n" +
-                "\n" +
-                "string: \"Une longue phrase.\"  # this is French\n", conf);
-        check("---\n" +
-                "# comment\n" +
-                "\n" +
-                "test: #    description\n" +
-                "  - foo  # bar\n" +
-                "  - hello #world\n" +
-                "\n" +
-                "string: \"Une longue phrase.\" # this is French\n", conf,
+        check("""
+              ---
+              # comment
+              
+              test:  #    description
+                - foo  #  bar
+                - hello  #world
+              
+              string: "Une longue phrase."  # this is French
+              """, conf);
+        check("""
+              ---
+              # comment
+              
+              test: #    description
+                - foo  # bar
+                - hello #world
+              
+              string: "Une longue phrase." # this is French
+              """, conf,
                 getLintProblem(4, 7), getLintProblem(6, 11), getLintProblem(8, 30));
     }
 
@@ -158,23 +175,25 @@ class CommentsTest extends RuleTester {
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
                 "comments-indentation: disable");
-        check("---\n" +
-                "#comment\n" +
-                "\n" +
-                "test: #    description\n" +
-                "  - foo  # bar\n" +
-                "  - hello #world\n" +
-                "\n" +
-                "# comment 2\n" +
-                "#comment 3\n" +
-                "  #comment 3 bis\n" +
-                "  #  comment 3 ter\n" +
-                "\n" +
-                "################################\n" +
-                "## comment 4\n" +
-                "##comment 5\n" +
-                "\n" +
-                "string: \"Une longue phrase.\" # this is French\n", conf,
+        check("""
+              ---
+              #comment
+              
+              test: #    description
+                - foo  # bar
+                - hello #world
+              
+              # comment 2
+              #comment 3
+                #comment 3 bis
+                #  comment 3 ter
+              
+              ################################
+              ## comment 4
+              ##comment 5
+              
+              string: "Une longue phrase." # this is French
+              """, conf,
                 getLintProblem(2, 2),
                 getLintProblem(4, 7),
                 getLintProblem(6, 11),
@@ -190,13 +209,17 @@ class CommentsTest extends RuleTester {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2");
-        check("---\n" +
-                "# This is paragraph 1.\n" +
-                "#\n" +
-                "# This is paragraph 2.\n", conf);
-        check("---\n" +
-                "inline: comment  #\n" +
-                "foo: bar\n", conf);
+        check("""
+              ---
+              # This is paragraph 1.
+              #
+              # This is paragraph 2.
+              """, conf);
+        check("""
+              ---
+              inline: comment  #
+              foo: bar
+              """, conf);
     }
 
     @Test
@@ -223,15 +246,19 @@ class CommentsTest extends RuleTester {
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
                 "trailing-spaces: disable");
-        check("---\n" +
-                "string: >\n" +
-                "  this is plain text\n" +
-                "\n" +
-                "# comment\n", conf);
-        check("---\n" +
-                "- string: >\n" +
-                "    this is plain text\n" +
-                "  \n" +
-                "  # comment\n", conf);
+        check("""
+              ---
+              string: >
+                this is plain text
+              
+              # comment
+              """, conf);
+        check("""
+              ---
+              - string: >
+                  this is plain text
+               \s
+                # comment
+              """, conf);
     }
 }
