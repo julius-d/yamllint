@@ -19,12 +19,11 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class QuotedStringsTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: disable");
 
         check("""
@@ -46,7 +45,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testQuoteTypeAny() throws YamlLintConfigException {
+    void quoteTypeAny() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any}");
 
         check("---\n" +
@@ -92,7 +91,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testQuoteTypeSingle() throws YamlLintConfigException {
+    void quoteTypeSingle() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single}");
 
         check("---\n" +
@@ -147,7 +146,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testQuoteTypeDouble() throws YamlLintConfigException {
+    void quoteTypeDouble() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: double}");
 
         check("---\n" +
@@ -197,7 +196,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testAnyQuotesNotRequired() throws YamlLintConfigException {
+    void anyQuotesNotRequired() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any, required: false}");
 
         check("""
@@ -246,7 +245,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testSingleQuotesNotRequired() throws YamlLintConfigException {
+    void singleQuotesNotRequired() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single, required: false}");
 
         check("---\n" +
@@ -297,7 +296,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testOnlyWhenNeeded() throws YamlLintConfigException {
+    void onlyWhenNeeded() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
 
         check("---\n" +
@@ -345,7 +344,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testOnlyWhenNeededSingleQuotes() throws YamlLintConfigException {
+    void onlyWhenNeededSingleQuotes() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single,",
                         "                 required: only-when-needed}");
 
@@ -396,7 +395,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testOnlyWwhenNeededCornerCases() throws YamlLintConfigException {
+    void onlyWwhenNeededCornerCases() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
 
         check("""
@@ -446,22 +445,16 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testOnlyWhenNeededExtras() throws YamlLintConfigException {
+    void onlyWhenNeededExtras() throws Exception {
         YamlLintConfig conf;
-        try {
-            getConfig("quoted-strings:",
-                    "  required: true", "  extra-allowed: [^http://]");
-            fail("Invalid configuration accepted");
-        } catch (YamlLintConfigException e) {
-            assertTrue(true);
-        }
+        assertThatThrownBy(() -> getConfig("quoted-strings:",
+                "  required: true", "  extra-allowed: [^http://]")).isInstanceOf(YamlLintConfigException.class);
 
         try {
             getConfig("quoted-strings:",
                     "  required: true",
                     "  extra-required: [^http://]");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
         }
 
         try {
@@ -469,7 +462,6 @@ class QuotedStringsTest extends RuleTester {
                     "  required: false",
                     "  extra-allowed: [^http://]");
         } catch (YamlLintConfigException e) {
-            assertTrue(true);
         }
 
         conf = getConfig("quoted-strings:",
@@ -538,7 +530,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testOctalValues() throws YamlLintConfigException {
+    void octalValues() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {required: true}");
         check("---\n" +
                 "- 100\n" +
@@ -557,7 +549,7 @@ class QuotedStringsTest extends RuleTester {
     }
 
     @Test
-    void testAllowQuotedQuotes() throws YamlLintConfigException {
+    void allowQuotedQuotes() throws Exception {
         YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single,",
                 "                 required: false,",
                 "                 allow-quoted-quotes: false}");

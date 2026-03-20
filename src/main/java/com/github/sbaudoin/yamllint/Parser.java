@@ -229,9 +229,9 @@ public class Parser {
 
         @Override
         public boolean equals(Object other) {
-            return other instanceof Comment &&
-                    lineNo == ((Comment)other).lineNo &&
-                    columnNo == ((Comment)other).columnNo &&
+            return other instanceof Comment c &&
+                    lineNo == c.lineNo &&
+                    columnNo == c.columnNo &&
                     toString().equals(other.toString());
         }
 

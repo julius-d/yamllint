@@ -19,7 +19,6 @@ import org.apache.commons.cli.*;
 
 import java.io.*;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -247,9 +246,9 @@ public final class Cli {
             String format = cmdLine.getOptionValue(ARG_FORMAT, DEFAULT_FORMAT);
             if (!OUTPUT_FORMATS.containsKey(format)) {
                 endOnError(
-                        String.format("invalid output format '%1$s'. Supported formats: %2$s",
+                        "invalid output format '%1$s'. Supported formats: %2$s".formatted(
                                 format,
-                                OUTPUT_FORMATS.keySet().stream().map(f -> (DEFAULT_FORMAT.equals(f))?("'" + f + "' (default)"):("'" + f + "'")).collect(Collectors.joining(", "))),
+                                OUTPUT_FORMATS.keySet().stream().map(f -> (DEFAULT_FORMAT.equals(f)) ? ("'" + f + "' (default)") : ("'" + f + "'")).collect(Collectors.joining(", "))),
                         false
                 );
             }
@@ -312,11 +311,11 @@ public final class Cli {
         Path userGlobalConfig;
 
         if (System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR) != null) {
-            userGlobalConfig = Paths.get(System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR));
+            userGlobalConfig = Path.of(System.getenv(YAMLLINT_CONFIG_FILE_ENV_VAR));
         } else if (System.getenv(XDG_CONFIG_HOME_ENV_VAR) != null) {
-            userGlobalConfig = Paths.get(System.getenv(XDG_CONFIG_HOME_ENV_VAR), APP_NAME, "config");
+            userGlobalConfig = Path.of(System.getenv(XDG_CONFIG_HOME_ENV_VAR), APP_NAME, "config");
         } else {
-            userGlobalConfig = Paths.get(System.getProperty("user.home"), ".config", APP_NAME, "config");
+            userGlobalConfig = Path.of(System.getProperty("user.home"), ".config", APP_NAME, "config");
         }
 
         return userGlobalConfig;
@@ -334,7 +333,7 @@ public final class Cli {
      * @return the project configuration file or {@code null} if not found
      */
     private File findProjectConfigFile() {
-        return findProjectConfigFile(Paths.get("."));
+        return findProjectConfigFile(Path.of("."));
     }
 
     /**

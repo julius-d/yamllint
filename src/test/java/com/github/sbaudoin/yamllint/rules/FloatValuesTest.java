@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class FloatValuesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("float-values: disable");
         check("""
               ---
@@ -35,7 +34,7 @@ class FloatValuesTest extends RuleTester {
     }
 
     @Test
-    void testNumeralBeforeDecimal() throws YamlLintConfigException {
+    void numeralBeforeDecimal() throws Exception {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: true",
                 "  forbid-scientific-notation: false",
@@ -59,7 +58,7 @@ class FloatValuesTest extends RuleTester {
     }
 
     @Test
-    void testScientificNotation() throws YamlLintConfigException {
+    void scientificNotation() throws Exception {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: true",
@@ -89,7 +88,7 @@ class FloatValuesTest extends RuleTester {
     }
 
     @Test
-    void testNan() throws YamlLintConfigException {
+    void nan() throws Exception {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: false",
@@ -113,7 +112,7 @@ class FloatValuesTest extends RuleTester {
     }
 
     @Test
-    void testInf() throws YamlLintConfigException {
+    void inf() throws Exception {
         YamlLintConfig conf = getConfig("float-values:",
                 "  require-numeral-before-decimal: false",
                 "  forbid-scientific-notation: false",

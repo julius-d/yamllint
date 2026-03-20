@@ -142,16 +142,16 @@ public class Anchors extends TokenRule {
             }
         }
 
-        if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_UNDECLARED_ALIASES)) && token instanceof AliasToken &&
-                !getContextMap(context).containsKey(((AliasToken)token).getValue())) {
+        if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_UNDECLARED_ALIASES)) && token instanceof AliasToken aliasToken &&
+                !getContextMap(context).containsKey(aliasToken.getValue())) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1, token.getStartMark().getColumn() + 1,
-                    String.format("found undeclared alias \"%s\"", ((AliasToken)token).getValue())));
+                    "found undeclared alias \"%s\"".formatted(aliasToken.getValue())));
         }
 
-        if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_DUPLICATED_ANCHORS)) && token instanceof AnchorToken &&
-                getContextMap(context).containsKey(((AnchorToken)token).getValue())) {
+        if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_DUPLICATED_ANCHORS)) && token instanceof AnchorToken anchorToken &&
+                getContextMap(context).containsKey(anchorToken.getValue())) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1, token.getStartMark().getColumn() + 1,
-                    String.format("found duplicated anchor \"%s\"", ((AnchorToken) token).getValue())));
+                    "found duplicated anchor \"%s\"".formatted(anchorToken.getValue())));
         }
 
         if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_UNUSED_ANCHORS))) {
@@ -171,20 +171,20 @@ public class Anchors extends TokenRule {
                     if (Boolean.FALSE.equals(info.get("used"))) {
                         problems.add(new LintProblem((Integer)info.get("line") + 1,
                                 (Integer)info.get("column") + 1,
-                            String.format("found unused anchor \"%s\"", k)));
+                                "found unused anchor \"%s\"".formatted(k)));
                     }
                 }
-            } else if (token instanceof AliasToken) {
+            } else if (token instanceof AliasToken aliasToken) {
                 ((HashMap<String, Object>) (getContextMap(context).getOrDefault(
-                        ((AliasToken)token).getValue(), new HashMap<String, Object>()))).put("used", true);
+                        aliasToken.getValue(), new HashMap<String, Object>()))).put("used", true);
             }
         }
 
         if (Boolean.TRUE.equals(conf.get(OPTION_FORBID_UNDECLARED_ALIASES)) ||
                 Boolean.TRUE.equals(conf.get(OPTION_FORBID_DUPLICATED_ANCHORS)) ||
                 Boolean.TRUE.equals(conf.get(OPTION_FORBID_UNUSED_ANCHORS))) {
-            if (token instanceof AnchorToken) {
-                getContextMap(context).put(((AnchorToken) token).getValue(),
+            if (token instanceof AnchorToken anchorToken) {
+                getContextMap(context).put(anchorToken.getValue(),
                         Stream.of(
                                 new AbstractMap.SimpleEntry<>("line", token.getStartMark().getLine()),
                                 new AbstractMap.SimpleEntry<>("column", token.getStartMark().getColumn()),

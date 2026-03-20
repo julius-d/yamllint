@@ -171,12 +171,12 @@ public class Format {
      * @return the parsable representation of the problem
      */
     public static String parsable(LintProblem problem, String filename) {
-        return String.format("%1$s:%2$d:%3$d:%4$s:%5$s:%6$s",
+        return "%1$s:%2$d:%3$d:%4$s:%5$s:%6$s".formatted(
                 filename,
                 problem.getLine(),
                 problem.getColumn(),
-                (problem.getRuleId() == null)?"":problem.getRuleId(),
-                (problem.getLevel() == null)?"":problem.getLevel(),
+                (problem.getRuleId() == null) ? "" : problem.getRuleId(),
+                (problem.getLevel() == null) ? "" : problem.getLevel(),
                 problem.getDesc());
     }
 
@@ -188,12 +188,12 @@ public class Format {
      * @return the GitHub representation of the problem
      */
     public static String github(LintProblem problem, String filename) {
-        return String.format("::%5$s file=%1$s,line=%2$d,col=%3$s::%4$s%6$s",
+        return "::%5$s file=%1$s,line=%2$d,col=%3$s::%4$s%6$s".formatted(
                 filename,
                 problem.getLine(),
                 problem.getColumn(),
-                (problem.getRuleId() == null)?"":"[" + problem.getRuleId() + "] ",
-                (problem.getLevel() == null)?"":problem.getLevel(),
+                (problem.getRuleId() == null) ? "" : "[" + problem.getRuleId() + "] ",
+                (problem.getLevel() == null) ? "" : problem.getLevel(),
                 problem.getDesc());
     }
 

@@ -125,7 +125,7 @@ public class LintProblem {
      */
     public String getMessage() {
         if (ruleId != null) {
-            return String.format("%1$2s (%2$2s)", desc, ruleId);
+            return "%1$2s (%2$2s)".formatted(desc, ruleId);
         }
         return desc;
     }
@@ -138,7 +138,7 @@ public class LintProblem {
      */
     public String getLongMessage() {
         if (ruleId != null) {
-            return String.format("%1$2s (%2$2s)%3$s%4$s", desc, ruleId, (extraDesc == null)?"":System.lineSeparator(), (extraDesc == null)?"":extraDesc);
+            return "%1$2s (%2$2s)%3$s%4$s".formatted(desc, ruleId, (extraDesc == null) ? "" : System.lineSeparator(), (extraDesc == null) ? "" : extraDesc);
         }
         return desc + ((extraDesc == null)?"":(System.lineSeparator() + extraDesc));
     }
@@ -186,10 +186,10 @@ public class LintProblem {
 
     @Override
     public boolean equals(Object o) {
-        if (o instanceof LintProblem) {
-            return (((LintProblem) o).line == line &&
-                    ((LintProblem) o).column == column &&
-                    Objects.equals(ruleId, ((LintProblem) o).ruleId));
+        if (o instanceof LintProblem problem) {
+            return (problem.line == line &&
+                    problem.column == column &&
+                    Objects.equals(ruleId, problem.ruleId));
         }
         return false;
     }
@@ -201,6 +201,6 @@ public class LintProblem {
 
     @Override
     public String toString() {
-        return String.format("%1$d:%2$d:%3$2s", line, column, getMessage());
+        return "%1$d:%2$d:%3$2s".formatted(line, column, getMessage());
     }
 }

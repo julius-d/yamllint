@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class TrailingSpacesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("trailing-spaces: disable");
         check("", conf);
         check("\n", conf);
@@ -33,7 +32,7 @@ class TrailingSpacesTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("trailing-spaces: enable");
         check("", conf);
         check("\n", conf);
@@ -50,7 +49,7 @@ class TrailingSpacesTest extends RuleTester {
     }
 
     @Test
-    void testWithDosNewLines() throws YamlLintConfigException {
+    void withDosNewLines() throws Exception {
         YamlLintConfig conf = getConfig("trailing-spaces: enable",
                 "new-lines: {type: dos}");
         check("""

@@ -16,7 +16,6 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class ScalarIndentationTest extends RuleTester {
@@ -26,7 +25,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testBasicsPlain() throws YamlLintConfigException {
+    void basicsPlain() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
@@ -78,7 +77,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testCheckMultiLinePlain() throws YamlLintConfigException {
+    void checkMultiLinePlain() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -118,7 +117,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testBasicsQuoted() throws YamlLintConfigException {
+    void basicsQuoted() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
@@ -168,7 +167,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testCheckMultiLineQuoted() throws YamlLintConfigException {
+    void checkMultiLineQuoted() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -261,7 +260,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testBasicsFoldedStyle() throws YamlLintConfigException {
+    void basicsFoldedStyle() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
@@ -316,7 +315,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testCheckMultiLineFoldedStyle() throws YamlLintConfigException {
+    void checkMultiLineFoldedStyle() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -374,7 +373,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testBasicsLiteralStyle() throws YamlLintConfigException {
+    void basicsLiteralStyle() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: false}",
@@ -429,7 +428,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testCheckMultiLineLiteralStyle() throws YamlLintConfigException {
+    void checkMultiLineLiteralStyle() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -490,7 +489,7 @@ class ScalarIndentationTest extends RuleTester {
     // http://stackoverflow.com/questions/3790454/in-yaml-how-do-i-break-a-string-over-multiple-lines
 
     @Test
-    void testParagraphPlain() throws YamlLintConfigException {
+    void paragraphPlain() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -521,7 +520,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testParagraphDoubleQuoted() throws YamlLintConfigException {
+    void paragraphDoubleQuoted() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -560,7 +559,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testParagraphSingleQuoted() throws YamlLintConfigException {
+    void paragraphSingleQuoted() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -599,7 +598,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testParagraphFolded() throws YamlLintConfigException {
+    void paragraphFolded() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -624,7 +623,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testParagraphLiteral() throws YamlLintConfigException {
+    void paragraphLiteral() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",
@@ -649,7 +648,7 @@ class ScalarIndentationTest extends RuleTester {
     }
 
     @Test
-    void testConsistent() throws YamlLintConfigException {
+    void consistent() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: true,",
                 "              check-multi-line-strings: true}",

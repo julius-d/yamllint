@@ -418,9 +418,9 @@ public class Indentation extends TokenRule {
             if (!foundIndentation.equals(expected)) {
                 String message;
                 if (expected < 0) {
-                    message = String.format("wrong indentation: expected at least %d", foundIndentation + 1);
+                    message = "wrong indentation: expected at least %d".formatted(foundIndentation + 1);
                 } else {
-                    message = String.format("wrong indentation: expected %d but found %d", expected, foundIndentation);
+                    message = "wrong indentation: expected %d but found %d".formatted(expected, foundIndentation);
                 }
                 problems.add(new LintProblem(token.getStartMark().getLine() + 1, foundIndentation + 1, message));
             }
@@ -713,7 +713,7 @@ public class Indentation extends TokenRule {
 
         @Override
         public String toString() {
-            return String.format("%1$s:%2$d", type, indent);
+            return "%1$s:%2$d".formatted(type, indent);
         }
     }
 

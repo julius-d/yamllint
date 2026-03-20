@@ -15,48 +15,43 @@
  */
 package com.github.sbaudoin.yamllint;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.yaml.snakeyaml.reader.StreamReader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class LintScannerTest {
     @Test
-    void testGetToken() {
+    void getToken() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
-        try {
+        Assertions.assertThatCode(() -> {
             while (scanner.getToken() != null) {
                 // Do nothing: we just want to go through all token
             }
-            assertTrue(true);
-        } catch (IndexOutOfBoundsException e) {
-            fail("IndexOutOfBoundsException raised while reading tokens");
-        }
+        }).withFailMessage("IndexOutOfBoundsException raised while reading tokens").doesNotThrowAnyException();
     }
 
     @Test
-    void testPeekToken() {
+    void peekToken() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
-        try {
+        Assertions.assertThatCode(() -> {
             while (scanner.peekToken() != null) {
                 // Looks like this is redundant compared to testGetToken()...
                 scanner.getToken();
             }
-            assertTrue(true);
-        } catch (IndexOutOfBoundsException e) {
-            fail("IndexOutOfBoundsException raised while reading tokens");
-        }
+        }).withFailMessage("IndexOutOfBoundsException raised while reading tokens").doesNotThrowAnyException();
     }
 
     @Test
-    void testHasMoreTokens() {
+    void hasMoreTokens() {
         LintScanner scanner = new LintScanner(new StreamReader("key1: value\nkey2: value"));
-        assertTrue(scanner.hasMoreTokens()); // StreamStartToken
+        assertThat(scanner.hasMoreTokens()).isTrue(); // StreamStartToken
         for (int i = 0; i < 11; i++) {
             scanner.getToken();
         }
-        assertTrue(scanner.hasMoreTokens());
+        assertThat(scanner.hasMoreTokens()).isTrue();
         scanner.getToken(); // StreamEndToken
-        assertFalse(scanner.hasMoreTokens());
+        assertThat(scanner.hasMoreTokens()).isFalse();
     }
 }

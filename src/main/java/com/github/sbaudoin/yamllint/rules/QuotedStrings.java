@@ -217,7 +217,7 @@ public class QuotedStrings extends TokenRule {
         }
 
         // Ignore explicit types, e.g. !!str testtest or !!int 42
-        if (prev instanceof TagToken && "!!".equals(((TagToken) prev).getValue().getHandle())) {
+        if (prev instanceof TagToken tagToken && "!!".equals(tagToken.getValue().getHandle())) {
             return problems;
         }
 
@@ -247,13 +247,13 @@ public class QuotedStrings extends TokenRule {
             if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN ||
                     !(quoteMatch(quoteType, ((ScalarToken) token).getStyle()) ||
                     ((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) && hasQuotedQuotes(token)))) {
-                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
+                msg = MSG_NOT_QUOTED_WITH_QUOTES.formatted(quoteType);
             }
         } else if (conf.get(OPTION_REQUIRED) instanceof Boolean && Boolean.FALSE.equals(conf.get(OPTION_REQUIRED))) {
             // Quotes are not mandatory but when used need to match config
             if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN && !quoteMatch(quoteType, ((ScalarToken) token).getStyle()) &&
                     !((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) &&hasQuotedQuotes(token))) {
-                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
+                msg = MSG_NOT_QUOTED_WITH_QUOTES.formatted(quoteType);
             } else if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
                 boolean isExtraRequired = ((List<String>)conf.get(OPTION_EXTRA_REQUIRED)).stream().anyMatch(
                         r -> Pattern.compile(r).matcher(((ScalarToken) token).getValue()).find());
@@ -270,7 +270,7 @@ public class QuotedStrings extends TokenRule {
                 boolean isExtraAllowed = ((List<String>)conf.get(OPTION_EXTRA_ALLOWED)).stream().anyMatch(
                         r -> Pattern.compile(r).matcher(((ScalarToken) token).getValue()).find());
                 if (!(isExtraRequired || isExtraAllowed)) {
-                    msg = String.format("string value is redundantly quoted with %s quotes", quoteType);
+                    msg = "string value is redundantly quoted with %s quotes".formatted(quoteType);
                 }
             }
 
@@ -278,7 +278,7 @@ public class QuotedStrings extends TokenRule {
             else if (((ScalarToken) token).getStyle() != DumperOptions.ScalarStyle.PLAIN &&
                     !quoteMatch(quoteType, ((ScalarToken) token).getStyle()) &&
                     !((boolean)conf.get(OPTION_ALLOW_QUOTED_QUOTES) && hasQuotedQuotes(token))) {
-                msg = String.format(MSG_NOT_QUOTED_WITH_QUOTES, quoteType);
+                msg = MSG_NOT_QUOTED_WITH_QUOTES.formatted(quoteType);
             }
 
             else if (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
@@ -321,16 +321,16 @@ public class QuotedStrings extends TokenRule {
         try {
             Token a = loader.getToken();
             Token b = loader.getToken();
-            return !(a instanceof ScalarToken && ((ScalarToken) a).getStyle() == DumperOptions.ScalarStyle.PLAIN &&
-                    b instanceof BlockEndToken && string.equals(((ScalarToken) a).getValue()));
+            return !(a instanceof ScalarToken st && st.getStyle() == DumperOptions.ScalarStyle.PLAIN &&
+                    b instanceof BlockEndToken && string.equals(st.getValue()));
         } catch (ScannerException e) {
             return true;
         }
     }
 
     private boolean hasQuotedQuotes(Token token) {
-        return (token instanceof ScalarToken &&
-                ((((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.SINGLE_QUOTED && ((ScalarToken) token).getValue().contains("\"")) ||
-                (((ScalarToken) token).getStyle() == DumperOptions.ScalarStyle.DOUBLE_QUOTED && ((ScalarToken) token).getValue().contains("'"))));
+        return (token instanceof ScalarToken st &&
+                ((st.getStyle() == DumperOptions.ScalarStyle.SINGLE_QUOTED && st.getValue().contains("\"")) ||
+                (st.getStyle() == DumperOptions.ScalarStyle.DOUBLE_QUOTED && st.getValue().contains("'"))));
     }
 }

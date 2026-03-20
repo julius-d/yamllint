@@ -26,7 +26,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testSyntaxErrors() throws YamlLintConfigException {
+    void syntaxErrors() throws Exception {
         check("""
               ---
               this is not: valid: YAML
@@ -48,7 +48,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testEmptyFlows() throws YamlLintConfigException {
+    void emptyFlows() throws Exception {
         check("""
               ---
               - []
@@ -62,7 +62,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testExplicitMapping() throws YamlLintConfigException {
+    void explicitMapping() throws Exception {
         check("""
               ---
               ? key
@@ -88,7 +88,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testMappingBetweenSequences() throws YamlLintConfigException {
+    void mappingBetweenSequences() throws Exception {
         // This is valid YAML.See http://www.yaml.org/spec/1.2/spec.html,
         // example 2.11
         check("""
@@ -106,7 +106,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testSets() throws YamlLintConfigException {
+    void sets() throws Exception {
         check("""
               ---
               ? key one
@@ -129,7 +129,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testMultipleDocs() throws YamlLintConfigException {
+    void multipleDocs() throws Exception {
         check("""
               ---
               a: b
@@ -141,7 +141,7 @@ class SyntaxErrorTest extends RuleTester {
     }
 
     @Test
-    void testCustomTag() throws YamlLintConfigException {
+    void customTag() throws Exception {
         // See https://github.com/sbaudoin/sonar-yaml/issues/15
         check("""
               ---

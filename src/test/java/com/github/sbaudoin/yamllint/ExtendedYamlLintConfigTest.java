@@ -23,54 +23,51 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 class ExtendedYamlLintConfigTest {
     @Test
-    void testWrongExtend() {
+    void wrongExtend() {
         try {
             new YamlLintConfig("extends: null");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid extends config: need to extend something", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("invalid extends config: need to extend something");
         }
 
         try {
             new YamlLintConfig("extends:");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid extends config: need to extend something", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("invalid extends config: need to extend something");
         }
 
         try {
             new YamlLintConfig("extends:\n  - foo");
             fail("Invalid config not identified");
         } catch (YamlLintConfigException e) {
-            assertTrue(e.getMessage().startsWith("invalid extends config: unknown error: "));
+            assertThat(e.getMessage().startsWith("invalid extends config: unknown error: ")).isTrue();
         }
 
         try {
             new YamlLintConfig("extends: dummy");
             fail("Unknown ruleset should not be extended");
         } catch (YamlLintConfigException e) {
-            assertEquals("invalid extends config: Bundled configuration file \"dummy\" not found", e.getMessage());
+            assertThat(e.getMessage()).isEqualTo("invalid extends config: Bundled configuration file \"dummy\" not found");
         }
 
         try {
             new YamlLintConfig("extends: foo" + File.separator + "bar");
             fail("Unknown ruleset should not be extended");
         } catch (YamlLintConfigException e) {
-            assertTrue(e.getCause() instanceof FileNotFoundException);
+            assertThat(e.getCause()).isInstanceOf(FileNotFoundException.class);
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendAddRule() throws YamlLintConfigException {
+    void extendAddRule() throws Exception {
         YamlLintConfig oldConf = new YamlLintConfig
                 ("""
                  rules:
@@ -86,19 +83,19 @@ class ExtendedYamlLintConfigTest {
                 """);
         newConf.extend(oldConf);
 
-        assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
-        assertTrue(newConf.getRuleConf("colons") instanceof Map);
-        assertEquals(0, ((Map)newConf.getRuleConf("colons")).get("max-spaces-before"));
-        assertEquals(1, ((Map)newConf.getRuleConf("colons")).get("max-spaces-after"));
-        assertTrue(newConf.getRuleConf("hyphens") instanceof Map);
-        assertEquals(2, ((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after"));
+        assertThat(newConf.ruleConf.keySet()).isEqualTo(new HashSet(Arrays.asList("colons", "hyphens")));
+        assertThat(newConf.getRuleConf("colons")).isInstanceOf(Map.class);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-before")).isEqualTo(0);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-after")).isEqualTo(1);
+        assertThat(newConf.getRuleConf("hyphens")).isInstanceOf(Map.class);
+        assertThat(((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after")).isEqualTo(2);
 
-        assertEquals(2, newConf.getEnabledRules(null).size());
+        assertThat(newConf.getEnabledRules(null).size()).isEqualTo(2);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendRemoveRule() throws YamlLintConfigException {
+    void extendRemoveRule() throws Exception {
         YamlLintConfig oldConf = new YamlLintConfig(
                 """
                 rules:
@@ -115,17 +112,17 @@ class ExtendedYamlLintConfigTest {
                 """);
         newConf.extend(oldConf);
 
-        assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
-        assertNull(newConf.getRuleConf("colons"));
-        assertTrue(newConf.getRuleConf("hyphens") instanceof Map);
-        assertEquals(2, ((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after"));
+        assertThat(newConf.ruleConf.keySet()).isEqualTo(new HashSet(Arrays.asList("colons", "hyphens")));
+        assertThat(newConf.getRuleConf("colons")).isNull();
+        assertThat(newConf.getRuleConf("hyphens")).isInstanceOf(Map.class);
+        assertThat(((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after")).isEqualTo(2);
 
-        assertEquals(1, newConf.getEnabledRules(null).size());
+        assertThat(newConf.getEnabledRules(null).size()).isEqualTo(1);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendEditRule() throws YamlLintConfigException {
+    void extendEditRule() throws Exception {
         YamlLintConfig oldConf = new YamlLintConfig(
                 """
                 rules:
@@ -144,19 +141,19 @@ class ExtendedYamlLintConfigTest {
                 """);
         newConf.extend(oldConf);
 
-        assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
-        assertTrue(newConf.getRuleConf("colons") instanceof Map);
-        assertTrue(newConf.getRuleConf("hyphens") instanceof Map);
-        assertEquals(3, ((Map)newConf.getRuleConf("colons")).get("max-spaces-before"));
-        assertEquals(4, ((Map)newConf.getRuleConf("colons")).get("max-spaces-after"));
-        assertEquals(2, ((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after"));
+        assertThat(newConf.ruleConf.keySet()).isEqualTo(new HashSet(Arrays.asList("colons", "hyphens")));
+        assertThat(newConf.getRuleConf("colons")).isInstanceOf(Map.class);
+        assertThat(newConf.getRuleConf("hyphens")).isInstanceOf(Map.class);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-before")).isEqualTo(3);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-after")).isEqualTo(4);
+        assertThat(((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after")).isEqualTo(2);
 
-        assertEquals(2, newConf.getEnabledRules(null).size());
+        assertThat(newConf.getEnabledRules(null).size()).isEqualTo(2);
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendReenableRule() throws YamlLintConfigException {
+    void extendReenableRule() throws Exception {
         YamlLintConfig oldConf = new YamlLintConfig(
                 """
                 rules:
@@ -173,18 +170,18 @@ class ExtendedYamlLintConfigTest {
                 """);
         newConf.extend(oldConf);
 
-        assertEquals(new HashSet(Arrays.asList("colons", "hyphens")), newConf.ruleConf.keySet());
-        assertTrue(newConf.getRuleConf("colons") instanceof Map);
-        assertTrue(newConf.getRuleConf("hyphens") instanceof Map);
-        assertEquals(0, ((Map)newConf.getRuleConf("colons")).get("max-spaces-before"));
-        assertEquals(1, ((Map)newConf.getRuleConf("colons")).get("max-spaces-after"));
-        assertEquals(2, ((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after"));
+        assertThat(newConf.ruleConf.keySet()).isEqualTo(new HashSet(Arrays.asList("colons", "hyphens")));
+        assertThat(newConf.getRuleConf("colons")).isInstanceOf(Map.class);
+        assertThat(newConf.getRuleConf("hyphens")).isInstanceOf(Map.class);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-before")).isEqualTo(0);
+        assertThat(((Map)newConf.getRuleConf("colons")).get("max-spaces-after")).isEqualTo(1);
+        assertThat(((Map)newConf.getRuleConf("hyphens")).get("max-spaces-after")).isEqualTo(2);
 
-        assertEquals(2, newConf.getEnabledRules(null).size());
+        assertThat(newConf.getEnabledRules(null).size()).isEqualTo(2);
     }
 
     @Test
-    void testExtendWithIgnore() throws YamlLintConfigException {
+    void extendWithIgnore() throws Exception {
         YamlLintConfig oldConf = new YamlLintConfig(
                 """
                 rules:
@@ -200,8 +197,8 @@ class ExtendedYamlLintConfigTest {
                     max-spaces-after: 2
                 """);
 
-        assertFalse(newConf.isFileIgnored("foo.bar"));
+        assertThat(newConf.isFileIgnored("foo.bar")).isFalse();
         newConf.extend(oldConf);
-        assertTrue(newConf.isFileIgnored("foo.bar"));
+        assertThat(newConf.isFileIgnored("foo.bar")).isTrue();
     }
 }

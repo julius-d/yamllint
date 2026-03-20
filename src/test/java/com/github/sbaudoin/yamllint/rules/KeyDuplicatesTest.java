@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class KeyDuplicatesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("key-duplicates: disable");
         check("""
               ---
@@ -121,7 +120,7 @@ class KeyDuplicatesTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("""
               ---
@@ -231,7 +230,7 @@ class KeyDuplicatesTest extends RuleTester {
     }
 
     @Test
-    void testKeyTokensInFlowSequences() throws YamlLintConfigException {
+    void keyTokensInFlowSequences() throws Exception {
         YamlLintConfig conf = getConfig("key-duplicates: enable");
         check("""
               ---

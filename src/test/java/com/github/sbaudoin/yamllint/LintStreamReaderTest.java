@@ -20,51 +20,47 @@ import org.junit.jupiter.api.Test;
 import java.io.PipedReader;
 import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 class LintStreamReaderTest {
     @Test
-    void testConstructors() {
-        assertEquals("'string'", new LintStreamReader("").getMark().getName());
-        assertEquals("'reader'", new LintStreamReader(new StringReader("")).getMark().getName());
+    void constructors() {
+        assertThat(new LintStreamReader("").getMark().getName()).isEqualTo("'string'");
+        assertThat(new LintStreamReader(new StringReader("")).getMark().getName()).isEqualTo("'reader'");
 
         PipedReader reader = new PipedReader();
-        try {
-            new LintStreamReader(reader);
-            fail("Unreadable readers should not be accepted");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
-        }
+        assertThatThrownBy(() -> new LintStreamReader(reader)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
-    void testForward() {
+    void forward() {
         LintStreamReader reader = new LintStreamReader("test");
         while (reader.peek() != '\u0000') {
             reader.forward(1);
         }
         reader = new LintStreamReader("test");
-        assertEquals('t', reader.peek());
+        assertThat(reader.peek()).isEqualTo('t');
         reader.forward(1);
-        assertEquals('e', reader.peek());
+        assertThat(reader.peek()).isEqualTo('e');
         reader.forward(1);
-        assertEquals('s', reader.peek());
+        assertThat(reader.peek()).isEqualTo('s');
         reader.forward(1);
-        assertEquals('t', reader.peek());
+        assertThat(reader.peek()).isEqualTo('t');
         reader.forward(1);
-        assertEquals('\u0000', reader.peek());
+        assertThat(reader.peek()).isEqualTo('\u0000');
     }
 
     @Test
-    void testPeekInt() {
+    void peekInt() {
         LintStreamReader reader = new LintStreamReader("test");
-        assertEquals('t', reader.peek(0));
-        assertEquals('e', reader.peek(1));
-        assertEquals('s', reader.peek(2));
-        assertEquals('t', reader.peek(3));
+        assertThat(reader.peek(0)).isEqualTo('t');
+        assertThat(reader.peek(1)).isEqualTo('e');
+        assertThat(reader.peek(2)).isEqualTo('s');
+        assertThat(reader.peek(3)).isEqualTo('t');
         reader.forward(1);
-        assertEquals('e', reader.peek(0));
-        assertEquals('s', reader.peek(1));
-        assertEquals('t', reader.peek(2));
+        assertThat(reader.peek(0)).isEqualTo('e');
+        assertThat(reader.peek(1)).isEqualTo('s');
+        assertThat(reader.peek(2)).isEqualTo('t');
     }
 }

@@ -90,26 +90,26 @@ public class OctalValues extends TokenRule {
         }
 
         if ((boolean)conf.get(OPTION_FORBID_IMPLICIT_OCTAL)) {
-            if (token instanceof ScalarToken) {
-                if (((ScalarToken)token).getStyle().getChar() == null) {
-                    String val = ((ScalarToken)token).getValue();
+            if (token instanceof ScalarToken scalarToken) {
+                if (scalarToken.getStyle().getChar() == null) {
+                    String val = scalarToken.getValue();
                     if (isDigit(val) && val.length() > 1 && val.charAt(0) =='0' && val.substring(1).matches(IS_OCTAL_NUMBER_PATTERN)) {
                         problems.add(new LintProblem(
                                 token.getStartMark().getLine() + 1, token.getEndMark().getColumn() + 1,
-                                String.format("forbidden implicit octal value \"%s\"", val)));
+                                "forbidden implicit octal value \"%s\"".formatted(val)));
                     }
                 }
             }
         }
 
         if ((boolean)conf.get(OPTION_FORBID_EXPLICIT_OCTAL)) {
-            if (token instanceof ScalarToken) {
-                if (((ScalarToken)token).getStyle().getChar() == null) {
-                    String val = ((ScalarToken)token).getValue();
+            if (token instanceof ScalarToken scalarToken) {
+                if (scalarToken.getStyle().getChar() == null) {
+                    String val = scalarToken.getValue();
                     if (val.length() > 2 && "0o".equals(val.substring(0, 2)) && val.substring(2).matches(IS_OCTAL_NUMBER_PATTERN)) {
                         problems.add(new LintProblem(
                                 token.getStartMark().getLine() + 1, token.getEndMark().getColumn() + 1,
-                                String.format("forbidden explicit octal value \"%s\"", val)));
+                                "forbidden explicit octal value \"%s\"".formatted(val)));
                     }
                 }
             }

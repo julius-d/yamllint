@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class NewLineAtEndOfFileTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "empty-lines: disable",
                 "document-start: disable");
@@ -32,7 +31,7 @@ class NewLineAtEndOfFileTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: enable",
                 "empty-lines: disable",
                 "document-start: disable");

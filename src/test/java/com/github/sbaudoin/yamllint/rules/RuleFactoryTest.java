@@ -20,11 +20,11 @@ import org.junit.jupiter.api.Test;
 import java.io.ByteArrayOutputStream;
 import java.util.logging.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class RuleFactoryTest {
     @Test
-    void testGetRule() {
+    void getRule() {
         // Temporarily remove console handler
         Logger logger = Logger.getLogger(RuleFactory.class.getName()).getParent();
         ConsoleHandler ch = (ConsoleHandler)logger.getHandlers()[0];
@@ -42,29 +42,29 @@ class RuleFactoryTest {
         logger.addHandler(sh);
 
         // All known rules
-        assertNotNull(RuleFactory.instance.getRule("braces"));
-        assertNotNull(RuleFactory.instance.getRule("brackets"));
-        assertNotNull(RuleFactory.instance.getRule("colons"));
-        assertNotNull(RuleFactory.instance.getRule("commas"));
-        assertNotNull(RuleFactory.instance.getRule("comments"));
-        assertNotNull(RuleFactory.instance.getRule("comments-indentation"));
-        assertNotNull(RuleFactory.instance.getRule("document-end"));
-        assertNotNull(RuleFactory.instance.getRule("document-start"));
-        assertNotNull(RuleFactory.instance.getRule("empty-lines"));
-        assertNotNull(RuleFactory.instance.getRule("empty-values"));
-        assertNotNull(RuleFactory.instance.getRule("hyphens"));
-        assertNotNull(RuleFactory.instance.getRule("indentation"));
-        assertNotNull(RuleFactory.instance.getRule("key-duplicates"));
-        assertNotNull(RuleFactory.instance.getRule("key-ordering"));
-        assertNotNull(RuleFactory.instance.getRule("line-length"));
-        assertNotNull(RuleFactory.instance.getRule("new-line-at-end-of-file"));
-        assertNotNull(RuleFactory.instance.getRule("new-lines"));
-        assertNotNull(RuleFactory.instance.getRule("octal-values"));
-        assertNotNull(RuleFactory.instance.getRule("trailing-spaces"));
-        assertNotNull(RuleFactory.instance.getRule("truthy"));
+        assertThat(RuleFactory.instance.getRule("braces")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("brackets")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("colons")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("commas")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("comments")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("comments-indentation")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("document-end")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("document-start")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("empty-lines")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("empty-values")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("hyphens")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("indentation")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("key-duplicates")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("key-ordering")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("line-length")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("new-line-at-end-of-file")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("new-lines")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("octal-values")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("trailing-spaces")).isNotNull();
+        assertThat(RuleFactory.instance.getRule("truthy")).isNotNull();
 
         // Unknown rule
-        assertNull(RuleFactory.instance.getRule("this-rule-does-not-exist"));
+        assertThat(RuleFactory.instance.getRule("this-rule-does-not-exist")).isNull();
 
         // Set back console handler
         logger.removeHandler(sh);

@@ -19,53 +19,52 @@ import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class LinterTest {
     @Test
-    void testRunOnString() throws YamlLintConfigException {
-        assertEquals(2, Linter.run("test: document", getFakeConfig()).size());
-        assertEquals(2, Linter.run("test: document", getFakeConfig(), new File("file.yml")).size());
+    void runOnString() throws Exception {
+        assertThat(Linter.run("test: document", getFakeConfig()).size()).isEqualTo(2);
+        assertThat(Linter.run("test: document", getFakeConfig(), new File("file.yml")).size()).isEqualTo(2);
     }
 
     @Test
-    void testReader() throws YamlLintConfigException, IOException {
-        assertEquals(0, Linter.run(new StringReader("---\n"), getFakeConfig()).size());
-        assertEquals(2, Linter.run(new StringReader("test: document"), getFakeConfig(), new File("file.yml")).size());
+    void reader() throws Exception {
+        assertThat(Linter.run(new StringReader("---\n"), getFakeConfig()).size()).isEqualTo(0);
+        assertThat(Linter.run(new StringReader("test: document"), getFakeConfig(), new File("file.yml")).size()).isEqualTo(2);
     }
 
     @Test
-    void testEmpty() throws YamlLintConfigException {
-        assertEquals(0, Linter.run("---\n", getFakeConfig()).size());
+    void empty() throws Exception {
+        assertThat(Linter.run("---\n", getFakeConfig()).size()).isEqualTo(0);
     }
 
     @Test
-    void testRunOnNonAsciiChars() throws IOException, YamlLintConfigException {
+    void runOnNonAsciiChars() throws Exception {
         String s = """
                    ---
                    - hétérogénéité
                    # 19.99
                    """;
-        assertEquals(0, Linter.run(s, getFakeConfig()).size());
-        assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
-        assertEquals(0, Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig()).size());
+        assertThat(Linter.run(s, getFakeConfig()).size()).isEqualTo(0);
+        assertThat(Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size()).isEqualTo(0);
+        assertThat(Linter.run(new String(s.getBytes(StandardCharsets.UTF_8), StandardCharsets.ISO_8859_1), getFakeConfig()).size()).isEqualTo(0);
 
         s = """
             ---
             - お早う御座います。
             # الأَبْجَدِيَّة العَرَبِيَّة
             """;
-        assertEquals(0, Linter.run(s, getFakeConfig()).size());
-        assertEquals(0, Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size());
+        assertThat(Linter.run(s, getFakeConfig()).size()).isEqualTo(0);
+        assertThat(Linter.run(new ByteArrayInputStream(s.getBytes(StandardCharsets.UTF_8)), getFakeConfig()).size()).isEqualTo(0);
     }
 
     @Test
-    void testRunWithIgnore() throws IOException, YamlLintConfigException {
+    void runWithIgnore() throws Exception {
         YamlLintConfig conf = new YamlLintConfig(
                 """
                 rules:
@@ -77,19 +76,19 @@ class LinterTest {
                   .*\\.txt$
                   foo.bar
                 """);
-        assertEquals(0, Linter.run(conf, new File("/my/file.txt")).size());
-        assertEquals(0, Linter.run(conf, new File("foo.bar")).size());
+        assertThat(Linter.run(conf, new File("/my/file.txt")).size()).isEqualTo(0);
+        assertThat(Linter.run(conf, new File("foo.bar")).size()).isEqualTo(0);
     }
 
     @Test
-    void testGetProblemLevel() {
-        assertEquals(Linter.NONE_LEVEL, Linter.getProblemLevel(0));
-        assertEquals(Linter.INFO_LEVEL, Linter.getProblemLevel(1));
-        assertEquals(Linter.WARNING_LEVEL, Linter.getProblemLevel(2));
-        assertEquals(Linter.ERROR_LEVEL, Linter.getProblemLevel(3));
-        assertEquals(0, Linter.getProblemLevel(Linter.NONE_LEVEL));
-        assertEquals(1, Linter.getProblemLevel(Linter.INFO_LEVEL));
-        assertEquals(2, Linter.getProblemLevel(Linter.WARNING_LEVEL));
-        assertEquals(3, Linter.getProblemLevel(Linter.ERROR_LEVEL));
+    void getProblemLevel() {
+        assertThat(Linter.getProblemLevel(0)).isEqualTo(Linter.NONE_LEVEL);
+        assertThat(Linter.getProblemLevel(1)).isEqualTo(Linter.INFO_LEVEL);
+        assertThat(Linter.getProblemLevel(2)).isEqualTo(Linter.WARNING_LEVEL);
+        assertThat(Linter.getProblemLevel(3)).isEqualTo(Linter.ERROR_LEVEL);
+        assertThat(Linter.getProblemLevel(Linter.NONE_LEVEL)).isEqualTo(0);
+        assertThat(Linter.getProblemLevel(Linter.INFO_LEVEL)).isEqualTo(1);
+        assertThat(Linter.getProblemLevel(Linter.WARNING_LEVEL)).isEqualTo(2);
+        assertThat(Linter.getProblemLevel(Linter.ERROR_LEVEL)).isEqualTo(3);
     }
 }

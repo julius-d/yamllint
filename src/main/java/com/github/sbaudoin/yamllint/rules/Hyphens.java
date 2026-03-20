@@ -16,7 +16,9 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.LintProblem;
-import org.yaml.snakeyaml.tokens.*;
+import org.yaml.snakeyaml.tokens.BlockEntryToken;
+import org.yaml.snakeyaml.tokens.ScalarToken;
+import org.yaml.snakeyaml.tokens.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -148,11 +150,11 @@ public class Hyphens extends TokenRule {
         int minSpaces = (int) conf.get(OPTION_MIN_SPACES_AFTER);
 
         if (maxSpaces == 0) {
-            return String.format("\"%s\" cannot be set to 0", OPTION_MAX_SPACES_AFTER);
+            return "\"%s\" cannot be set to 0".formatted(OPTION_MAX_SPACES_AFTER);
         }
 
         if (minSpaces > 0 && minSpaces > maxSpaces) {
-            return String.format("\"%s\" cannot be greater than \"%s\"", OPTION_MIN_SPACES_AFTER, OPTION_MAX_SPACES_AFTER);
+            return "\"%s\" cannot be greater than \"%s\"".formatted(OPTION_MIN_SPACES_AFTER, OPTION_MAX_SPACES_AFTER);
         }
         return null;
     }
@@ -185,9 +187,9 @@ public class Hyphens extends TokenRule {
             }
         }
 
-        if (Boolean.TRUE.equals(conf.get(OPTION_CHECK_SCALARS)) && (Integer)conf.get(OPTION_MIN_SPACES_AFTER) > 0 && token instanceof ScalarToken) {
+        if (Boolean.TRUE.equals(conf.get(OPTION_CHECK_SCALARS)) && (Integer)conf.get(OPTION_MIN_SPACES_AFTER) > 0 && token instanceof ScalarToken scalarToken) {
             // Token identified as a scalar so there is no space after the hyphen: no need to count
-            if (((ScalarToken) token).getValue().startsWith("-")) {
+            if (scalarToken.getValue().startsWith("-")) {
                 problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                         token.getStartMark().getColumn() + 1, "too few spaces after hyphen"));
             }

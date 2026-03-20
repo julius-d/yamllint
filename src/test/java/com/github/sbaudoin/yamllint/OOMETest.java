@@ -18,20 +18,19 @@ package com.github.sbaudoin.yamllint;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileReader;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class OOMETest {
     @Test
-    void test() throws IOException {
-        LintScanner scanner = new LintScanner(new LintStreamReader(new FileReader(Paths.get("src", "test", "resources", "oome.yml").toFile())));
+    void test() throws Exception {
+        LintScanner scanner = new LintScanner(new LintStreamReader(new FileReader(Path.of("src", "test", "resources", "oome.yml").toFile())));
         int i = 0;
         while (scanner.hasMoreTokens()) {
             scanner.getToken();
             i++;
         }
-        assertEquals(58457, i);
+        assertThat(i).isEqualTo(58457);
     }
 }

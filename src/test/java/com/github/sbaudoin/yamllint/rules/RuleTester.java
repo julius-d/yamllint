@@ -22,7 +22,7 @@ import com.github.sbaudoin.yamllint.YamlLintConfigException;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 public abstract class RuleTester {
     protected YamlLintConfig getConfig(String... rules) throws YamlLintConfigException {
@@ -49,9 +49,9 @@ public abstract class RuleTester {
     protected void check(String source, YamlLintConfig conf, LintProblem... expectedProblems) throws YamlLintConfigException {
         List<LintProblem> problems = Linter.run(source, (conf == null)?getFakeConfig():conf);
         problems.forEach(System.out::println);
-        assertEquals(expectedProblems.length, problems.size());
+        assertThat(problems.size()).isEqualTo(expectedProblems.length);
         for (int i = 0; i < expectedProblems.length; i++) {
-            assertEquals(problems.get(i), expectedProblems[i]);
+            assertThat(expectedProblems[i]).isEqualTo(problems.get(i));
         }
     }
 

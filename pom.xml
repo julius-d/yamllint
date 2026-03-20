@@ -20,7 +20,7 @@
         <maven.javadoc.failOnError>false</maven.javadoc.failOnError>
         <maven-bundle-plugin.version>3.5.0</maven-bundle-plugin.version>
         <maven-surefire-plugin.version>3.5.0</maven-surefire-plugin.version>
-        <jacoco.version>0.8.11</jacoco.version>
+        <jacoco.version>0.8.14</jacoco.version>
         <argLine/>
     </properties>
 
@@ -57,7 +57,7 @@
             <dependency>
                 <groupId>org.junit</groupId>
                 <artifactId>junit-bom</artifactId>
-                <version>5.10.1</version>
+                <version>5.14.3</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -96,6 +96,12 @@
             <version>1.2.1</version>
             <scope>test</scope>
         </dependency>
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.27.7</version>
+      <scope>test</scope>
+    </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
@@ -173,11 +179,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.15.0</version>
                 <configuration>
-                    <source>${maven.compiler.source}</source>
-                    <target>${maven.compiler.target}</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
+          <release>17</release>
                 </configuration>
             </plugin>
             <plugin>

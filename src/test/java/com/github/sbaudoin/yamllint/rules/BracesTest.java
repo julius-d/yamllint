@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class BracesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("braces: disable");
         check("""
               ---
@@ -36,7 +35,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testForbid() throws YamlLintConfigException {
+    void forbid() throws Exception {
         YamlLintConfig conf = getConfig("braces:", "  forbid: false");
         check("""
               ---
@@ -121,7 +120,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMinSpaces() throws YamlLintConfigException {
+    void minSpaces() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: 0",
@@ -179,7 +178,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMaxSpaces() throws YamlLintConfigException {
+    void maxSpaces() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: 0",
                 "  min-spaces-inside: -1",
@@ -232,7 +231,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMinAndMaxSpaces() throws YamlLintConfigException {
+    void minAndMaxSpaces() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: 0",
                 "  min-spaces-inside: 0",
@@ -281,7 +280,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMinSpacesEmpty() throws YamlLintConfigException {
+    void minSpacesEmpty() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
@@ -322,7 +321,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMaxSpacesEmpty() throws YamlLintConfigException {
+    void maxSpacesEmpty() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
@@ -375,7 +374,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMinAndMaxSpacesEmpty() throws YamlLintConfigException {
+    void minAndMaxSpacesEmpty() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: -1",
@@ -400,7 +399,7 @@ class BracesTest extends RuleTester {
     }
 
     @Test
-    void testMixedEmptyNonempty() throws YamlLintConfigException {
+    void mixedEmptyNonempty() throws Exception {
         YamlLintConfig conf = getConfig("braces:",
                 "  max-spaces-inside: -1",
                 "  min-spaces-inside: 1",

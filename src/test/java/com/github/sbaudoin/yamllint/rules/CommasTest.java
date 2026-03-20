@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class CommasTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("commas: disable");
         check("""
               ---
@@ -54,7 +53,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testBeforeMax() throws YamlLintConfigException {
+    void beforeMax() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 0",
@@ -120,7 +119,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testBeforeMaxWithCommaOnNewLine() throws YamlLintConfigException {
+    void beforeMaxWithCommaOnNewLine() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 0",
@@ -174,7 +173,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testBeforeMax3() throws YamlLintConfigException {
+    void beforeMax3() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 3",
                 "  min-spaces-after: 0",
@@ -200,7 +199,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testAfterMin() throws YamlLintConfigException {
+    void afterMin() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 1",
@@ -225,7 +224,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testAfterMax() throws YamlLintConfigException {
+    void afterMax() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 0",
@@ -282,7 +281,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testAfterMax3() throws YamlLintConfigException {
+    void afterMax3() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: -1",
                 "  min-spaces-after: 1",
@@ -305,7 +304,7 @@ class CommasTest extends RuleTester {
     }
 
     @Test
-    void testBothBeforeAndAfter() throws YamlLintConfigException {
+    void bothBeforeAndAfter() throws Exception {
         YamlLintConfig conf = getConfig("commas:",
                 "  max-spaces-before: 0",
                 "  min-spaces-after: 1",

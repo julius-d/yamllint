@@ -22,7 +22,10 @@ import org.yaml.snakeyaml.tokens.ScalarToken;
 import org.yaml.snakeyaml.tokens.TagToken;
 import org.yaml.snakeyaml.tokens.Token;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -156,13 +159,13 @@ public class Truthy extends TokenRule {
             return problems;
         }
 
-        if (token instanceof ScalarToken) {
+        if (token instanceof ScalarToken scalarToken) {
             List<?> forbiddenTokens = TRUTHY_TOKENS.stream().filter(i -> !((List<?>)conf.get(OPTION_ALLOWED_VALUES)).contains(i)).collect(Collectors.toList());
-            if (forbiddenTokens.stream().anyMatch(truthy -> truthy.equals(((ScalarToken)token).getValue())) &&
-                    ((ScalarToken)token).getStyle() == DumperOptions.ScalarStyle.PLAIN) {
+            if (forbiddenTokens.stream().anyMatch(truthy -> truthy.equals(scalarToken.getValue())) &&
+                    scalarToken.getStyle() == DumperOptions.ScalarStyle.PLAIN) {
                 problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                         token.getStartMark().getColumn() + 1,
-                        String.format("truthy value should be one of [%s]", String.join(", ", (List<String>)conf.get(OPTION_ALLOWED_VALUES)))));
+                        "truthy value should be one of [%s]".formatted(String.join(", ", (List<String>)conf.get(OPTION_ALLOWED_VALUES)))));
             }
         }
 

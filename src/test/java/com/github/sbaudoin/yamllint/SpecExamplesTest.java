@@ -19,12 +19,11 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class SpecExamplesTest {
     private static final List<String> CONF_GENERAL = Arrays.asList(
@@ -167,15 +166,15 @@ class SpecExamplesTest {
 
 
     static Stream<File> getFiles() {
-        return Arrays.stream(Paths.get("src", "test", "resources", "yaml-1.2-spec-examples").toFile().listFiles()).
+        return Arrays.stream(Path.of("src", "test", "resources", "yaml-1.2-spec-examples").toFile().listFiles()).
                 filter(f -> !SNAKEYAML_BLACKLIST.contains(f.toPath().getFileName().toString()));
     }
 
     @ParameterizedTest
     @MethodSource("getFiles")
-    void testSpecExample(File file) throws IOException, YamlLintConfigException {
+    void specExample(File file) throws Exception {
         System.out.println(file.toString());
-        assertEquals(0, Linter.run(getConf(file), file).size());
+        assertThat(Linter.run(getConf(file), file).size()).isEqualTo(0);
     }
 
 

@@ -25,34 +25,29 @@ import org.yaml.snakeyaml.tokens.ValueToken;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 class ParserTest {
     @Test
-    void testGetLines() {
+    void getLines() {
         List<Parser.Line> e = Parser.getLines("");
-        assertEquals(1, e.size());
-        assertEquals(1, e.get(0).getLineNo());
-        assertEquals(0, e.get(0).getStart());
-        assertEquals(0, e.get(0).getEnd());
+        assertThat(e.size()).isEqualTo(1);
+        assertThat(e.get(0).getLineNo()).isEqualTo(1);
+        assertThat(e.get(0).getStart()).isEqualTo(0);
+        assertThat(e.get(0).getEnd()).isEqualTo(0);
 
         e = Parser.getLines("\n");
-        assertEquals(2, e.size());
+        assertThat(e.size()).isEqualTo(2);
 
         e = Parser.getLines(" \n");
-        assertEquals(2, e.size());
-        assertEquals(1, e.get(0).getLineNo());
-        assertEquals(0, e.get(0).getStart());
-        assertEquals(1, e.get(0).getEnd());
+        assertThat(e.size()).isEqualTo(2);
+        assertThat(e.get(0).getLineNo()).isEqualTo(1);
+        assertThat(e.get(0).getStart()).isEqualTo(0);
+        assertThat(e.get(0).getEnd()).isEqualTo(1);
 
         e = Parser.getLines("\n\n");
-        assertEquals(3, e.size());
+        assertThat(e.size()).isEqualTo(3);
 
         e = Parser.getLines("""
                             ---
@@ -61,42 +56,42 @@ class ParserTest {
                             
                             3
                             """);
-        assertEquals(6, e.size());
-        assertEquals(1, e.get(0).getLineNo());
-        assertEquals("---", e.get(0).getContent());
-        assertEquals("line 2", e.get(2).getContent());
-        assertEquals("", e.get(3).getContent());
-        assertEquals(6, e.get(5).getLineNo());
+        assertThat(e.size()).isEqualTo(6);
+        assertThat(e.get(0).getLineNo()).isEqualTo(1);
+        assertThat(e.get(0).getContent()).isEqualTo("---");
+        assertThat(e.get(2).getContent()).isEqualTo("line 2");
+        assertThat(e.get(3).getContent()).isEqualTo("");
+        assertThat(e.get(5).getLineNo()).isEqualTo(6);
 
         e = Parser.getLines("""
                             test with
                             no newline
                             at the end""");
-        assertEquals(3, e.size());
-        assertEquals(3, e.get(2).getLineNo());
-        assertEquals("at the end", e.get(2).getContent());
+        assertThat(e.size()).isEqualTo(3);
+        assertThat(e.get(2).getLineNo()).isEqualTo(3);
+        assertThat(e.get(2).getContent()).isEqualTo("at the end");
     }
 
     @Test
-    void testGetTokensOrComments() {
+    void getTokensOrComments() {
         List<Parser.Lined> e = Parser.getTokensOrComments("");
-        assertEquals(2, e.size());
-        assertTrue(e.get(0) instanceof Parser.Token);
-        assertNull(((Parser.Token) e.get(0)).getPrev());
-        assertNotNull(((Parser.Token)e.get(0)).getCurr());
-        assertNotNull(((Parser.Token)e.get(0)).getNext());
-        assertTrue(e.get(1) instanceof Parser.Token);
-        assertEquals(((Parser.Token)e.get(1)).getPrev(), ((Parser.Token)e.get(0)).getCurr());
-        assertEquals(((Parser.Token)e.get(1)).getCurr(), ((Parser.Token)e.get(0)).getNext());
-        assertNull(((Parser.Token) e.get(1)).getNext());
+        assertThat(e.size()).isEqualTo(2);
+        assertThat(e.get(0)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(0)).getPrev()).isNull();
+        assertThat(((Parser.Token)e.get(0)).getCurr()).isNotNull();
+        assertThat(((Parser.Token)e.get(0)).getNext()).isNotNull();
+        assertThat(e.get(1)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(0)).getCurr()).isEqualTo(((Parser.Token)e.get(1)).getPrev());
+        assertThat(((Parser.Token)e.get(0)).getNext()).isEqualTo(((Parser.Token)e.get(1)).getCurr());
+        assertThat(((Parser.Token)e.get(1)).getNext()).isNull();
 
         e = Parser.getTokensOrComments("""
                                        ---
                                        k: v
                                        """);
-        assertEquals(9, e.size());
-        assertTrue(((Parser.Token)e.get(3)).getCurr() instanceof KeyToken);
-        assertTrue(((Parser.Token)e.get(5)).getCurr() instanceof ValueToken);
+        assertThat(e.size()).isEqualTo(9);
+        assertThat(((Parser.Token)e.get(3)).getCurr()).isInstanceOf(KeyToken.class);
+        assertThat(((Parser.Token)e.get(5)).getCurr()).isInstanceOf(ValueToken.class);
 
         e = Parser.getTokensOrComments("""
                                        # start comment
@@ -108,33 +103,34 @@ class ParserTest {
                                        - c
                                        # end comment
                                        """);
-        assertEquals(21, e.size());
-        assertTrue(e.get(1) instanceof Parser.Comment);
-        assertEquals(new Parser.Comment(1, 1, "# start comment", 0, null, null, null), e.get(1));
-        assertEquals(new Parser.Comment(3, 13, "# key=val", 0, null, null, null), e.get(11));
-        assertEquals(new Parser.Comment(4, 1, "# this is", 0, null, null, null), e.get(12));
-        assertEquals(new Parser.Comment(5, 1, "# a block     ", 0, null, null, null), e.get(13));
-        assertEquals(new Parser.Comment(6, 1, "# comment", 0, null, null, null), e.get(14));
-        assertEquals(new Parser.Comment(8, 1, "# end comment", 0, null, null, null), e.get(18));
+        assertThat(e.size()).isEqualTo(21);
+        assertThat(e.get(1)).isInstanceOf(Parser.Comment.class);
+        assertThat(e.get(1)).isEqualTo(new Parser.Comment(1, 1, "# start comment", 0, null, null, null));
+        assertThat(e.get(11)).isEqualTo(new Parser.Comment(3, 13, "# key=val", 0, null, null, null));
+        assertThat(e.get(12)).isEqualTo(new Parser.Comment(4, 1, "# this is", 0, null, null, null));
+        assertThat(e.get(13)).isEqualTo(new Parser.Comment(5, 1, "# a block     ", 0, null, null, null));
+        assertThat(e.get(14)).isEqualTo(new Parser.Comment(6, 1, "# comment", 0, null, null, null));
+        assertThat(e.get(18)).isEqualTo(new Parser.Comment(8, 1, "# end comment", 0, null, null, null));
 
-        e = Parser.getTokensOrComments("---\n" +
-                "# no newline char");
-        assertEquals(new Parser.Comment(2, 1, "# no newline char", 0, null, null, null), e.get(2));
+        e = Parser.getTokensOrComments("""
+                ---
+                # no newline char""");
+        assertThat(e.get(2)).isEqualTo(new Parser.Comment(2, 1, "# no newline char", 0, null, null, null));
 
         e = Parser.getTokensOrComments("# just comment");
-        assertEquals(new Parser.Comment(1, 1, "# just comment", 0, null, null, null), e.get(1));
+        assertThat(e.get(1)).isEqualTo(new Parser.Comment(1, 1, "# just comment", 0, null, null, null));
 
         e = Parser.getTokensOrComments("""
                                        
                                           # indented comment
                                        """);
-        assertEquals(new Parser.Comment(2, 4, "# indented comment", 0, null, null, null), e.get(1));
+        assertThat(e.get(1)).isEqualTo(new Parser.Comment(2, 4, "# indented comment", 0, null, null, null));
 
         e = Parser.getTokensOrComments("""
                                        
                                        # trailing spaces   \s
                                        """);
-        assertEquals(new Parser.Comment(2, 1, "# trailing spaces    ", 0, null, null, null), e.get(1));
+        assertThat(e.get(1)).isEqualTo(new Parser.Comment(2, 1, "# trailing spaces    ", 0, null, null, null));
 
         e = Parser.getTokensOrComments("""
                                        # block
@@ -150,51 +146,51 @@ class ParserTest {
                                        # block comment
                                        - data   # inline comment
                                        """).stream().filter(c -> c instanceof Parser.Comment).collect(Collectors.toList());
-        assertEquals(10, e.size());
-        assertFalse(((Parser.Comment)e.get(0)).isInline());
-        assertFalse(((Parser.Comment)e.get(1)).isInline());
-        assertTrue(((Parser.Comment)e.get(2)).isInline());
-        assertFalse(((Parser.Comment)e.get(3)).isInline());
-        assertFalse(((Parser.Comment)e.get(4)).isInline());
-        assertTrue(((Parser.Comment)e.get(5)).isInline());
-        assertTrue(((Parser.Comment)e.get(6)).isInline());
-        assertTrue(((Parser.Comment)e.get(7)).isInline());
-        assertFalse(((Parser.Comment)e.get(8)).isInline());
-        assertTrue(((Parser.Comment)e.get(9)).isInline());
+        assertThat(e.size()).isEqualTo(10);
+        assertThat(((Parser.Comment)e.get(0)).isInline()).isFalse();
+        assertThat(((Parser.Comment)e.get(1)).isInline()).isFalse();
+        assertThat(((Parser.Comment)e.get(2)).isInline()).isTrue();
+        assertThat(((Parser.Comment)e.get(3)).isInline()).isFalse();
+        assertThat(((Parser.Comment)e.get(4)).isInline()).isFalse();
+        assertThat(((Parser.Comment)e.get(5)).isInline()).isTrue();
+        assertThat(((Parser.Comment)e.get(6)).isInline()).isTrue();
+        assertThat(((Parser.Comment)e.get(7)).isInline()).isTrue();
+        assertThat(((Parser.Comment)e.get(8)).isInline()).isFalse();
+        assertThat(((Parser.Comment)e.get(9)).isInline()).isTrue();
     }
 
     @Test
-    void testGetTokensOrCommentsOrLines() {
+    void getTokensOrCommentsOrLines() {
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines("""
                                                                  ---
                                                                  k: v  # k=v
                                                                  """);
-        assertEquals(13, e.size());
-        assertTrue(e.get(0) instanceof Parser.Token);
-        assertTrue(((Parser.Token)e.get(0)).getCurr() instanceof StreamStartToken);
-        assertTrue(e.get(1) instanceof Parser.Token);
-        assertTrue(((Parser.Token)e.get(1)).getCurr() instanceof DocumentStartToken);
-        assertTrue(e.get(2) instanceof Parser.Line);
-        assertTrue(e.get(3) instanceof Parser.Token);
-        assertTrue(((Parser.Token)e.get(3)).getCurr() instanceof BlockMappingStartToken);
-        assertTrue(e.get(4) instanceof Parser.Token);
-        assertTrue(((Parser.Token)e.get(4)).getCurr() instanceof KeyToken);
-        assertTrue(e.get(6) instanceof Parser.Token);
-        assertTrue(((Parser.Token)e.get(6)).getCurr() instanceof ValueToken);
-        assertTrue(e.get(8) instanceof Parser.Comment);
-        assertTrue(e.get(9) instanceof Parser.Line);
-        assertTrue(e.get(12) instanceof Parser.Line);
+        assertThat(e.size()).isEqualTo(13);
+        assertThat(e.get(0)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(0)).getCurr()).isInstanceOf(StreamStartToken.class);
+        assertThat(e.get(1)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(1)).getCurr()).isInstanceOf(DocumentStartToken.class);
+        assertThat(e.get(2)).isInstanceOf(Parser.Line.class);
+        assertThat(e.get(3)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(3)).getCurr()).isInstanceOf(BlockMappingStartToken.class);
+        assertThat(e.get(4)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(4)).getCurr()).isInstanceOf(KeyToken.class);
+        assertThat(e.get(6)).isInstanceOf(Parser.Token.class);
+        assertThat(((Parser.Token)e.get(6)).getCurr()).isInstanceOf(ValueToken.class);
+        assertThat(e.get(8)).isInstanceOf(Parser.Comment.class);
+        assertThat(e.get(9)).isInstanceOf(Parser.Line.class);
+        assertThat(e.get(12)).isInstanceOf(Parser.Line.class);
     }
 
     @Test
-    void testCommentEquals() {
+    void commentEquals() {
         String buffer = """
                         ---
                         k: v  # k=v
                         """;
         List<Parser.Lined> e = Parser.getTokensOrCommentsOrLines(buffer);
-        assertTrue(e.get(8) instanceof Parser.Comment);
-        assertNotEquals(e.get(8), e.get(4));
-        assertEquals(new Parser.Comment(2, 7, buffer, 10, null, null, null), e.get(8));
+        assertThat(e.get(8)).isInstanceOf(Parser.Comment.class);
+        assertThat(e.get(4)).isNotEqualTo(e.get(8));
+        assertThat(e.get(8)).isEqualTo(new Parser.Comment(2, 7, buffer, 10, null, null, null));
     }
 }

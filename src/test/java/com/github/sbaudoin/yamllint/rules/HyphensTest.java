@@ -19,11 +19,11 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 class HyphensTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         testDisabled(getConfig("hyphens: disable"));
         testDisabled(getConfig("hyphens: {max-spaces-after: 5, min-spaces-after: -1}"));
         testDisabled(getConfig("hyphens: {max-spaces-after: -1, min-spaces-after: -1}"));
@@ -85,7 +85,7 @@ class HyphensTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 1}");
         check("""
               ---
@@ -136,7 +136,7 @@ class HyphensTest extends RuleTester {
     }
 
     @Test
-    void testMax3() throws YamlLintConfigException {
+    void max3() throws Exception {
         YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 3}");
         check("""
               ---
@@ -165,13 +165,13 @@ class HyphensTest extends RuleTester {
     }
 
     @Test
-    void testInvalidSpaces() {
-        assertThrows(YamlLintConfigException.class, () -> getConfig("hyphens: {max-spaces-after: 0}"));
-        assertThrows(YamlLintConfigException.class, () -> getConfig("hyphens: {min-spaces-after: 3}"));
+    void invalidSpaces() {
+        assertThatExceptionOfType(YamlLintConfigException.class).isThrownBy(() -> getConfig("hyphens: {max-spaces-after: 0}"));
+        assertThatExceptionOfType(YamlLintConfigException.class).isThrownBy(() -> getConfig("hyphens: {min-spaces-after: 3}"));
     }
 
     @Test
-    void testMinSpace() throws YamlLintConfigException {
+    void minSpace() throws Exception {
         YamlLintConfig conf = getConfig("hyphens: {max-spaces-after: 4, min-spaces-after: 3}");
         check("""
               ---

@@ -18,16 +18,16 @@ package com.github.sbaudoin.yamllint;
 import com.github.sbaudoin.yamllint.rules.RuleTester;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class YamlLintConfigExceptionTest extends RuleTester {
     @Test
-    void testInit() {
-        assertNull(new YamlLintConfigException().getMessage());
+    void init() {
+        assertThat(new YamlLintConfigException().getMessage()).isNull();
         Throwable t = new Throwable("Throwable");
         YamlLintConfigException e = new YamlLintConfigException("Message", t);
-        assertEquals("Message", e.getMessage());
-        assertNotNull(e.getCause());
-        assertEquals("Throwable", e.getCause().getMessage());
+        assertThat(e.getMessage()).isEqualTo("Message");
+        assertThat(e.getCause()).isNotNull();
+        assertThat(e.getCause().getMessage()).isEqualTo("Throwable");
     }
 }

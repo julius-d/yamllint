@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class CommentsTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("comments: disable",
                 "comments-indentation: disable");
         check("""
@@ -46,7 +45,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testStartingSpace() throws YamlLintConfigException {
+    void startingSpace() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: -1",
@@ -91,7 +90,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testShebang() throws YamlLintConfigException {
+    void shebang() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  ignore-shebangs: false",
@@ -118,7 +117,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testIgnoreShebang() throws YamlLintConfigException {
+    void ignoreShebang() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  ignore-shebangs: true",
@@ -142,7 +141,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testSpacesFromContent() throws YamlLintConfigException {
+    void spacesFromContent() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: false",
                 "  min-spaces-from-content: 2");
@@ -170,7 +169,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testBoth() throws YamlLintConfigException {
+    void both() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
@@ -205,7 +204,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testEmptyComment() throws YamlLintConfigException {
+    void emptyComment() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2");
@@ -223,7 +222,7 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testFirstLine() throws YamlLintConfigException {
+    void firstLine() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                     "  require-starting-space: true",
                     "  min-spaces-from-content: 2");
@@ -231,17 +230,18 @@ class CommentsTest extends RuleTester {
     }
 
     @Test
-    void testLastLine() throws YamlLintConfigException {
+    void lastLine() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",
                 "new-line-at-end-of-file: disable");
-        check("# comment with no newline char:\n" +
-                "#", conf);
+        check("""
+                # comment with no newline char:
+                #""", conf);
     }
 
     @Test
-    void testMultiLineScalar() throws YamlLintConfigException {
+    void multiLineScalar() throws Exception {
         YamlLintConfig conf = getConfig("comments:",
                 "  require-starting-space: true",
                 "  min-spaces-from-content: 2",

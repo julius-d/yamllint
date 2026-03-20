@@ -16,21 +16,21 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class DocumentStartTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("document-start: disable");
         check("", conf);
         check("key: val", conf);
-        check("---\n" +
-                "key: val", conf);
+        check("""
+                ---
+                key: val""", conf);
     }
 
     @Test
-    void testRequired() throws YamlLintConfigException {
+    void required() throws Exception {
         YamlLintConfig conf = getConfig("document-start: {present: true}", "empty-lines: disable");
         check("", conf);
         check("\n", conf);
@@ -53,7 +53,7 @@ class DocumentStartTest extends RuleTester {
     }
 
     @Test
-    void testForbidden() throws YamlLintConfigException {
+    void forbidden() throws Exception {
         YamlLintConfig conf = getConfig("document-start: {present: false}", "empty-lines: disable");
         check("", conf);
         check("key: val\n", conf);
@@ -80,7 +80,7 @@ class DocumentStartTest extends RuleTester {
     }
 
     @Test
-    void testMultipleDocuments() throws YamlLintConfigException {
+    void multipleDocuments() throws Exception {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
         check("""
               ---
@@ -111,7 +111,7 @@ class DocumentStartTest extends RuleTester {
     }
 
     @Test
-    void testDirectives() throws YamlLintConfigException {
+    void directives() throws Exception {
         YamlLintConfig conf = getConfig("document-start: {present: true}");
         check("""
               %YAML 1.2

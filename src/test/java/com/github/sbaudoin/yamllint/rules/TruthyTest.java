@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class TruthyTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("truthy: disable");
         check("""
               ---
@@ -34,7 +33,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("""
               ---
@@ -64,7 +63,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testDifferentAllowedValues() throws YamlLintConfigException {
+    void differentAllowedValues() throws Exception {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\"]");
         check("""
@@ -88,7 +87,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testCombinedAllowedValues() throws YamlLintConfigException {
+    void combinedAllowedValues() throws Exception {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: [\"yes\", \"no\", \"true\", \"false\"]");
         check("""
@@ -110,7 +109,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testNoAllowedValues() throws YamlLintConfigException {
+    void noAllowedValues() throws Exception {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: []");
         check("""
@@ -130,7 +129,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testExplicitTypes() throws YamlLintConfigException {
+    void explicitTypes() throws Exception {
         YamlLintConfig conf = getConfig("truthy: enable");
         check("---\n" +
                 "string1: !!str True\n" +
@@ -150,7 +149,7 @@ class TruthyTest extends RuleTester {
     }
 
     @Test
-    void testCheckKeysDisabled() throws YamlLintConfigException {
+    void checkKeysDisabled() throws Exception {
         YamlLintConfig conf = getConfig("truthy:",
                 "  allowed-values: []",
                 "  check-keys: false",

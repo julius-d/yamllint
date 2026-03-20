@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 
 class YamlLintDirectivesTest extends RuleTester {
     @Test
-    void testDisableDirective() throws YamlLintConfigException {
+    void disableDirective() throws Exception {
         YamlLintConfig conf = getDefaultConf();
 
         check("""
@@ -66,7 +66,7 @@ class YamlLintDirectivesTest extends RuleTester {
     }
 
     @Test
-    void testDisableDirectiveWithRules() throws YamlLintConfigException {
+    void disableDirectiveWithRules() throws Exception {
         YamlLintConfig conf = getDefaultConf();
 
         check("""
@@ -144,7 +144,7 @@ class YamlLintDirectivesTest extends RuleTester {
     }
 
     @Test
-    void testDisableLineDirective() throws YamlLintConfigException {
+    void disableLineDirective() throws Exception {
         YamlLintConfig conf = getDefaultConf();
 
         check("""
@@ -191,7 +191,7 @@ class YamlLintDirectivesTest extends RuleTester {
     }
 
     @Test
-    void testDisableLineDirectiveWithRules() throws YamlLintConfigException {
+    void disableLineDirectiveWithRules() throws Exception {
         YamlLintConfig conf = getDefaultConf();
 
         check("""
@@ -280,11 +280,12 @@ class YamlLintDirectivesTest extends RuleTester {
     }
 
     @Test
-    void testDirectiveOnLastLine() throws YamlLintConfigException {
+    void directiveOnLastLine() throws Exception {
         YamlLintConfig conf = getConf("new-line-at-end-of-file: {}");
 
-        check("---\n" +
-                "no new line",
+        check("""
+                ---
+                no new line""",
             conf,
             getLintProblem(2, 12, "new-line-at-end-of-file"));
         check("""
@@ -292,13 +293,14 @@ class YamlLintDirectivesTest extends RuleTester {
               # yamllint disable
               no new line""",
             conf);
-        check("---\n" +
-                "no new line  # yamllint disable",
+        check("""
+                ---
+                no new line  # yamllint disable""",
             conf);
     }
 
     @Test
-    void testIndentedDirective() throws YamlLintConfigException {
+    void indentedDirective() throws Exception {
         YamlLintConfig conf = getConf("brackets: {min-spaces-inside: 0, max-spaces-inside: 0}");
 
         check("""
@@ -320,7 +322,7 @@ class YamlLintDirectivesTest extends RuleTester {
     }
 
     @Test
-    void testDirectiveOnItself() throws YamlLintConfigException {
+    void directiveOnItself() throws Exception {
         YamlLintConfig conf = getConf("comments: {min-spaces-from-content: 2}\n",
                 "comments-indentation: {}\n");
 

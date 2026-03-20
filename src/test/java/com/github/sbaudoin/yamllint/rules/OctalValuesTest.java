@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class OctalValuesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("octal-values: disable",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -30,7 +29,7 @@ class OctalValuesTest extends RuleTester {
     }
 
     @Test
-    void testImplicitOctalValues() throws YamlLintConfigException {
+    void implicitOctalValues() throws Exception {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: true, forbid-explicit-octal: false}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -39,8 +38,9 @@ class OctalValuesTest extends RuleTester {
         check("user-city: 010,0571", conf);
         check("user-city: \"010\"", conf);
         check("user-city: \"010\"", conf);
-        check("user-city:\n" +
-                "  - 010", conf, getLintProblem(2, 8));
+        check("""
+                user-city:
+                  - 010""", conf, getLintProblem(2, 8));
         check("user-city: [010]", conf, getLintProblem(1, 16));
         check("user-city: {beijing: 010}", conf, getLintProblem(1, 25));
         check("explicit-octal: 0o10", conf);
@@ -58,7 +58,7 @@ class OctalValuesTest extends RuleTester {
     }
 
     @Test
-    void testExplicitOctalValues() throws YamlLintConfigException {
+    void explicitOctalValues() throws Exception {
         YamlLintConfig conf = getConfig("octal-values: {forbid-implicit-octal: false, forbid-explicit-octal: true}",
                 "new-line-at-end-of-file: disable",
                 "document-start: disable");
@@ -66,8 +66,9 @@ class OctalValuesTest extends RuleTester {
         check("user-city: abc", conf);
         check("user-city: 0o10,0571", conf);
         check("user-city: \"0o10\"", conf);
-        check("user-city:\n" +
-                "  - 0o10", conf, getLintProblem(2, 9));
+        check("""
+                user-city:
+                  - 0o10""", conf, getLintProblem(2, 9));
         check("user-city: [0o10]", conf, getLintProblem(1, 17));
         check("user-city: {beijing: 0o10}", conf, getLintProblem(1, 26));
         check("implicit-octal: 010", conf);

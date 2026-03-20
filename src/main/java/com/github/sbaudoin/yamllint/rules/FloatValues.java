@@ -16,7 +16,9 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.LintProblem;
-import org.yaml.snakeyaml.tokens.*;
+import org.yaml.snakeyaml.tokens.ScalarToken;
+import org.yaml.snakeyaml.tokens.TagToken;
+import org.yaml.snakeyaml.tokens.Token;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -127,25 +129,25 @@ public class FloatValues extends TokenRule {
         if ((boolean)conf.get(OPTION_FORBID_NAN) && val.matches("(\\.nan|\\.NaN|\\.NAN)$")) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                     token.getStartMark().getColumn() + 1,
-                    String.format("forbidden not a number value \"%s\"", val)));
+                    "forbidden not a number value \"%s\"".formatted(val)));
         }
 
         if ((boolean)conf.get(OPTION_FORBID_INF) && val.matches("[-+]?(\\.inf|\\.Inf|\\.INF)$")) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                     token.getStartMark().getColumn() + 1,
-                    String.format("forbidden infinite value \"%s\"", val)));
+                    "forbidden infinite value \"%s\"".formatted(val)));
         }
 
         if ((boolean)conf.get(OPTION_FORBID_SCIENTIFIC_NOTATION) && val.matches("[-+]?(\\.\\d+|\\d+(\\.\\d*)?)([eE][-+]?\\d+)$")) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                     token.getStartMark().getColumn() + 1,
-                    String.format("forbidden scientific notation \"%s\"", val)));
+                    "forbidden scientific notation \"%s\"".formatted(val)));
         }
 
         if ((boolean)conf.get(OPTION_REQUIRE_NUMERAL_BEFORE_DECIMAL) && val.matches("[-+]?(\\.\\d+)([eE][-+]?\\d+)?$")) {
             problems.add(new LintProblem(token.getStartMark().getLine() + 1,
                     token.getStartMark().getColumn() + 1,
-                    String.format("forbidden decimal missing 0 prefix \"%s\"", val)));
+                    "forbidden decimal missing 0 prefix \"%s\"".formatted(val)));
         }
 
         return problems;

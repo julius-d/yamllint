@@ -17,97 +17,97 @@ package com.github.sbaudoin.yamllint;
 
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class LintProblemTest {
     @Test
-    void testSimpleProblem() {
+    void simpleProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc");
         problem.setLevel(Linter.ERROR_LEVEL);
-        assertNull(problem.getRuleId());
-        assertEquals(1, problem.getLine());
-        assertEquals(2, problem.getColumn());
-        assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
-        assertEquals("desc", problem.getDesc());
-        assertNull(problem.getExtraDesc());
-        assertEquals("desc", problem.getMessage());
-        assertEquals("desc", problem.getLongMessage());
-        assertEquals("1:2:desc", problem.toString());
-        assertEquals(new LintProblem(1, 2, null), problem);
-        assertEquals(922381112, problem.hashCode());
+        assertThat(problem.getRuleId()).isNull();
+        assertThat(problem.getLine()).isEqualTo(1);
+        assertThat(problem.getColumn()).isEqualTo(2);
+        assertThat(problem.getLevel()).isEqualTo(Linter.ERROR_LEVEL);
+        assertThat(problem.getDesc()).isEqualTo("desc");
+        assertThat(problem.getExtraDesc()).isNull();
+        assertThat(problem.getMessage()).isEqualTo("desc");
+        assertThat(problem.getLongMessage()).isEqualTo("desc");
+        assertThat(problem.toString()).isEqualTo("1:2:desc");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null));
+        assertThat(problem.hashCode()).isEqualTo(922381112);
     }
 
     @Test
-    void testCompleteProblem() {
+    void completeProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id");
         problem.setLevel(Linter.ERROR_LEVEL);
-        assertEquals("rule-id", problem.getRuleId());
-        assertEquals(1, problem.getLine());
-        assertEquals(2, problem.getColumn());
-        assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
-        assertEquals("desc", problem.getDesc());
-        assertNull(problem.getExtraDesc());
-        assertEquals("desc (rule-id)", problem.getMessage());
-        assertEquals("desc (rule-id)", problem.getLongMessage());
-        assertEquals("1:2:desc (rule-id)", problem.toString());
-        assertEquals(new LintProblem(1, 2, null, "rule-id"), problem);
-        assertEquals(-1290166725, problem.hashCode());
+        assertThat(problem.getRuleId()).isEqualTo("rule-id");
+        assertThat(problem.getLine()).isEqualTo(1);
+        assertThat(problem.getColumn()).isEqualTo(2);
+        assertThat(problem.getLevel()).isEqualTo(Linter.ERROR_LEVEL);
+        assertThat(problem.getDesc()).isEqualTo("desc");
+        assertThat(problem.getExtraDesc()).isNull();
+        assertThat(problem.getMessage()).isEqualTo("desc (rule-id)");
+        assertThat(problem.getLongMessage()).isEqualTo("desc (rule-id)");
+        assertThat(problem.toString()).isEqualTo("1:2:desc (rule-id)");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null, "rule-id"));
+        assertThat(problem.hashCode()).isEqualTo(-1290166725);
     }
 
     @Test
-    void testExtraProblem() {
+    void extraProblem() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id", "an extra desc");
         problem.setLevel(Linter.ERROR_LEVEL);
-        assertEquals("rule-id", problem.getRuleId());
-        assertEquals(1, problem.getLine());
-        assertEquals(2, problem.getColumn());
-        assertEquals(Linter.ERROR_LEVEL, problem.getLevel());
-        assertEquals("desc", problem.getDesc());
-        assertEquals("an extra desc", problem.getExtraDesc());
-        assertEquals("desc (rule-id)", problem.getMessage());
-        assertEquals("desc (rule-id)" + System.lineSeparator() + "an extra desc", problem.getLongMessage());
-        assertEquals("1:2:desc (rule-id)", problem.toString());
-        assertEquals(new LintProblem(1, 2, null, "rule-id"), problem);
-        assertEquals(-1290166725, problem.hashCode());
+        assertThat(problem.getRuleId()).isEqualTo("rule-id");
+        assertThat(problem.getLine()).isEqualTo(1);
+        assertThat(problem.getColumn()).isEqualTo(2);
+        assertThat(problem.getLevel()).isEqualTo(Linter.ERROR_LEVEL);
+        assertThat(problem.getDesc()).isEqualTo("desc");
+        assertThat(problem.getExtraDesc()).isEqualTo("an extra desc");
+        assertThat(problem.getMessage()).isEqualTo("desc (rule-id)");
+        assertThat(problem.getLongMessage()).isEqualTo("desc (rule-id)" + System.lineSeparator() + "an extra desc");
+        assertThat(problem.toString()).isEqualTo("1:2:desc (rule-id)");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null, "rule-id"));
+        assertThat(problem.hashCode()).isEqualTo(-1290166725);
 
         problem = new LintProblem(1, 2, "desc");
         problem.setExtraDesc("an extra desc");
-        assertEquals("desc" + System.lineSeparator() + "an extra desc", problem.getLongMessage());
+        assertThat(problem.getLongMessage()).isEqualTo("desc" + System.lineSeparator() + "an extra desc");
     }
 
     @Test
-    void testProblemNullDesc() {
+    void problemNullDesc() {
         LintProblem problem = new LintProblem(1, 2, null);
-        assertEquals("<no description>", problem.getDesc());
-        assertEquals("<no description>", problem.getMessage());
-        assertEquals("1:2:<no description>", problem.toString());
-        assertEquals(new LintProblem(1, 2, null, null), problem);
-        assertEquals(922381112, problem.hashCode());
+        assertThat(problem.getDesc()).isEqualTo("<no description>");
+        assertThat(problem.getMessage()).isEqualTo("<no description>");
+        assertThat(problem.toString()).isEqualTo("1:2:<no description>");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null, null));
+        assertThat(problem.hashCode()).isEqualTo(922381112);
     }
 
     @Test
-    void testProblemNullDescNullRuleId() {
+    void problemNullDescNullRuleId() {
         LintProblem problem = new LintProblem(1, 2, null, null);
-        assertEquals("<no description>", problem.getDesc());
-        assertEquals("<no description>", problem.getMessage());
-        assertEquals("1:2:<no description>", problem.toString());
-        assertEquals(new LintProblem(1, 2, null, null), problem);
-        assertEquals(922381112, problem.hashCode());
+        assertThat(problem.getDesc()).isEqualTo("<no description>");
+        assertThat(problem.getMessage()).isEqualTo("<no description>");
+        assertThat(problem.toString()).isEqualTo("1:2:<no description>");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null, null));
+        assertThat(problem.hashCode()).isEqualTo(922381112);
     }
 
     @Test
-    void testProblemNullDescWithRuleId() {
+    void problemNullDescWithRuleId() {
         LintProblem problem = new LintProblem(1, 2, null, "rule-id");
-        assertEquals("<no description>", problem.getDesc());
-        assertEquals("<no description> (rule-id)", problem.getMessage());
-        assertEquals("1:2:<no description> (rule-id)", problem.toString());
-        assertEquals(new LintProblem(1, 2, null, "rule-id"), problem);
-        assertEquals(-1290166725, problem.hashCode());
+        assertThat(problem.getDesc()).isEqualTo("<no description>");
+        assertThat(problem.getMessage()).isEqualTo("<no description> (rule-id)");
+        assertThat(problem.toString()).isEqualTo("1:2:<no description> (rule-id)");
+        assertThat(problem).isEqualTo(new LintProblem(1, 2, null, "rule-id"));
+        assertThat(problem.hashCode()).isEqualTo(-1290166725);
     }
 
     @Test
-    void testNotEquals() {
+    void notEquals() {
         LintProblem problem = new LintProblem(1, 2, "desc", "rule-id");
-        assertNotEquals("some text", problem.toString());
+        assertThat(problem.toString()).isNotEqualTo("some text");
     }
 }

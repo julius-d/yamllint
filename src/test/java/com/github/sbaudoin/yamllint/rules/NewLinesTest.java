@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class NewLinesTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: disable");
         check("", conf);
@@ -33,7 +32,7 @@ class NewLinesTest extends RuleTester {
     }
 
     @Test
-    void testUnixType() throws YamlLintConfigException {
+    void unixType() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: unix}");
         check("", conf);
@@ -47,7 +46,7 @@ class NewLinesTest extends RuleTester {
     }
 
     @Test
-    void testDosType() throws YamlLintConfigException {
+    void dosType() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: dos}");
         check("", conf);
@@ -61,7 +60,7 @@ class NewLinesTest extends RuleTester {
     }
 
     @Test
-    void testPlatformType() throws YamlLintConfigException {
+    void platformType() throws Exception {
         YamlLintConfig conf = getConfig("new-line-at-end-of-file: disable",
                 "new-lines: {type: platform}");
 

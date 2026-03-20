@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class KeyOrderingTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: disable");
         check("""
               ---
@@ -49,7 +48,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("""
               ---
@@ -80,7 +79,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testWordLength() throws YamlLintConfigException {
+    void wordLength() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("""
               ---
@@ -98,7 +97,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testKeyDuplicates() throws YamlLintConfigException {
+    void keyDuplicates() throws Exception {
         YamlLintConfig conf = getConfig("key-duplicates: disable",
                 "key-ordering: enable");
         check("""
@@ -109,7 +108,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testCase() throws YamlLintConfigException {
+    void testCase() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("""
               ---
@@ -129,7 +128,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testAccents() throws YamlLintConfigException {
+    void accents() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("""
               ---
@@ -153,7 +152,7 @@ class KeyOrderingTest extends RuleTester {
     }
 
     @Test
-    void testKeyTokensInFlowSequences() throws YamlLintConfigException {
+    void keyTokensInFlowSequences() throws Exception {
         YamlLintConfig conf = getConfig("key-ordering: enable");
         check("""
               ---

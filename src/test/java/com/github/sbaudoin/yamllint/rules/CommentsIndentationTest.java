@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class CommentsIndentationTest extends RuleTester {
     @Test
-    void testDisable() throws YamlLintConfigException {
+    void disable() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: disable");
         check("""
               ---
@@ -53,7 +52,7 @@ class CommentsIndentationTest extends RuleTester {
     }
 
     @Test
-    void testEnabled() throws YamlLintConfigException {
+    void enabled() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("""
               ---
@@ -157,14 +156,14 @@ class CommentsIndentationTest extends RuleTester {
     }
 
     @Test
-    void testFirstLine() throws YamlLintConfigException {
+    void firstLine() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("# comment\n", conf);
         check("  # comment\n", conf, getLintProblem(1, 3));
     }
 
     @Test
-    void testNoNewlineAtEnd() throws YamlLintConfigException {
+    void noNewlineAtEnd() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: enable",
                 "new-line-at-end-of-file: disable");
         check("# comment", conf);
@@ -172,7 +171,7 @@ class CommentsIndentationTest extends RuleTester {
     }
 
     @Test
-    void testEmptyComment() throws YamlLintConfigException {
+    void emptyComment() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("""
               ---
@@ -189,7 +188,7 @@ class CommentsIndentationTest extends RuleTester {
     }
 
     @Test
-    void testInlineComment() throws YamlLintConfigException {
+    void inlineComment() throws Exception {
         YamlLintConfig conf = getConfig("comments-indentation: enable");
         check("""
               ---

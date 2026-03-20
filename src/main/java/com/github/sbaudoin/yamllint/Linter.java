@@ -422,29 +422,29 @@ public class Linter {
         List<LintProblem> problems = new ArrayList<>();
         List<Parser.Lined> items = Parser.getTokensOrCommentsOrLines(sBuffer);
         for (Parser.Lined elem : items) {
-            if (elem instanceof Parser.Token) {
+            if (elem instanceof Parser.Token token) {
                 for (Rule rule : tokenRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
                     saveProblemsInCache(cache, rule, ruleConf,
-                            ((TokenRule)rule).check(ruleConf, ((Parser.Token)elem).getCurr(), ((Parser.Token)elem).getPrev(), ((Parser.Token)elem).getNext(),
-                            ((Parser.Token) elem).getNextNext(), (Map<String, Object>)context.get(rule.getId())));
+                            ((TokenRule)rule).check(ruleConf, token.getCurr(), token.getPrev(), token.getNext(),
+                            token.getNextNext(), (Map<String, Object>)context.get(rule.getId())));
                 }
-            } else if (elem instanceof Parser.Comment) {
+            } else if (elem instanceof Parser.Comment comment) {
                 for (Rule rule : commentRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
-                    saveProblemsInCache(cache, rule, ruleConf, ((CommentRule)rule).check(ruleConf, (Parser.Comment)elem));
+                    saveProblemsInCache(cache, rule, ruleConf, ((CommentRule)rule).check(ruleConf, comment));
                 }
 
-                disabled.processComment((Parser.Comment)elem);
-                if (((Parser.Comment)elem).isInline()) {
-                    disabledForLine.processComment((Parser.Comment)elem);
+                disabled.processComment(comment);
+                if (comment.isInline()) {
+                    disabledForLine.processComment(comment);
                 } else {
-                    disabledForNextLine.processComment((Parser.Comment)elem);
+                    disabledForNextLine.processComment(comment);
                 }
-            } else if (elem instanceof Parser.Line) {
+            } else if (elem instanceof Parser.Line line) {
                 for (Rule rule : lineRules) {
                     Map<Object, Object> ruleConf = (Map<Object, Object>)conf.getRuleConf(rule.getId());
-                    saveProblemsInCache(cache, rule, ruleConf, ((LineRule)rule).check(ruleConf, (Parser.Line)elem));
+                    saveProblemsInCache(cache, rule, ruleConf, ((LineRule)rule).check(ruleConf, line));
                 }
 
                 // This is the last token / comment / line of this line, let's flush the

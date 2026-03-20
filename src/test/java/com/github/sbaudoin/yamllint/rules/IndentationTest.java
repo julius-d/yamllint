@@ -16,12 +16,11 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class IndentationTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("indentation: disable");
         check("""
               ---
@@ -56,7 +55,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testOneSpace() throws YamlLintConfigException {
+    void oneSpace() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 1, indent-sequences: false, check-multi-line-strings: false}");
         check("""
               ---
@@ -91,7 +90,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testTwoSpaces() throws YamlLintConfigException {
+    void twoSpaces() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: false, check-multi-line-strings: false}");
         check("""
               ---
@@ -129,7 +128,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testThreeSpaces() throws YamlLintConfigException {
+    void threeSpaces() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 3, indent-sequences: false, check-multi-line-strings: false}");
         check("""
               ---
@@ -164,7 +163,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testConsistentSpaces() throws YamlLintConfigException {
+    void consistentSpaces() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
                 "              indent-sequences: whatever,",
                 "              check-multi-line-strings: false}",
@@ -270,7 +269,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testConsistentSpacesAndIndentSequences() throws YamlLintConfigException {
+    void consistentSpacesAndIndentSequences() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -437,7 +436,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testIndentSequencesWhatever() throws YamlLintConfigException {
+    void indentSequencesWhatever() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 4, indent-sequences: whatever, check-multi-line-strings: false}");
         check("""
               ---
@@ -485,7 +484,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testIndentSequencesConsistent() throws YamlLintConfigException {
+    void indentSequencesConsistent() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 4, indent-sequences: consistent, check-multi-line-strings: false}");
         check("""
               ---
@@ -547,7 +546,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testDirectFlows() throws YamlLintConfigException {
+    void directFlows() throws Exception {
         // flow: [ ...
         // ]
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
@@ -624,7 +623,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testBrokenFlows() throws YamlLintConfigException {
+    void brokenFlows() throws Exception {
         // flow: [
         //   ...
         // ]
@@ -757,7 +756,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testClearedFlows() throws YamlLintConfigException {
+    void clearedFlows() throws Exception {
         // flow:
         //   [
         //     ...
@@ -870,7 +869,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testUnderIndented() throws YamlLintConfigException {
+    void underIndented() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: consistent, check-multi-line-strings: false}");
         check("""
               ---
@@ -935,7 +934,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testOverIndented() throws YamlLintConfigException {
+    void overIndented() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: consistent, check-multi-line-strings: false}");
         check("""
               ---
@@ -1031,7 +1030,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testMultiLines() throws YamlLintConfigException {
+    void multiLines() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1058,7 +1057,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testEmptyValue() throws YamlLintConfigException {
+    void emptyValue() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1077,7 +1076,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testNestedCollections() throws YamlLintConfigException {
+    void nestedCollections() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: 2, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1138,7 +1137,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testNestedCollectionsWithSpacesConsistent() throws YamlLintConfigException {
+    void nestedCollectionsWithSpacesConsistent() throws Exception {
         // Tests behavior of {spaces: consistent} in nested collections to
         // ensure wrong-indentation is properly caught--especially when the
         // expected indent value is initially unkown. For details, see
@@ -1186,7 +1185,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testReturn() throws YamlLintConfigException {
+    void testReturn() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1218,14 +1217,14 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testFirstLine() throws YamlLintConfigException {
+    void firstLine() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}",
                 "document-start: disable");
         check("  a: 1\n", conf, getLintProblem(1, 3));
     }
 
     @Test
-    void testExplicitBlockMappings() throws YamlLintConfigException {
+    void explicitBlockMappings() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1320,7 +1319,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testClearSequenceItem() throws YamlLintConfigException {
+    void clearSequenceItem() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1410,7 +1409,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testAnchors() throws YamlLintConfigException {
+    void anchors() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1500,7 +1499,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testTags() throws YamlLintConfigException {
+    void tags() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: true, check-multi-line-strings: false}");
         check("""
               ---
@@ -1539,7 +1538,7 @@ class IndentationTest extends RuleTester {
     }
 
     @Test
-    void testFlowsImbrication() throws YamlLintConfigException {
+    void flowsImbrication() throws Exception {
         YamlLintConfig conf = getConfig("indentation: {spaces: consistent, indent-sequences: false, check-multi-line-strings: false}");
         check("""
               ---

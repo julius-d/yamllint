@@ -20,11 +20,11 @@ import org.junit.jupiter.api.Test;
 import java.util.Map;
 
 import static com.github.sbaudoin.yamllint.rules.RuleTester.getFakeConfig;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ExtendedLibraryYamlLintConfigTest {
     @Test
-    void testExtendConfigDisableRule() throws YamlLintConfigException {
+    void extendConfigDisableRule() throws Exception {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig(
                 """
@@ -35,15 +35,15 @@ class ExtendedLibraryYamlLintConfigTest {
 
         oldConf.ruleConf.put("trailing-spaces", null);
 
-        assertEquals(newConf.ruleConf.keySet(), oldConf.ruleConf.keySet());
+        assertThat(oldConf.ruleConf.keySet()).isEqualTo(newConf.ruleConf.keySet());
         for (String ruleId : newConf.ruleConf.keySet()) {
-            assertEquals(newConf.ruleConf.get(ruleId), oldConf.ruleConf.get(ruleId));
+            assertThat(oldConf.ruleConf.get(ruleId)).isEqualTo(newConf.ruleConf.get(ruleId));
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendConfigOverrideWholeRule() throws YamlLintConfigException {
+    void extendConfigOverrideWholeRule() throws Exception {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig(
                 """
@@ -59,15 +59,15 @@ class ExtendedLibraryYamlLintConfigTest {
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max-start", 43);
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max-end", 44);
 
-        assertEquals(newConf.ruleConf.keySet(), oldConf.ruleConf.keySet());
+        assertThat(oldConf.ruleConf.keySet()).isEqualTo(newConf.ruleConf.keySet());
         for (String ruleId : newConf.ruleConf.keySet()) {
-            assertEquals(newConf.ruleConf.get(ruleId), oldConf.ruleConf.get(ruleId));
+            assertThat(oldConf.ruleConf.get(ruleId)).isEqualTo(newConf.ruleConf.get(ruleId));
         }
     }
 
     @Test
     @SuppressWarnings("unchecked")
-    void testExtendConfigOverrideRulePartly() throws YamlLintConfigException {
+    void extendConfigOverrideRulePartly() throws Exception {
         YamlLintConfig oldConf = getFakeConfig();
         YamlLintConfig newConf = new YamlLintConfig(
                 """
@@ -79,9 +79,9 @@ class ExtendedLibraryYamlLintConfigTest {
 
         ((Map)oldConf.ruleConf.get("empty-lines")).put("max-start", 42);
 
-        assertEquals(newConf.ruleConf.keySet(), oldConf.ruleConf.keySet());
+        assertThat(oldConf.ruleConf.keySet()).isEqualTo(newConf.ruleConf.keySet());
         for (String ruleId : newConf.ruleConf.keySet()) {
-            assertEquals(newConf.ruleConf.get(ruleId), oldConf.ruleConf.get(ruleId));
+            assertThat(oldConf.ruleConf.get(ruleId)).isEqualTo(newConf.ruleConf.get(ruleId));
         }
     }
 }

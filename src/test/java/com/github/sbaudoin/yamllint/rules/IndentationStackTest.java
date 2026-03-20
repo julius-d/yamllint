@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class IndentationStackTest {
     /**
@@ -57,41 +57,40 @@ class IndentationStackTest {
             if ("StreamStart".equals(tokenType) || "StreamEnd".equals(tokenType)) {
                 continue;
             }
-            output.append(String.format("%9s %s\n", tokenType, formatStack((List<?>)context.get("stack"))));
+            output.append("%9s %s\n".formatted(tokenType, formatStack((List<?>)context.get("stack"))));
         }
 
         return output.toString();
     }
 
     @Test
-    void testSimpleMapping() {
-        assertEquals(
-                """
+    void simpleMapping() {
+        assertThat(fullStack("key: val\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
                     Value B_MAP:0 KEY:0 VAL:5
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("key: val\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("     key: val\n")).isEqualTo("""
                 BMapStart B_MAP:5
                       Key B_MAP:5 KEY:5
                    Scalar B_MAP:5 KEY:5
                     Value B_MAP:5 KEY:5 VAL:10
                    Scalar B_MAP:5
                      BEnd\s
-                """,
-                fullStack("     key: val\n"));
+                """);
     }
 
     @Test
-    void testSimpleSequence() {
-        assertEquals(
-                """
+    void simpleSequence() {
+        assertThat(fullStack("""
+                - 1
+                - 2
+                - 3
+                """)).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                    Scalar B_SEQ:0
@@ -100,15 +99,13 @@ class IndentationStackTest {
                    BEntry B_SEQ:0 B_ENT:2
                    Scalar B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("""
-                          - 1
-                          - 2
-                          - 3
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                key:
+                  - 1
+                  - 2
+                """)).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -120,52 +117,47 @@ class IndentationStackTest {
                    Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:2
                      BEnd B_MAP:0
                      BEnd\s
-                """,
-                fullStack("""
-                          key:
-                            - 1
-                            - 2
-                          """));
+                """);
     }
 
     @Test
-    void testNonIndentedSequences() {
-            /* There seems to be a bug in snakeyaml: depending on the indentation, a
-               sequence does not produce the same tokens. More precisely, the
-               following YAML:
-                   usr:
-                     - lib
-               produces a BlockSequenceStartToken and a BlockEndToken around the
-               "lib" sequence, whereas the following:
-                   usr:
-                     - lib
-               does not (both two tokens are omitted).
-               So, yamllint must create fake 'B_SEQ'. This test makes sure it does. */
+    void nonIndentedSequences() {
+        /* There seems to be a bug in snakeyaml: depending on the indentation, a
+           sequence does not produce the same tokens. More precisely, the
+           following YAML:
+               usr:
+                 - lib
+           produces a BlockSequenceStartToken and a BlockEndToken around the
+           "lib" sequence, whereas the following:
+               usr:
+                 - lib
+           does not (both two tokens are omitted).
+           So, yamllint must create fake 'B_SEQ'. This test makes sure it does. */
 
-                assertEquals(
-                        """
-                        BMapStart B_MAP:0
-                              Key B_MAP:0 KEY:0
-                           Scalar B_MAP:0 KEY:0
-                            Value B_MAP:0 KEY:0 VAL:2
-                        BSeqStart B_MAP:0 KEY:0 VAL:2 B_SEQ:2
-                           BEntry B_MAP:0 KEY:0 VAL:2 B_SEQ:2 B_ENT:4
-                           Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:2
-                             BEnd B_MAP:0
-                              Key B_MAP:0 KEY:0
-                           Scalar B_MAP:0 KEY:0
-                            Value B_MAP:0 KEY:0 VAL:5
-                           Scalar B_MAP:0
-                             BEnd\s
-                        """,
-                        fullStack("""
-                                  usr:
-                                    - lib
-                                  var: cache
-                                  """));
+        assertThat(fullStack("""
+                usr:
+                  - lib
+                var: cache
+                """)).isEqualTo("""
+                BMapStart B_MAP:0
+                      Key B_MAP:0 KEY:0
+                   Scalar B_MAP:0 KEY:0
+                    Value B_MAP:0 KEY:0 VAL:2
+                BSeqStart B_MAP:0 KEY:0 VAL:2 B_SEQ:2
+                   BEntry B_MAP:0 KEY:0 VAL:2 B_SEQ:2 B_ENT:4
+                   Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:2
+                     BEnd B_MAP:0
+                      Key B_MAP:0 KEY:0
+                   Scalar B_MAP:0 KEY:0
+                    Value B_MAP:0 KEY:0 VAL:5
+                   Scalar B_MAP:0
+                     BEnd\s
+                """);
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                usr:
+                - lib
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -173,14 +165,13 @@ class IndentationStackTest {
                 "   BEntry B_MAP:0 KEY:0 VAL:2 B_SEQ:0 B_ENT:2\n" +
                 "   Scalar B_MAP:0\n" +
                 // missing BEnd here
-                "     BEnd \n",
-                fullStack("""
-                          usr:
-                          - lib
-                          """));
+                "     BEnd \n");
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                usr:
+                - lib
+                var: cache
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -192,15 +183,12 @@ class IndentationStackTest {
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:5\n" +
                 "   Scalar B_MAP:0\n" +
-                "     BEnd \n",
-                fullStack("""
-                          usr:
-                          - lib
-                          var: cache
-                          """));
+                "     BEnd \n");
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                usr:
+                - []
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -209,14 +197,13 @@ class IndentationStackTest {
                 "FSeqStart B_MAP:0 KEY:0 VAL:2 B_SEQ:0 B_ENT:2 F_SEQ:3\n" +
                 "  FSeqEnd B_MAP:0\n" +
                 // missing BEnd here
-                "     BEnd \n",
-                fullStack("""
-                          usr:
-                          - []
-                          """));
+                "     BEnd \n");
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                usr:
+                - k:
+                    v
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -229,18 +216,17 @@ class IndentationStackTest {
                 "   Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:0 B_ENT:2 B_MAP:2\n" +
                 "     BEnd B_MAP:0\n" +
                 // missing BEnd here
-                "     BEnd \n",
-                fullStack("""
-                          usr:
-                          - k:
-                              v
-                          """));
+                "     BEnd \n");
     }
 
     @Test
-    void testFlows() {
-        assertEquals(
-                """
+    void flows() {
+        assertThat(fullStack("""
+                usr: [
+                  {k:
+                    v}
+                  ]
+                """)).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -254,19 +240,12 @@ class IndentationStackTest {
                   FMapEnd B_MAP:0 KEY:0 VAL:5 F_SEQ:2
                   FSeqEnd B_MAP:0
                      BEnd\s
-                """,
-                fullStack("""
-                          usr: [
-                            {k:
-                              v}
-                            ]
-                          """));
+                """);
     }
 
     @Test
-    void testAnchors() {
-        assertEquals(
-                """
+    void anchors() {
+        assertThat(fullStack("key: &anchor value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -274,11 +253,12 @@ class IndentationStackTest {
                    Anchor B_MAP:0 KEY:0 VAL:5
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("key: &anchor value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                key: &anchor
+                  value
+                """)).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -286,37 +266,32 @@ class IndentationStackTest {
                    Anchor B_MAP:0 KEY:0 VAL:2
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("""
-                          key: &anchor
-                            value
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("- &anchor value\n")).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                    Anchor B_SEQ:0 B_ENT:2
                    Scalar B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("- &anchor value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                - &anchor
+                  value
+                """)).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                    Anchor B_SEQ:0 B_ENT:2
                    Scalar B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("""
-                          - &anchor
-                            value
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                - &anchor
+                  - 1
+                  - 2
+                """)).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                    Anchor B_SEQ:0 B_ENT:2
@@ -327,15 +302,12 @@ class IndentationStackTest {
                    Scalar B_SEQ:0 B_ENT:2 B_SEQ:2
                      BEnd B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("""
-                          - &anchor
-                            - 1
-                            - 2
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                &anchor key:
+                  value
+                """)).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Anchor B_MAP:0 KEY:0
@@ -343,14 +315,14 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:2
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("""
-                          &anchor key:
-                            value
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                pre:
+                  &anchor1 0
+                &anchor2 key:
+                  value
+                """)).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -363,16 +335,14 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:2
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("""
-                          pre:
-                            &anchor1 0
-                          &anchor2 key:
-                            value
-                          """));
+                """);
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                sequence: &anchor
+                - entry
+                - &anchor
+                  - nested
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -387,19 +357,12 @@ class IndentationStackTest {
                 "   Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:0 B_ENT:2 B_SEQ:2\n" +
                 "     BEnd B_MAP:0\n" +
                 // missing BEnd here
-                "     BEnd \n",
-                fullStack("""
-                          sequence: &anchor
-                          - entry
-                          - &anchor
-                            - nested
-                          """));
+                "     BEnd \n");
     }
 
     @Test
-    void testTags() {
-        assertEquals(
-                """
+    void tags() {
+        assertThat(fullStack("key: !!tag value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                    Scalar B_MAP:0 KEY:0
@@ -407,11 +370,12 @@ class IndentationStackTest {
                       Tag B_MAP:0 KEY:0 VAL:5
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("key: !!tag value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                - !!map # Block collection
+                  foo : bar
+                """)).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                       Tag B_SEQ:0 B_ENT:2
@@ -422,14 +386,12 @@ class IndentationStackTest {
                    Scalar B_SEQ:0 B_ENT:2 B_MAP:2
                      BEnd B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("""
-                          - !!map # Block collection
-                            foo : bar
-                          """));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("""
+                - !!seq
+                  - nested item
+                """)).isEqualTo("""
                 BSeqStart B_SEQ:0
                    BEntry B_SEQ:0 B_ENT:2
                       Tag B_SEQ:0 B_ENT:2
@@ -438,14 +400,14 @@ class IndentationStackTest {
                    Scalar B_SEQ:0 B_ENT:2 B_SEQ:2
                      BEnd B_SEQ:0
                      BEnd\s
-                """,
-                fullStack("""
-                          - !!seq
-                            - nested item
-                          """));
+                """);
 
-        assertEquals(
-                "BMapStart B_MAP:0\n" +
+        assertThat(fullStack("""
+                sequence: !!seq
+                - entry
+                - !!seq
+                  - nested
+                """)).isEqualTo("BMapStart B_MAP:0\n" +
                 "      Key B_MAP:0 KEY:0\n" +
                 "   Scalar B_MAP:0 KEY:0\n" +
                 "    Value B_MAP:0 KEY:0 VAL:2\n" +
@@ -460,29 +422,20 @@ class IndentationStackTest {
                 "   Scalar B_MAP:0 KEY:0 VAL:2 B_SEQ:0 B_ENT:2 B_SEQ:2\n" +
                 "     BEnd B_MAP:0\n" +
                 // missing BEnd here
-                "     BEnd \n",
-                fullStack("""
-                          sequence: !!seq
-                          - entry
-                          - !!seq
-                            - nested
-                          """));
+                "     BEnd \n");
     }
 
     @Test
-    void testFlowsImbrication() {
-        assertEquals(
-                """
+    void flowsImbrication() {
+        assertThat(fullStack("[[val]]\n")).isEqualTo("""
                 FSeqStart F_SEQ:1
                 FSeqStart F_SEQ:1 F_SEQ:2
                    Scalar F_SEQ:1 F_SEQ:2
                   FSeqEnd F_SEQ:1
                   FSeqEnd\s
-                """,
-                fullStack("[[val]]\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("[[val], [val2]]\n")).isEqualTo("""
                 FSeqStart F_SEQ:1
                 FSeqStart F_SEQ:1 F_SEQ:2
                    Scalar F_SEQ:1 F_SEQ:2
@@ -492,21 +445,17 @@ class IndentationStackTest {
                    Scalar F_SEQ:1 F_SEQ:9
                   FSeqEnd F_SEQ:1
                   FSeqEnd\s
-                """,
-                fullStack("[[val], [val2]]\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("{{key}}\n")).isEqualTo("""
                 FMapStart F_MAP:1
                 FMapStart F_MAP:1 F_MAP:2
                    Scalar F_MAP:1 F_MAP:2
                   FMapEnd F_MAP:1
                   FMapEnd\s
-                """,
-                fullStack("{{key}}\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("[key]: value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                 FSeqStart B_MAP:0 KEY:0 F_SEQ:1
@@ -515,11 +464,9 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:7
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("[key]: value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("[[key]]: value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                 FSeqStart B_MAP:0 KEY:0 F_SEQ:1
@@ -530,11 +477,9 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:9
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("[[key]]: value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("{key}: value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                 FMapStart B_MAP:0 KEY:0 F_MAP:1
@@ -543,11 +488,9 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:7
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("{key}: value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("{key: value}: value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                 FMapStart B_MAP:0 KEY:0 F_MAP:1
@@ -559,11 +502,9 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:14
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("{key: value}: value\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("{{key}}: value\n")).isEqualTo("""
                 BMapStart B_MAP:0
                       Key B_MAP:0 KEY:0
                 FMapStart B_MAP:0 KEY:0 F_MAP:1
@@ -574,10 +515,8 @@ class IndentationStackTest {
                     Value B_MAP:0 KEY:0 VAL:9
                    Scalar B_MAP:0
                      BEnd\s
-                """,
-                fullStack("{{key}}: value\n"));
-        assertEquals(
-                """
+                """);
+        assertThat(fullStack("{{key}: val, {key2}: {val2}}\n")).isEqualTo("""
                 FMapStart F_MAP:1
                       Key F_MAP:1 KEY:1
                 FMapStart F_MAP:1 KEY:1 F_MAP:2
@@ -595,11 +534,9 @@ class IndentationStackTest {
                    Scalar F_MAP:1 KEY:1 VAL:21 F_MAP:22
                   FMapEnd F_MAP:1
                   FMapEnd\s
-                """,
-                fullStack("{{key}: val, {key2}: {val2}}\n"));
+                """);
 
-        assertEquals(
-                """
+        assertThat(fullStack("{[{{[val]}}, [{[key]: val2}]]}\n")).isEqualTo("""
                 FMapStart F_MAP:1
                 FSeqStart F_MAP:1 F_SEQ:2
                 FMapStart F_MAP:1 F_SEQ:2 F_MAP:3
@@ -622,7 +559,6 @@ class IndentationStackTest {
                   FSeqEnd F_MAP:1 F_SEQ:2
                   FSeqEnd F_MAP:1
                   FMapEnd\s
-                """,
-                fullStack("{[{{[val]}}, [{[key]: val2}]]}\n"));
+                """);
     }
 }

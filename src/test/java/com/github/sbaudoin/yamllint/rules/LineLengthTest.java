@@ -17,12 +17,11 @@ package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.Format;
 import com.github.sbaudoin.yamllint.YamlLintConfig;
-import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
 class LineLengthTest extends RuleTester {
     @Test
-    void testDisabled() throws YamlLintConfigException {
+    void disabled() throws Exception {
         YamlLintConfig conf = getConfig("line-length: disable",
                 "empty-lines: disable",
                 "new-line-at-end-of-file: disable",
@@ -40,7 +39,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testDefault() throws YamlLintConfigException {
+    void testDefault() throws Exception {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 80",
                 "  allow-non-breakable-words: true",
@@ -60,7 +59,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testMaxLength10() throws YamlLintConfigException {
+    void maxLength10() throws Exception {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 10",
                 "  allow-non-breakable-words: true",
@@ -72,7 +71,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testSpaces() throws YamlLintConfigException {
+    void spaces() throws Exception {
         YamlLintConfig conf = getConfig("line-length:",
                 "  max: 80",
                 "  allow-non-breakable-words: true",
@@ -84,7 +83,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testNonBreakableWord() throws YamlLintConfigException {
+    void nonBreakableWord() throws Exception {
         YamlLintConfig conf = getConfig("line-length: {max: 20, allow-non-breakable-words: true, allow-non-breakable-inline-mappings: false}");
         check("---\n" + Format.repeat(30, "A") + "\n", conf);
         check("""
@@ -194,7 +193,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testNonBreakableInlineMappings() throws YamlLintConfigException {
+    void nonBreakableInlineMappings() throws Exception {
         YamlLintConfig conf = getConfig("line-length: {max: 20," +
                 "              allow-non-breakable-inline-mappings: true," +
                 "              allow-non-breakable-words: true}");
@@ -245,7 +244,7 @@ class LineLengthTest extends RuleTester {
     }
 
     @Test
-    void testWithDosNewlines() throws YamlLintConfigException {
+    void withDosNewlines() throws Exception {
         YamlLintConfig conf = getConfig("line-length: {max: 10}",
                 "new-lines: {type: dos}",
                 "new-line-at-end-of-file: disable");

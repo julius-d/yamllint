@@ -16,7 +16,9 @@
 package com.github.sbaudoin.yamllint.rules;
 
 import com.github.sbaudoin.yamllint.LintProblem;
-import org.yaml.snakeyaml.tokens.*;
+import org.yaml.snakeyaml.tokens.FlowSequenceEndToken;
+import org.yaml.snakeyaml.tokens.FlowSequenceStartToken;
+import org.yaml.snakeyaml.tokens.Token;
 
 import java.util.*;
 
