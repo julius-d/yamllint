@@ -349,6 +349,34 @@
                     </execution>
                 </executions>
             </plugin>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>3.3.0</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                        <phase>prepare-package</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <java>
+                        <googleJavaFormat>
+                            <version>1.14.0</version>
+                        </googleJavaFormat>
+                        <removeUnusedImports/>
+                        <indent>
+                            <spaces>true</spaces>
+                            <spacesPerTab>2</spacesPerTab>
+                        </indent>
+                        <trimTrailingWhitespace/>
+                        <endWithNewline/>
+                    </java>
+                    <lineEndings>UNIX</lineEndings>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
     <reporting>

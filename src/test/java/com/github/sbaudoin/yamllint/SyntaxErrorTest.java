@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint;
@@ -19,37 +17,46 @@ import com.github.sbaudoin.yamllint.rules.RuleTester;
 import org.junit.jupiter.api.Test;
 
 class SyntaxErrorTest extends RuleTester {
-    @Override
-    public String getRuleId() {
-        // By convention syntax errors have the 'null' id
-        return null;
-    }
+  @Override
+  public String getRuleId() {
+    // By convention syntax errors have the 'null' id
+    return null;
+  }
 
-    @Test
-    void syntaxErrors() throws Exception {
-        check("""
+  @Test
+  void syntaxErrors() throws Exception {
+    check(
+        """
               ---
               this is not: valid: YAML
-              """, null, getLintProblem(2, 19));
-        check("""
+              """,
+        null,
+        getLintProblem(2, 19));
+    check(
+        """
               ---
               this is: valid YAML
-              
+
               this is an error: [
-              
+
               ...
-              """, null, getLintProblem(6, 1));
-        check("""
+              """,
+        null,
+        getLintProblem(6, 1));
+    check(
+        """
               %YAML 1.2
               %TAG ! tag:clarkevans.com,2002:
               doc: ument
               ...
-              """, null, getLintProblem(3, 1));
-    }
+              """,
+        null, getLintProblem(3, 1));
+  }
 
-    @Test
-    void emptyFlows() throws Exception {
-        check("""
+  @Test
+  void emptyFlows() throws Exception {
+    check(
+        """
               ---
               - []
               - {}
@@ -58,56 +65,66 @@ class SyntaxErrorTest extends RuleTester {
               - {
               }
               ...
-              """, null);
-    }
+              """,
+        null);
+  }
 
-    @Test
-    void explicitMapping() throws Exception {
-        check("""
+  @Test
+  void explicitMapping() throws Exception {
+    check(
+        """
               ---
               ? key
               : - value 1
                 - value 2
               ...
-              """, null);
-        check("""
+              """,
+        null);
+    check(
+        """
               ---
               ?
                 key
               : {a: 1}
               ...
-              """, null);
-        check("""
+              """,
+        null);
+    check(
+        """
               ---
               ?
                 key
               :
                 val
               ...
-              """, null);
-    }
+              """,
+        null);
+  }
 
-    @Test
-    void mappingBetweenSequences() throws Exception {
-        // This is valid YAML.See http://www.yaml.org/spec/1.2/spec.html,
-        // example 2.11
-        check("""
+  @Test
+  void mappingBetweenSequences() throws Exception {
+    // This is valid YAML.See http://www.yaml.org/spec/1.2/spec.html,
+    // example 2.11
+    check(
+        """
               ---
               ? - Detroit Tigers
                 - Chicago cubs
               :
                 - 2001-07-23
-              
+
               ? [New York Yankees,
                  Atlanta Braves]
               : [2001-07-02, 2001-08-12,
                  2001-08-14]
-              """, null);
-    }
+              """,
+        null);
+  }
 
-    @Test
-    void sets() throws Exception {
-        check("""
+  @Test
+  void sets() throws Exception {
+    check(
+        """
               ---
               ? key one
               ? key two
@@ -115,8 +132,10 @@ class SyntaxErrorTest extends RuleTester {
               ? key with value
               : value
               ...
-              """, null);
-        check("""
+              """,
+        null);
+    check(
+        """
               ---
               ? - multi
                 - line
@@ -125,25 +144,30 @@ class SyntaxErrorTest extends RuleTester {
                   a:
                     set
               ...
-              """, null);
-    }
+              """,
+        null);
+  }
 
-    @Test
-    void multipleDocs() throws Exception {
-        check("""
+  @Test
+  void multipleDocs() throws Exception {
+    check(
+        """
               ---
               a: b
               ...
               ---
               ,
               ...
-              """, null, getLintProblem(5, 1));
-    }
+              """,
+        null,
+        getLintProblem(5, 1));
+  }
 
-    @Test
-    void customTag() throws Exception {
-        // See https://github.com/sbaudoin/sonar-yaml/issues/15
-        check("""
+  @Test
+  void customTag() throws Exception {
+    // See https://github.com/sbaudoin/sonar-yaml/issues/15
+    check(
+        """
               ---
               appli_password: !vault |
                         $ANSIBLE_VAULT;1.1;AES256
@@ -152,6 +176,7 @@ class SyntaxErrorTest extends RuleTester {
                         42424242424242424242424242424242424242424242424242424242424242424242424242424242
                         42424242424242424242424242424242424242424242424242424242424242424242424242424242
                         4242
-              """, null);
-    }
+              """,
+        null);
+  }
 }

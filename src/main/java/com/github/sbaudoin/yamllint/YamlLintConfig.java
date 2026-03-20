@@ -1,27 +1,20 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint;
 
-import org.apache.commons.io.input.CharSequenceReader;
-import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.error.YAMLException;
 import com.github.sbaudoin.yamllint.rules.Rule;
 import com.github.sbaudoin.yamllint.rules.RuleFactory;
-import org.yaml.snakeyaml.reader.UnicodeReader;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,574 +23,609 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.util.*;
+import org.apache.commons.io.input.CharSequenceReader;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.error.YAMLException;
+import org.yaml.snakeyaml.reader.UnicodeReader;
 
-/**
- * Class that represents the configuration for the YAML linter
- */
+/** Class that represents the configuration for the YAML linter */
 public class YamlLintConfig {
-    /**
-     * Configuration parameter that base extension point
-     */
-    public static final String EXTENDS_KEY = "extends";
+  /** Configuration parameter that base extension point */
+  public static final String EXTENDS_KEY = "extends";
 
-    /**
-     * Configuration parameter that lists patterns used by the linter to be identify YAML files
-     */
-    public static final String YAML_FILES_KEY = "yaml-files";
+  /** Configuration parameter that lists patterns used by the linter to be identify YAML files */
+  public static final String YAML_FILES_KEY = "yaml-files";
 
-    /**
-     * Configuration parameter that lists file patterns to be ignored by the linter
-     */
-    public static final String IGNORE_KEY = "ignore";
+  /** Configuration parameter that lists file patterns to be ignored by the linter */
+  public static final String IGNORE_KEY = "ignore";
 
-    /**
-     * Configuration parameter that gives the path to a file containing patterns of files to be ignored by the linter
-     */
-    public static final String IGNORE_FROM_FILE_KEY = "ignore-from-file";
+  /**
+   * Configuration parameter that gives the path to a file containing patterns of files to be
+   * ignored by the linter
+   */
+  public static final String IGNORE_FROM_FILE_KEY = "ignore-from-file";
 
-    /**
-     * Configuration parameter that lists the rules checked by the linter
-     */
-    public static final String RULES_KEY = "rules";
+  /** Configuration parameter that lists the rules checked by the linter */
+  public static final String RULES_KEY = "rules";
 
+  // Compared to Python yamllint, for better semantic we store the rules' configurations in ruleConf
+  // instead of an attribute named 'rule', which can be misleading
+  /** Holder for the rules' configurations. Key: ruleId; value: rule configuration as a map */
+  protected Map<String, Object> ruleConf;
 
-    // Compared to Python yamllint, for better semantic we store the rules' configurations in ruleConf
-    // instead of an attribute named 'rule', which can be misleading
-    /**
-     * Holder for the rules' configurations. Key: ruleId; value: rule configuration as a map
-     */
-    protected Map<String, Object> ruleConf;
+  /** List of regexp patterns used to tell if a file is to be ignored or not */
+  protected List<String> ignore = null;
 
-    /**
-     * List of regexp patterns used to tell if a file is to be ignored or not
-     */
-    protected List<String> ignore = null;
+  /** List of regexp patterns used to identify YAML files, defaulted to .yaml and .yml */
+  protected List<String> yamlFiles = Arrays.asList(".*\\.yaml$", ".*\\.yml$");
 
-    /**
-     * List of regexp patterns used to identify YAML files, defaulted to .yaml and .yml
-     */
-    protected List<String> yamlFiles = Arrays.asList(".*\\.yaml$", ".*\\.yml$");
+  /**
+   * Constructs a <code>YamlLintConfig</code> from a YAML string
+   *
+   * @param content the configuration as a YAML string
+   * @throws YamlLintConfigException if the configuration contains an error so that its content
+   *     cannot be successfully parsed
+   * @throws IllegalArgumentException if <var>content</var> is <code>null</code>
+   */
+  public YamlLintConfig(CharSequence content) throws YamlLintConfigException {
+    if (content != null) {
+      parse(content);
+      validate();
+    } else {
+      throw new IllegalArgumentException("content cannot be null");
+    }
+  }
 
+  /**
+   * Constructs a <code>YamlLintConfig</code> from a YAML file
+   *
+   * @param file a YAML configuration file identified by a URL
+   * @throws IOException if an error occurs handling the passed file
+   * @throws YamlLintConfigException if the configuration contains an error so that its content
+   *     cannot be successfully parsed
+   * @throws IllegalArgumentException if <var>file</var> is <code>null</code>
+   */
+  public YamlLintConfig(URL file) throws IOException, YamlLintConfigException {
+    if (file != null) {
+      try (Scanner scanner = new Scanner(file.openStream()).useDelimiter("\\A")) {
+        parse(scanner.next());
+      }
+      validate();
+    } else {
+      throw new IllegalArgumentException("file cannot be null");
+    }
+  }
 
-    /**
-     * Constructs a <code>YamlLintConfig</code> from a YAML string
-     *
-     * @param content the configuration as a YAML string
-     * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
-     * @throws IllegalArgumentException if <var>content</var> is <code>null</code>
-     */
-    public YamlLintConfig(CharSequence content) throws YamlLintConfigException {
-        if (content != null) {
-            parse(content);
-            validate();
-        } else {
-            throw new IllegalArgumentException("content cannot be null");
-        }
+  /**
+   * Constructs a <code>YamlLintConfig</code> from an input stream
+   *
+   * @param in an {@code InputStream} that will supply YAML content. Be aware that this {@code
+   *     InputStream} is not closed by this method, you will have to do it yourself later.
+   * @throws YamlLintConfigException if the configuration contains an error so that its content
+   *     cannot be successfully parsed
+   * @throws IllegalArgumentException if <var>in</var> is <code>null</code>
+   */
+  public YamlLintConfig(InputStream in) throws YamlLintConfigException {
+    if (in == null) {
+      throw new IllegalArgumentException("in cannot be null");
     }
 
-    /**
-     * Constructs a <code>YamlLintConfig</code> from a YAML file
-     *
-     * @param file a YAML configuration file identified by a URL
-     * @throws IOException if an error occurs handling the passed file
-     * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
-     * @throws IllegalArgumentException if <var>file</var> is <code>null</code>
-     */
-    public YamlLintConfig(URL file) throws IOException, YamlLintConfigException {
-        if (file != null) {
-            try (Scanner scanner = new Scanner(file.openStream()).useDelimiter("\\A")) {
-                parse(scanner.next());
-            }
-            validate();
-        } else {
-            throw new IllegalArgumentException("file cannot be null");
-        }
+    parse(in);
+  }
+
+  /**
+   * Tells if a file identified by its path a to be considered as a YAML file
+   *
+   * @param filepath the path of the file to be checked by this tool
+   * @return <code>true</code> if a YAML file, <code>false</code> otherwise
+   */
+  public boolean isYamlFile(String filepath) {
+    return yamlFiles.stream().anyMatch(filepath::matches);
+  }
+
+  /**
+   * Tells if a file identified by its path is to be ignored by this tool
+   *
+   * @param filepath the path of the file to be checked by this tool
+   * @return <code>true</code> if the file must be ignored, <code>false</code> otherwise
+   */
+  public boolean isFileIgnored(String filepath) {
+    return ignore != null && ignore.stream().anyMatch(filepath::matches);
+  }
+
+  /**
+   * Returns the rules to be checked for the passed file
+   *
+   * @param file the file to be checked
+   * @return the list of rules to be checked for the file. All rules are returned if <var>file</var>
+   *     is <code>null</code>.
+   */
+  public List<Rule> getEnabledRules(File file) {
+    List<Rule> rules = new ArrayList<>();
+    for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
+      Rule rule = RuleFactory.instance.getRule(entry.getKey());
+      if (rule != null && entry.getValue() != null && (file == null || !rule.ignores(file))) {
+        rules.add(rule);
+      }
+    }
+    return rules;
+  }
+
+  /**
+   * Returns the configuration for the rule identified by its ID
+   *
+   * @param id a rule ID
+   * @return a configuration map or <code>null</code> if not found
+   */
+  public Object getRuleConf(String id) {
+    return ruleConf.get(id);
+  }
+
+  /**
+   * Updates the attributes of this configuration instance with the one of the passed configuration.
+   * Existing entries are replaced (overridden).
+   *
+   * @param baseConfig a configuration that will extend this instance's rule configuration
+   */
+  @SuppressWarnings("unchecked")
+  public void extend(final YamlLintConfig baseConfig) {
+    assert ruleConf != null;
+
+    Map<String, Object> newConf = new HashMap<>(baseConfig.ruleConf);
+
+    for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
+      String ruleId = entry.getKey();
+      Object conf = entry.getValue();
+      if (conf instanceof Map && newConf.get(ruleId) != null) {
+        deepMerge((Map<Object, Object>) newConf.get(ruleId), (Map<Object, Object>) conf);
+      } else {
+        newConf.put(ruleId, conf);
+      }
     }
 
-    /**
-     * Constructs a <code>YamlLintConfig</code> from an input stream
-     *
-     * @param in an {@code InputStream} that will supply YAML content. Be aware that this {@code InputStream} is not
-     *           closed by this method, you will have to do it yourself later.
-     * @throws YamlLintConfigException if the configuration contains an error so that its content cannot be successfully parsed
-     * @throws IllegalArgumentException if <var>in</var> is <code>null</code>
-     */
-    public YamlLintConfig(InputStream in) throws YamlLintConfigException {
-        if (in == null) {
-            throw new IllegalArgumentException("in cannot be null");
-        }
+    ruleConf = newConf;
 
-        parse(in);
+    if (baseConfig.yamlFiles != null) {
+      yamlFiles = baseConfig.yamlFiles;
     }
 
-    /**
-     * Tells if a file identified by its path a to be considered as a YAML file
-     *
-     * @param filepath the path of the file to be checked by this tool
-     * @return <code>true</code> if a YAML file, <code>false</code> otherwise
-     */
-    public boolean isYamlFile(String filepath) {
-        return yamlFiles.stream().anyMatch(filepath::matches);
+    if (baseConfig.ignore != null) {
+      ignore = baseConfig.ignore;
+    }
+  }
+
+  /**
+   * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>. This method
+   * does not handle the BOM: the passed {@code CharSequence} is expected not to contain BOM.
+   *
+   * @param rawContent a YAML linter configuration
+   * @throws YamlLintConfigException if a parse error occurs
+   */
+  protected void parse(final CharSequence rawContent) throws YamlLintConfigException {
+    try (CharSequenceReader r = new CharSequenceReader(rawContent)) {
+      parse(r);
+    }
+  }
+
+  /**
+   * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>, taking into
+   * account the possible BOM
+   *
+   * @param in an input stream to a YAML linter configuration
+   * @throws YamlLintConfigException if a parse error occurs
+   */
+  protected void parse(final InputStream in) throws YamlLintConfigException {
+    parse(new UnicodeReader(in));
+  }
+
+  /**
+   * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>
+   *
+   * @param r a reader to a YAML linter configuration
+   * @throws YamlLintConfigException if a parse error occurs
+   */
+  @SuppressWarnings("unchecked")
+  protected void parse(final Reader r) throws YamlLintConfigException {
+    Map<String, Object> conf;
+
+    try {
+      conf = new Yaml().load(r);
+    } catch (YAMLException | ClassCastException e) {
+      throw getInvalidConfigException("YAML", e.getMessage(), e);
+    }
+    if (conf == null) {
+      throw getInvalidConfigException("not a dictionary");
     }
 
-    /**
-     * Tells if a file identified by its path is to be ignored by this tool
-     *
-     * @param filepath the path of the file to be checked by this tool
-     * @return <code>true</code> if the file must be ignored, <code>false</code> otherwise
-     */
-    public boolean isFileIgnored(String filepath) {
-        return ignore != null && ignore.stream().anyMatch(filepath::matches);
+    // ruleConf stores YAML conf; rules stores actual rules
+    ruleConf = (Map<String, Object>) conf.getOrDefault(RULES_KEY, new HashMap<String, Object>());
+
+    // Does this conf override another conf that we need to load?
+    if (conf.containsKey(EXTENDS_KEY)) {
+      try {
+        YamlLintConfig base =
+            new YamlLintConfig(getExtendedConfigFile((String) conf.get(EXTENDS_KEY)));
+        extend(base);
+      } catch (IllegalArgumentException e) {
+        throw getInvalidConfigException(EXTENDS_KEY, e.getMessage(), e);
+      } catch (Exception e) {
+        throw getInvalidConfigException(EXTENDS_KEY, "unknown error: " + e.getMessage(), e);
+      }
     }
 
-    /**
-     * Returns the rules to be checked for the passed file
-     *
-     * @param file the file to be checked
-     * @return the list of rules to be checked for the file. All rules are returned if <var>file</var> is <code>null</code>.
-     */
-    public List<Rule> getEnabledRules(File file) {
-        List<Rule> rules = new ArrayList<>();
-        for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
-            Rule rule = RuleFactory.instance.getRule(entry.getKey());
-            if (rule != null && entry.getValue() != null && (file == null || !rule.ignores(file))) {
-                rules.add(rule);
-            }
-        }
-        return rules;
+    // List of patterns used to identify YAML files
+    if (conf.containsKey(YAML_FILES_KEY)) {
+      if (!(conf.get(YAML_FILES_KEY) instanceof List)) {
+        throw getInvalidConfigException(
+            "'%s' must be a list (of regexp patterns)".formatted(YAML_FILES_KEY));
+      }
+      yamlFiles = (List<String>) conf.get(YAML_FILES_KEY);
     }
 
-    /**
-     * Returns the configuration for the rule identified by its ID
-     *
-     * @param id a rule ID
-     * @return a configuration map or <code>null</code> if not found
-     */
-    public Object getRuleConf(String id) {
-        return ruleConf.get(id);
+    // List of patterns used to ignore files
+    ignore = getIgnorePatterns(conf);
+  }
+
+  /**
+   * Validates the rule configuration and instantiates the associated executable rules in
+   * <var>rules</var>
+   *
+   * @throws YamlLintConfigException if a mismatch exists between the configured rules and the rules
+   *     contained in this package, or if the rule configuration is invalid
+   */
+  protected void validate() throws YamlLintConfigException {
+    for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
+      String id = entry.getKey();
+      Rule rule = RuleFactory.instance.getRule(id);
+      if (rule == null) {
+        throw getInvalidConfigException("no such rule: \"%s\"".formatted(id));
+      }
+
+      Map<String, Object> newConf = validateRuleConf(rule, entry.getValue());
+      ruleConf.put(id, newConf);
+    }
+  }
+
+  /**
+   * Validates a rule against a given configuration. The rule might be updated by this method.
+   *
+   * @param rule the rule to be validated against the passed configuration. Must not be <code>null
+   *     </code>.
+   * @param conf the YAML configuration of the rule
+   * @return the possibly updated YAML configuration if the rule has been validated or <code>null
+   *     </code> if the rule is disabled by configuration
+   * @throws YamlLintConfigException if <var>conf</var> contains invalid configuration
+   */
+  @SuppressWarnings("unchecked")
+  protected static Map<String, Object> validateRuleConf(final Rule rule, final Object conf)
+      throws YamlLintConfigException {
+    Object myConf = conf;
+    if (myConf == null || "disable".equals(myConf)) {
+      return null;
+    } else if ("enable".equals(myConf)) {
+      myConf = new HashMap<>();
     }
 
-    /**
-     * Updates the attributes of this configuration instance with the one of the passed configuration. Existing entries are replaced (overridden).
-     *
-     * @param baseConfig a configuration that will extend this instance's rule configuration
-     */
-    @SuppressWarnings("unchecked")
-    public void extend(final YamlLintConfig baseConfig) {
-        assert ruleConf != null;
-
-        Map<String, Object> newConf = new HashMap<>(baseConfig.ruleConf);
-
-        for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
-            String ruleId = entry.getKey();
-            Object conf = entry.getValue();
-            if (conf instanceof Map && newConf.get(ruleId) != null) {
-                deepMerge((Map<Object, Object>)newConf.get(ruleId), (Map<Object, Object>)conf);
-            } else {
-                newConf.put(ruleId, conf);
-            }
-        }
-
-        ruleConf = newConf;
-
-        if (baseConfig.yamlFiles != null) {
-            yamlFiles = baseConfig.yamlFiles;
-        }
-
-        if (baseConfig.ignore != null) {
-            ignore = baseConfig.ignore;
-        }
+    if (!(myConf instanceof Map)) {
+      throw getInvalidConfigException(
+          "rule \"%s\": should be either \"enable\", \"disable\" or a dictionary"
+              .formatted(rule.getId()));
     }
 
+    Map<String, Object> mapConf = (Map<String, Object>) myConf;
 
-    /**
-     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>.
-     * This method does not handle the BOM: the passed {@code CharSequence} is expected not to contain BOM.
-     *
-     * @param rawContent a YAML linter configuration
-     * @throws YamlLintConfigException if a parse error occurs
-     */
-    protected void parse(final CharSequence rawContent) throws YamlLintConfigException {
-        try (CharSequenceReader r = new CharSequenceReader(rawContent)) {
-            parse(r);
-        }
+    // Deal with the rule's 'ignore' or 'ignore-from-file' conf
+    setIgnoreConf(rule, mapConf);
+
+    // Deal with 'level' conf
+    setRuleLevel(rule, mapConf);
+
+    Map<String, Object> options = rule.getOptions();
+    for (Map.Entry<String, Object> entry : mapConf.entrySet()) {
+      String optkey = entry.getKey();
+      Object optvalue = entry.getValue();
+
+      if (IGNORE_KEY.equals(optkey)
+          || IGNORE_FROM_FILE_KEY.equals(optkey)
+          || Linter.LEVEL_KEY.equals(optkey)) {
+        continue;
+      }
+      checkRuleOption(optkey, optvalue, rule);
+      rule.addParameter(optkey, optvalue);
+    }
+    for (String optkey : options.keySet()) {
+      mapConf.putIfAbsent(optkey, rule.getDefaultOptionValue(optkey));
     }
 
-    /**
-     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>, taking into account the possible
-     * BOM
-     *
-     * @param in an input stream to a YAML linter configuration
-     * @throws YamlLintConfigException if a parse error occurs
-     */
-    protected void parse(final InputStream in) throws YamlLintConfigException {
-        parse(new UnicodeReader(in));
+    String validationMessage = rule.validate(mapConf);
+    if (validationMessage != null && !"".equals(validationMessage)) {
+      throw getInvalidConfigException("%s: %s".formatted(rule.getId(), validationMessage));
     }
 
-    /**
-     * Parses a passed YAML configuration for this tool and updates <var>ruleConf</var>
-     *
-     * @param r a reader to a YAML linter configuration
-     * @throws YamlLintConfigException if a parse error occurs
-     */
-    @SuppressWarnings("unchecked")
-    protected void parse(final Reader r) throws YamlLintConfigException {
-        Map<String, Object> conf;
+    return mapConf;
+  }
 
-        try {
-            conf = new Yaml().load(r);
-        } catch (YAMLException | ClassCastException e) {
-            throw getInvalidConfigException("YAML", e.getMessage(), e);
+  /**
+   * Checks the consistency of a given configuration rule
+   *
+   * @param optkey the configuration parameter
+   * @param optvalue the configuration value
+   * @param rule the rule that is configured by the passed option key and value
+   * @throws YamlLintConfigException if the option cannot be validated
+   */
+  private static void checkRuleOption(final String optkey, final Object optvalue, final Rule rule)
+      throws YamlLintConfigException {
+    Map<String, Object> options = rule.getOptions();
+    if (!options.containsKey(optkey)) {
+      throw getInvalidConfigException(
+          "unknown option \"%s\" for rule \"%s\"".formatted(optkey, rule.getId()));
+    }
+    if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
+      if (!((List<?>) options.get(optkey)).contains(optvalue)
+          && ((List<?>) options.get(optkey))
+              .stream().noneMatch(object -> optvalue.getClass().equals(object))) {
+        throw getInvalidConfigException(
+            "option \"%s\" of \"%s\" should be in %s"
+                .formatted(
+                    optkey,
+                    rule.getId(),
+                    getListRepresentation((List<Object>) options.get(optkey))));
+      }
+    } else {
+      if (rule.isListOption(optkey)) {
+        if (!(optvalue instanceof List)) {
+          throw getInvalidConfigException(
+              "option \"%s\" of \"%s\" should be a list".formatted(optkey, rule.getId()));
         }
-        if (conf == null) {
-            throw getInvalidConfigException("not a dictionary");
-        }
+      } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
+        throw getInvalidConfigException(
+            "option \"%s\" of \"%s\" should be of type %s"
+                .formatted(
+                    optkey,
+                    rule.getId(),
+                    options.get(optkey).getClass().getSimpleName().toLowerCase()));
+      }
+    }
+  }
 
-        // ruleConf stores YAML conf; rules stores actual rules
-        ruleConf = (Map<String, Object>)conf.getOrDefault(RULES_KEY, new HashMap<String, Object>());
+  /**
+   * Sets the list of patterns to identified the files to be ignored for this rule
+   *
+   * @param rule a rule
+   * @param conf the rule's configuration
+   * @throws YamlLintConfigException if the ignore configuration is invalid
+   */
+  private static void setIgnoreConf(Rule rule, Map<String, Object> conf)
+      throws YamlLintConfigException {
+    rule.setIgnore(getIgnorePatterns(conf));
+  }
 
-        // Does this conf override another conf that we need to load?
-        if (conf.containsKey(EXTENDS_KEY)) {
-            try {
-                YamlLintConfig base = new YamlLintConfig(getExtendedConfigFile((String) conf.get(EXTENDS_KEY)));
-                extend(base);
-            } catch (IllegalArgumentException e) {
-                throw getInvalidConfigException(EXTENDS_KEY, e.getMessage(), e);
-            } catch (Exception e) {
-                throw getInvalidConfigException(EXTENDS_KEY, "unknown error: " + e.getMessage(), e);
-            }
-        }
-
-        // List of patterns used to identify YAML files
-        if (conf.containsKey(YAML_FILES_KEY)) {
-            if (!(conf.get(YAML_FILES_KEY) instanceof List)) {
-                throw getInvalidConfigException("'%s' must be a list (of regexp patterns)".formatted(YAML_FILES_KEY));
-            }
-            yamlFiles = (List<String>)conf.get(YAML_FILES_KEY);
-        }
-
-        // List of patterns used to ignore files
-        ignore = getIgnorePatterns(conf);
+  /**
+   * Checks the 'ignore' and 'ignore-from-file' configuration parameters and returns the list of
+   * patterns they may contain
+   *
+   * @param conf the linter configuration
+   * @return the list (possibly empty) of patterns of files to be ignored
+   * @throws YamlLintConfigException if the ignore* configuration parameters are invalid
+   */
+  private static List<String> getIgnorePatterns(Map<String, Object> conf)
+      throws YamlLintConfigException {
+    if (conf.containsKey(IGNORE_KEY) && conf.containsKey(IGNORE_FROM_FILE_KEY)) {
+      throw getInvalidConfigException("ignore and ignore-from-file keys cannot be used together");
     }
 
-    /**
-     * Validates the rule configuration and instantiates the associated executable rules in <var>rules</var>
-     *
-     * @throws YamlLintConfigException if a mismatch exists between the configured rules and the rules contained in this package,
-     * or if the rule configuration is invalid
-     */
-    protected void validate() throws YamlLintConfigException {
-        for (Map.Entry<String, Object> entry : ruleConf.entrySet()) {
-            String id = entry.getKey();
-            Rule rule = RuleFactory.instance.getRule(id);
-            if (rule == null) {
-                throw getInvalidConfigException("no such rule: \"%s\"".formatted(id));
-            }
+    if (conf.containsKey(IGNORE_FROM_FILE_KEY)) {
+      return getIgnorePatternsFromFiles(conf.get(IGNORE_FROM_FILE_KEY));
+    } else if (conf.containsKey(IGNORE_KEY)) {
+      return getIgnorePatternsFromIgnore(conf.get(IGNORE_KEY));
+    }
+    return new ArrayList<>();
+  }
 
-            Map<String, Object> newConf = validateRuleConf(rule, entry.getValue());
-            ruleConf.put(id, newConf);
-        }
+  /**
+   * Processes the 'ignore-from-file' configuration and returns the list of patterns read from the
+   * given files
+   *
+   * @param conf the 'ignore-from-file' configuration
+   * @return the list (possibly empty) of patterns of files to be ignored
+   * @throws YamlLintConfigException if the ignore-from-file configuration is invalid
+   */
+  @SuppressWarnings("unchecked")
+  private static List<String> getIgnorePatternsFromFiles(Object conf)
+      throws YamlLintConfigException {
+    List<String> files = new ArrayList<>();
+    List<String> ignore = new ArrayList<>();
+
+    if (!(conf instanceof String)
+        && !(conf instanceof List<?> list && list.stream().allMatch(String.class::isInstance))) {
+      throw getInvalidConfigException(
+          "ignore-from-file should contain filename(s), either as a list or string");
     }
 
-    /**
-     * Validates a rule against a given configuration. The rule might be updated by this method.
-     *
-     * @param rule the rule to be validated against the passed configuration. Must not be <code>null</code>.
-     * @param conf the YAML configuration of the rule
-     * @return the possibly updated YAML configuration if the rule has been validated or <code>null</code> if the rule is disabled by configuration
-     * @throws YamlLintConfigException if <var>conf</var> contains invalid configuration
-     */
-    @SuppressWarnings("unchecked")
-    protected static Map<String, Object> validateRuleConf(final Rule rule, final Object conf) throws YamlLintConfigException {
-        Object myConf = conf;
-        if (myConf == null || "disable".equals(myConf)) {
-            return null;
-        } else if ("enable".equals(myConf)) {
-            myConf = new HashMap<>();
-        }
-
-        if (!(myConf instanceof Map)) {
-            throw getInvalidConfigException("rule \"%s\": should be either \"enable\", \"disable\" or a dictionary".formatted(rule.getId()));
-        }
-
-        Map<String, Object> mapConf = (Map<String, Object>)myConf;
-
-        // Deal with the rule's 'ignore' or 'ignore-from-file' conf
-        setIgnoreConf(rule, mapConf);
-
-        // Deal with 'level' conf
-        setRuleLevel(rule, mapConf);
-
-        Map<String, Object> options = rule.getOptions();
-        for (Map.Entry<String, Object> entry : mapConf.entrySet()) {
-            String optkey = entry.getKey();
-            Object optvalue = entry.getValue();
-
-            if (IGNORE_KEY.equals(optkey) || IGNORE_FROM_FILE_KEY.equals(optkey) || Linter.LEVEL_KEY.equals(optkey)) {
-                continue;
-            }
-            checkRuleOption(optkey, optvalue, rule);
-            rule.addParameter(optkey, optvalue);
-        }
-        for (String optkey : options.keySet()) {
-            mapConf.putIfAbsent(optkey, rule.getDefaultOptionValue(optkey));
-        }
-
-        String validationMessage = rule.validate(mapConf);
-        if (validationMessage != null && !"".equals(validationMessage)) {
-            throw getInvalidConfigException("%s: %s".formatted(rule.getId(), validationMessage));
-        }
-
-        return mapConf;
+    if (conf instanceof String string) {
+      files.add(string);
+    } else {
+      files = (List<String>) conf;
     }
 
+    // Process files
+    try {
+      for (String filePath : files) {
+        ignore.addAll(Files.readAllLines(new File(filePath).toPath()));
+      }
+    } catch (IOException e) {
+      throw getInvalidConfigException("ignore-from-file contains an invalid file path");
+    }
+    return ignore;
+  }
 
-    /**
-     * Checks the consistency of a given configuration rule
-     *
-     * @param optkey the configuration parameter
-     * @param optvalue the configuration value
-     * @param rule the rule that is configured by the passed option key and value
-     * @throws YamlLintConfigException if the option cannot be validated
-     */
-    private static void checkRuleOption(final String optkey, final Object optvalue, final Rule rule) throws YamlLintConfigException {
-        Map<String, Object> options = rule.getOptions();
-        if (!options.containsKey(optkey)) {
-            throw getInvalidConfigException("unknown option \"%s\" for rule \"%s\"".formatted(optkey, rule.getId()));
-        }
-        if (options.get(optkey) instanceof List && !rule.isListOption(optkey)) {
-            if (!((List<?>)options.get(optkey)).contains(optvalue) && ((List<?>)options.get(optkey)).stream().noneMatch(object -> optvalue.getClass().equals(object))) {
-                throw getInvalidConfigException("option \"%s\" of \"%s\" should be in %s".formatted(optkey, rule.getId(), getListRepresentation((List<Object>)options.get(optkey))));
-            }
-        } else {
-            if (rule.isListOption(optkey)) {
-                if (!(optvalue instanceof List)) {
-                    throw getInvalidConfigException("option \"%s\" of \"%s\" should be a list".formatted(optkey, rule.getId()));
-                }
-            } else if (!optvalue.getClass().equals(options.get(optkey).getClass())) {
-                throw getInvalidConfigException("option \"%s\" of \"%s\" should be of type %s".formatted(optkey, rule.getId(), options.get(optkey).getClass().getSimpleName().toLowerCase()));
-            }
-        }
+  /**
+   * Checks the 'ignore' configuration and returns the list of patterns it may contain
+   *
+   * @param conf the 'ignore-from-file' configuration
+   * @return the list (possibly empty) of patterns of files to be ignored
+   * @throws YamlLintConfigException if the ignore configuration is invalid
+   */
+  @SuppressWarnings("unchecked")
+  private static List<String> getIgnorePatternsFromIgnore(Object conf)
+      throws YamlLintConfigException {
+    if (!(conf instanceof String)
+        && !(conf instanceof List<?> list && list.stream().allMatch(String.class::isInstance))) {
+      throw getInvalidConfigException("'%s' should contain file patterns".formatted(IGNORE_KEY));
     }
 
-    /**
-     * Sets the list of patterns to identified the files to be ignored for this rule
-     *
-     * @param rule a rule
-     * @param conf the rule's configuration
-     * @throws YamlLintConfigException if the ignore configuration is invalid
-     */
-    private static void setIgnoreConf(Rule rule, Map<String, Object> conf) throws YamlLintConfigException {
-        rule.setIgnore(getIgnorePatterns(conf));
+    if (conf instanceof List) {
+      return (List<String>) conf;
+    }
+    return Arrays.asList(((String) conf).split("\\r?\\n"));
+  }
+
+  /**
+   * Sets the rule level (default to "error" if not specified)
+   *
+   * @param rule a rule
+   * @param conf the rule's configuration
+   * @throws YamlLintConfigException if the level configuration is invalid
+   */
+  private static void setRuleLevel(Rule rule, Map<String, Object> conf)
+      throws YamlLintConfigException {
+    if (!conf.containsKey(Linter.LEVEL_KEY)) {
+      rule.setLevel(Linter.ERROR_LEVEL);
+      conf.put(Linter.LEVEL_KEY, Linter.ERROR_LEVEL);
+    } else if (conf.containsKey(Linter.LEVEL_KEY)
+        && (Linter.ERROR_LEVEL.equals(conf.get(Linter.LEVEL_KEY))
+            || Linter.WARNING_LEVEL.equals(conf.get(Linter.LEVEL_KEY))
+            || Linter.INFO_LEVEL.equals(conf.get(Linter.LEVEL_KEY)))) {
+      rule.setLevel((String) conf.get(Linter.LEVEL_KEY));
+    } else {
+      throw getInvalidConfigException(
+          "level should be \"%s\", \"%s\" or \"%s\""
+              .formatted(Linter.ERROR_LEVEL, Linter.WARNING_LEVEL, Linter.INFO_LEVEL));
+    }
+  }
+
+  /**
+   * Returns a <code>URL</code> pointing to the passed configuration file: local file system file or
+   * bundled configuration file identified by its name (without the ".yaml" extension)
+   *
+   * @param name the file name
+   * @return a <code>URL</code> to this file
+   * @throws IllegalArgumentException if name is {@code null} or an error occurs handling the passed
+   *     file name
+   */
+  protected URL getExtendedConfigFile(final String name) {
+    if (name == null || "".equals(name.trim())) {
+      throw new IllegalArgumentException("need to extend something");
     }
 
-    /**
-     * Checks the 'ignore' and 'ignore-from-file' configuration parameters and returns
-     * the list of patterns they may contain
-     *
-     * @param conf the linter configuration
-     * @return the list (possibly empty) of patterns of files to be ignored
-     * @throws YamlLintConfigException if the ignore* configuration parameters are invalid
-     */
-    private static List<String> getIgnorePatterns(Map<String, Object> conf) throws YamlLintConfigException {
-        if (conf.containsKey(IGNORE_KEY) && conf.containsKey(IGNORE_FROM_FILE_KEY)) {
-            throw getInvalidConfigException("ignore and ignore-from-file keys cannot be used together");
-        }
+    // Is it a standard conf shipped with yamllint...
+    if (!name.contains(File.separator)) {
+      URL url = getClass().getClassLoader().getResource("conf/" + name + ".yaml");
 
-        if (conf.containsKey(IGNORE_FROM_FILE_KEY)) {
-            return getIgnorePatternsFromFiles(conf.get(IGNORE_FROM_FILE_KEY));
-        } else if (conf.containsKey(IGNORE_KEY)) {
-            return getIgnorePatternsFromIgnore(conf.get(IGNORE_KEY));
-        }
-        return new ArrayList<>();
+      if (url == null) {
+        throw new IllegalArgumentException("Bundled configuration file \"" + name + "\" not found");
+      }
+      return url;
     }
 
-    /**
-     * Processes the 'ignore-from-file' configuration and returns the list of patterns
-     * read from the given files
-     *
-     * @param conf the 'ignore-from-file' configuration
-     * @return the list (possibly empty) of patterns of files to be ignored
-     * @throws YamlLintConfigException if the ignore-from-file configuration is invalid
-     */
-    @SuppressWarnings("unchecked")
-    private static List<String> getIgnorePatternsFromFiles(Object conf) throws YamlLintConfigException {
-        List<String> files = new ArrayList<>();
-        List<String> ignore = new ArrayList<>();
-
-        if (!(conf instanceof String) &&
-                !(conf instanceof List<?> list && list.stream().allMatch(String.class::isInstance))) {
-            throw getInvalidConfigException("ignore-from-file should contain filename(s), either as a list or string");
-        }
-
-        if (conf instanceof String string) {
-            files.add(string);
-        } else {
-            files = (List<String>) conf;
-        }
-
-        // Process files
-        try {
-            for (String filePath : files) {
-                ignore.addAll(Files.readAllLines(new File(filePath).toPath()));
-            }
-        } catch (IOException e) {
-            throw getInvalidConfigException("ignore-from-file contains an invalid file path");
-        }
-        return ignore;
+    // or a custom conf on filesystem?
+    try {
+      return new File(name.replace('/', File.separatorChar)).toURI().toURL();
+    } catch (MalformedURLException e) {
+      // Should never happen...
+      throw new IllegalArgumentException(
+          "Cannot create URL for the configuration file \"" + name + "\"", e);
     }
+  }
 
-    /**
-     * Checks the 'ignore' configuration and returns the list of patterns it may contain
-     *
-     * @param conf the 'ignore-from-file' configuration
-     * @return the list (possibly empty) of patterns of files to be ignored
-     * @throws YamlLintConfigException if the ignore configuration is invalid
-     */
-    @SuppressWarnings("unchecked")
-    private static List<String> getIgnorePatternsFromIgnore(Object conf) throws YamlLintConfigException {
-        if (!(conf instanceof String) &&
-                !(conf instanceof List<?> list && list.stream().allMatch(String.class::isInstance))) {
-            throw getInvalidConfigException("'%s' should contain file patterns".formatted(IGNORE_KEY));
-        }
+  /**
+   * Returns a representation of the passed list of objects (some object types have a specific
+   * representation, the default being <code>Object.toString()</code> or <code>null</code> if
+   * applicable.
+   *
+   * @param list a non {@code null} list of object
+   * @return a representation of the list and its objects
+   */
+  protected static String getListRepresentation(final List<Object> list) {
+    StringBuilder sb = new StringBuilder("[");
+    boolean first = true;
+    for (Object o : list) {
+      if (!first) {
+        sb.append(", ");
+      } else {
+        first = false;
+      }
 
-        if (conf instanceof List) {
-            return (List<String>) conf;
-        }
-        return Arrays.asList(((String) conf).split("\\r?\\n"));
+      if (o instanceof String) {
+        sb.append("'").append(o).append("'");
+      } else if (o instanceof Class<?> class1) {
+        sb.append(class1.getSimpleName().toLowerCase());
+      } else {
+        sb.append(o);
+      }
     }
+    return sb.append("]").toString();
+  }
 
-    /**
-     * Sets the rule level (default to "error" if not specified)
-     *
-     * @param rule a rule
-     * @param conf the rule's configuration
-     * @throws YamlLintConfigException if the level configuration is invalid
-     */
-    private static void setRuleLevel(Rule rule, Map<String, Object> conf) throws YamlLintConfigException {
-        if (!conf.containsKey(Linter.LEVEL_KEY)) {
-            rule.setLevel(Linter.ERROR_LEVEL);
-            conf.put(Linter.LEVEL_KEY, Linter.ERROR_LEVEL);
-        } else if (conf.containsKey(Linter.LEVEL_KEY) &&
-                (Linter.ERROR_LEVEL.equals(conf.get(Linter.LEVEL_KEY)) || Linter.WARNING_LEVEL.equals(conf.get(Linter.LEVEL_KEY)) || Linter.INFO_LEVEL.equals(conf.get(Linter.LEVEL_KEY)))) {
-            rule.setLevel((String)conf.get(Linter.LEVEL_KEY));
-        } else {
-            throw getInvalidConfigException("level should be \"%s\", \"%s\" or \"%s\"".formatted(Linter.ERROR_LEVEL, Linter.WARNING_LEVEL, Linter.INFO_LEVEL));
+  /**
+   * Deeply merges 2 maps together (<var>newMap</var> is merged into <var>original</var>)
+   *
+   * @param original a map to be extended by <var>newMap</var>
+   * @param newMap a map to be merged into <var>original</var>
+   * @return the <var>original</var> map
+   */
+  @SuppressWarnings("unchecked")
+  protected static Map<Object, Object> deepMerge(
+      final Map<Object, Object> original, final Map<Object, Object> newMap) {
+    for (Map.Entry<Object, Object> entry : newMap.entrySet()) {
+      Object key = entry.getKey();
+      Object value = entry.getValue();
+      if (key instanceof Map && original.get(key) instanceof Map) {
+        original.put(
+            key, deepMerge((Map<Object, Object>) original.get(key), (Map<Object, Object>) value));
+      } else if (key instanceof List && original.get(key) instanceof List) {
+        List<Object> originalChild = (List<Object>) original.get(key);
+        for (Object each : (List<?>) value) {
+          if (!originalChild.contains(each)) {
+            originalChild.add(each);
+          }
         }
+      } else {
+        original.put(key, value);
+      }
     }
+    return original;
+  }
 
-    /**
-     * Returns a <code>URL</code> pointing to the passed configuration file: local file system file or bundled configuration
-     * file identified by its name (without the ".yaml" extension)
-     *
-     * @param name the file name
-     * @return a <code>URL</code> to this file
-     * @throws IllegalArgumentException if name is {@code null} or an error occurs handling the passed file name
-     */
-    protected URL getExtendedConfigFile(final String name) {
-        if (name == null || "".equals(name.trim())) {
-            throw new IllegalArgumentException("need to extend something");
-        }
+  /**
+   * Returns a {@code YamlLintConfigException} with the message "invalid config: %passed_message%"
+   *
+   * @param message a message that describes the configuration error
+   * @return a {@code YamlLintConfigException} with the passed message
+   */
+  private static YamlLintConfigException getInvalidConfigException(String message) {
+    return getInvalidConfigException(null, message, null);
+  }
 
-        // Is it a standard conf shipped with yamllint...
-        if (!name.contains(File.separator)) {
-            URL url = getClass().getClassLoader().getResource("conf/" + name + ".yaml");
-
-            if (url == null) {
-                throw new IllegalArgumentException("Bundled configuration file \"" + name + "\" not found");
-            }
-            return url;
-        }
-
-        // or a custom conf on filesystem?
-        try {
-            return new File(name.replace('/', File.separatorChar)).toURI().toURL();
-        } catch (MalformedURLException e) {
-            // Should never happen...
-            throw new IllegalArgumentException("Cannot create URL for the configuration file \"" + name + "\"", e);
-        }
+  /**
+   * Returns a {@code YamlLintConfigException} with the message "invalid%specifier% config:
+   * %passed_message%"
+   *
+   * @param specifier a string to be passed after 'invalid'. Pass {@code null} if you do not want
+   *     any specifier.
+   * @param message a message that describes the configuration error. May be {@code null}.
+   * @param e an optional (may be {@code null}) {@code Throwable} to be set as the ancestor of the
+   *     returned exception
+   * @return a {@code YamlLintConfigException} with the passed message
+   */
+  private static YamlLintConfigException getInvalidConfigException(
+      String specifier, String message, Throwable e) {
+    String m =
+        "invalid%s config: %s".formatted((specifier == null) ? "" : (" " + specifier), message);
+    if (e == null) {
+      return new YamlLintConfigException(m);
+    } else {
+      return new YamlLintConfigException(m, e);
     }
-
-    /**
-     * Returns a representation of the passed list of objects (some object types have a specific representation, the default
-     * being <code>Object.toString()</code> or <code>null</code> if applicable.
-     *
-     * @param list a non {@code null} list of object
-     * @return a representation of the list and its objects
-     */
-    protected static String getListRepresentation(final List<Object> list) {
-        StringBuilder sb = new StringBuilder("[");
-        boolean first = true;
-        for (Object o : list) {
-            if (!first) {
-                sb.append(", ");
-            } else {
-                first = false;
-            }
-
-            if (o instanceof String) {
-                sb.append("'").append(o).append("'");
-            } else if (o instanceof Class<?> class1) {
-                sb.append(class1.getSimpleName().toLowerCase());
-            } else {
-                sb.append(o);
-            }
-        }
-        return sb.append("]").toString();
-    }
-
-    /**
-     * Deeply merges 2 maps together (<var>newMap</var> is merged into <var>original</var>)
-     *
-     * @param original a map to be extended by <var>newMap</var>
-     * @param newMap a map to be merged into <var>original</var>
-     * @return the <var>original</var> map
-     */
-    @SuppressWarnings("unchecked")
-    protected static Map<Object, Object> deepMerge(final Map<Object, Object> original, final Map<Object, Object> newMap) {
-        for (Map.Entry<Object, Object> entry : newMap.entrySet()) {
-            Object key = entry.getKey();
-            Object value = entry.getValue();
-            if (key instanceof Map && original.get(key) instanceof Map) {
-                original.put(key, deepMerge((Map<Object, Object>) original.get(key), (Map<Object, Object>) value));
-            } else if (key instanceof List && original.get(key) instanceof List) {
-                List<Object> originalChild = (List<Object>) original.get(key);
-                for (Object each : (List<?>) value) {
-                    if (!originalChild.contains(each)) {
-                        originalChild.add(each);
-                    }
-                }
-            } else {
-                original.put(key, value);
-            }
-        }
-        return original;
-    }
-
-    /**
-     * Returns a {@code YamlLintConfigException} with the message "invalid config: %passed_message%"
-     *
-     * @param message a message that describes the configuration error
-     * @return a {@code YamlLintConfigException} with the passed message
-     */
-    private static YamlLintConfigException getInvalidConfigException(String message) {
-        return getInvalidConfigException(null, message, null);
-    }
-
-    /**
-     * Returns a {@code YamlLintConfigException} with the message "invalid%specifier% config: %passed_message%"
-     *
-     * @param specifier a string to be passed after 'invalid'. Pass {@code null} if you do not want any specifier.
-     * @param message a message that describes the configuration error. May be {@code null}.
-     * @param e an optional (may be {@code null}) {@code Throwable} to be set as the ancestor of the returned exception
-     * @return a {@code YamlLintConfigException} with the passed message
-     */
-    private static YamlLintConfigException getInvalidConfigException(String specifier, String message, Throwable e) {
-        String m = "invalid%s config: %s".formatted((specifier == null) ? "" : (" " + specifier), message);
-        if (e == null) {
-            return new YamlLintConfigException(m);
-        } else {
-            return new YamlLintConfigException(m, e);
-        }
-    }
+  }
 }

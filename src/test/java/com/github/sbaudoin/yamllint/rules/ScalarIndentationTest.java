@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint.rules;
@@ -19,282 +17,379 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import org.junit.jupiter.api.Test;
 
 class ScalarIndentationTest extends RuleTester {
-    @Override
-    public String getRuleId() {
-        return "indentation";
-    }
+  @Override
+  public String getRuleId() {
+    return "indentation";
+  }
 
-    @Test
-    void basicsPlain() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: false}",
-                "document-start: disable");
-        check("""
+  @Test
+  void basicsPlain() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: false}",
+            "document-start: disable");
+    check("""
               multi
               line
               """, conf);
-        check("""
+    check("""
               multi
                line
               """, conf);
-        check("""
+    check("""
               - multi
                 line
               """, conf);
-        check("""
+    check("""
               - multi
                  line
               """, conf);
-        check("""
+    check("""
               a key: multi
                      line
               """, conf);
-        check("""
+    check("""
               a key: multi
                 line
               """, conf);
-        check("""
+    check("""
               a key: multi
                       line
               """, conf);
-        check("""
+    check(
+        """
               a key:
                 multi
                 line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - C code: void main() {
                             printf("foo");
                         }
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - C code:
                   void main() {
                       printf("foo");
                   }
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void checkMultiLinePlain() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void checkMultiLinePlain() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               multi
                line
               """, conf, getLintProblem(2, 2));
-        check("""
+    check(
+        """
               - multi
                  line
-              """, conf, getLintProblem(2, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 4));
+    check(
+        """
               a key: multi
                 line
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               a key: multi
                       line
-              """, conf, getLintProblem(2, 9));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 9));
+    check(
+        """
               a key:
                 multi
                  line
-              """, conf, getLintProblem(3, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 4));
+    check(
+        """
               - C code: void main() {
                             printf("foo");
                         }
-              """, conf, getLintProblem(2, 15));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 15));
+    check(
+        """
               - C code:
                   void main() {
                       printf("foo");
                   }
-              """, conf, getLintProblem(3, 9));
-    }
+              """,
+        conf,
+        getLintProblem(3, 9));
+  }
 
-    @Test
-    void basicsQuoted() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: false}",
-                "document-start: disable");
-        check("""
+  @Test
+  void basicsQuoted() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: false}",
+            "document-start: disable");
+    check("""
               "multi
                line"
               """, conf);
-        check("""
+    check("""
               - "multi
                  line"
               """, conf);
-        check("""
+    check("""
               a key: "multi
                       line"
               """, conf);
-        check("""
+    check(
+        """
               a key:
                 "multi
                  line"
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - jinja2: "{% if ansible is defined %}
                            {{ ansible }}
                          {% else %}
                            {{ chef }}
                          {% endif %}"
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - jinja2:
                   "{% if ansible is defined %}
                      {{ ansible }}
                    {% else %}
                      {{ chef }}
                    {% endif %}"
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ["this is a very long line
                 that needs to be split",
                "other line"]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ["multi
                 line 1", "multi
                           line 2"]
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void checkMultiLineQuoted() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void checkMultiLineQuoted() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               "multi
               line"
               """, conf, getLintProblem(2, 1));
-        check("""
+    check(
+        """
               "multi
                 line"
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               - "multi
                 line"
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               - "multi
                   line"
-              """, conf, getLintProblem(2, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 5));
+    check(
+        """
               a key: "multi
                 line"
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               a key: "multi
                      line"
-              """, conf, getLintProblem(2, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 8));
+    check(
+        """
               a key: "multi
                        line"
-              """, conf, getLintProblem(2, 10));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 10));
+    check(
+        """
               a key:
                 "multi
                 line"
-              """, conf, getLintProblem(3, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 3));
+    check(
+        """
               a key:
                 "multi
                   line"
-              """, conf, getLintProblem(3, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 5));
+    check(
+        """
               - jinja2: "{% if ansible is defined %}
                            {{ ansible }}
                          {% else %}
                            {{ chef }}
                          {% endif %}"
-              """, conf,
-                getLintProblem(2, 14), getLintProblem(4, 14));
-        check("""
+              """,
+        conf, getLintProblem(2, 14), getLintProblem(4, 14));
+    check(
+        """
               - jinja2:
                   "{% if ansible is defined %}
                      {{ ansible }}
                    {% else %}
                      {{ chef }}
                    {% endif %}"
-              """, conf,
-                getLintProblem(3, 8), getLintProblem(5, 8));
-        check("""
+              """,
+        conf, getLintProblem(3, 8), getLintProblem(5, 8));
+    check(
+        """
               ["this is a very long line
                 that needs to be split",
                "other line"]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ["this is a very long line
                that needs to be split",
                "other line"]
-              """, conf, getLintProblem(2, 2));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 2));
+    check(
+        """
               ["this is a very long line
                  that needs to be split",
                "other line"]
-              """, conf, getLintProblem(2, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 4));
+    check(
+        """
               ["multi
                 line 1", "multi
                           line 2"]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ["multi
                 line 1", "multi
                          line 2"]
-              """, conf, getLintProblem(3, 12));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 12));
+    check(
+        """
               ["multi
                 line 1", "multi
                            line 2"]
-              """, conf, getLintProblem(3, 14));
-    }
+              """,
+        conf,
+        getLintProblem(3, 14));
+  }
 
-    @Test
-    void basicsFoldedStyle() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: false}",
-                "document-start: disable");
-        check("""
+  @Test
+  void basicsFoldedStyle() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: false}",
+            "document-start: disable");
+    check("""
               >
                 multi
                 line
               """, conf);
-        check("""
+    check(
+        """
               - >
                   multi
                   line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - key: >
                   multi
                   line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - key:
                   >
                     multi
                     line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - ? >
                     multi-line
                     key
                 : >
                     multi-line
                     value
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - ?
                   >
                     multi-line
@@ -303,54 +398,75 @@ class ScalarIndentationTest extends RuleTester {
                   >
                     multi-line
                     value
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - jinja2: >
                   {% if ansible is defined %}
                     {{ ansible }}
                   {% else %}
                     {{ chef }}
                   {% endif %}
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void checkMultiLineFoldedStyle() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void checkMultiLineFoldedStyle() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               >
                 multi
                  line
-              """, conf, getLintProblem(3, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 4));
+    check(
+        """
               - >
                   multi
                    line
-              """, conf, getLintProblem(3, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 6));
+    check(
+        """
               - key: >
                   multi
                    line
-              """, conf, getLintProblem(3, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 6));
+    check(
+        """
               - key:
                   >
                     multi
                      line
-              """, conf, getLintProblem(4, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(4, 8));
+    check(
+        """
               - ? >
                     multi-line
                      key
                 : >
                     multi-line
                      value
-              """, conf,
-                getLintProblem(3, 8), getLintProblem(6, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 8),
+        getLintProblem(6, 8));
+    check(
+        """
               - ?
                   >
                     multi-line
@@ -359,55 +475,69 @@ class ScalarIndentationTest extends RuleTester {
                   >
                     multi-line
                      value
-              """, conf,
-                getLintProblem(4, 8), getLintProblem(8, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(4, 8),
+        getLintProblem(8, 8));
+    check(
+        """
               - jinja2: >
                   {% if ansible is defined %}
                     {{ ansible }}
                   {% else %}
                     {{ chef }}
                   {% endif %}
-              """, conf,
-                getLintProblem(3, 7), getLintProblem(5, 7));
-    }
+              """,
+        conf, getLintProblem(3, 7), getLintProblem(5, 7));
+  }
 
-    @Test
-    void basicsLiteralStyle() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: false}",
-                "document-start: disable");
-        check("""
+  @Test
+  void basicsLiteralStyle() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: false}",
+            "document-start: disable");
+    check("""
               |
                 multi
                 line
               """, conf);
-        check("""
+    check(
+        """
               - |
                   multi
                   line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - key: |
                   multi
                   line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - key:
                   |
                     multi
                     line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - ? |
                     multi-line
                     key
                 : |
                     multi-line
                     value
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - ?
                   |
                     multi-line
@@ -416,54 +546,75 @@ class ScalarIndentationTest extends RuleTester {
                   |
                     multi-line
                     value
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - jinja2: |
                   {% if ansible is defined %}
                    {{ ansible }}
                   {% else %}
                     {{ chef }}
                   {% endif %}
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void checkMultiLineLiteralStyle() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void checkMultiLineLiteralStyle() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               |
                 multi
                  line
-              """, conf, getLintProblem(3, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 4));
+    check(
+        """
               - |
                   multi
                    line
-              """, conf, getLintProblem(3, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 6));
+    check(
+        """
               - key: |
                   multi
                    line
-              """, conf, getLintProblem(3, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 6));
+    check(
+        """
               - key:
                   |
                     multi
                      line
-              """, conf, getLintProblem(4, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(4, 8));
+    check(
+        """
               - ? |
                     multi-line
                      key
                 : |
                     multi-line
                      value
-              """, conf,
-                getLintProblem(3, 8), getLintProblem(6, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 8),
+        getLintProblem(6, 8));
+    check(
+        """
               - ?
                   |
                     multi-line
@@ -472,241 +623,324 @@ class ScalarIndentationTest extends RuleTester {
                   |
                     multi-line
                      value
-              """, conf,
-                getLintProblem(4, 8), getLintProblem(8, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(4, 8),
+        getLintProblem(8, 8));
+    check(
+        """
               - jinja2: |
                   {% if ansible is defined %}
                     {{ ansible }}
                   {% else %}
                     {{ chef }}
                   {% endif %}
-              """, conf,
-                getLintProblem(3, 7), getLintProblem(5, 7));
-    }
+              """,
+        conf, getLintProblem(3, 7), getLintProblem(5, 7));
+  }
 
-    // The following "paragraph" examples are inspired from
-    // http://stackoverflow.com/questions/3790454/in-yaml-how-do-i-break-a-string-over-multiple-lines
+  // The following "paragraph" examples are inspired from
+  // http://stackoverflow.com/questions/3790454/in-yaml-how-do-i-break-a-string-over-multiple-lines
 
-    @Test
-    void paragraphPlain() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void paragraphPlain() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               - long text: very "long"
                            'string' with
-              
+
                            paragraph gap, \\n and
                            spaces.
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - long text: very "long"
                   'string' with
-              
+
                   paragraph gap, \\n and
                   spaces.
-              """, conf,
-                getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 5),
+        getLintProblem(4, 5),
+        getLintProblem(5, 5));
+    check(
+        """
               - long text:
                   very "long"
                   'string' with
-              
+
                   paragraph gap, \\n and
                   spaces.
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void paragraphDoubleQuoted() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void paragraphDoubleQuoted() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               - long text: "very \\"long\\"
                             'string' with
-              
+
                             paragraph gap, \\n and
                             spaces."
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - long text: "very \\"long\\"
                   'string' with
-              
+
                   paragraph gap, \\n and
                   spaces."
-              """, conf,
-                getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 5),
+        getLintProblem(4, 5),
+        getLintProblem(5, 5));
+    check(
+        """
               - long text: "very \\"long\\"
               'string' with
-              
+
               paragraph gap, \\n and
               spaces."
-              """, conf,
-                getLintProblem(2, 1), getLintProblem(4, 1), getLintProblem(5, 1));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 1),
+        getLintProblem(4, 1),
+        getLintProblem(5, 1));
+    check(
+        """
               - long text:
                   "very \\"long\\"
                    \'string\' with
-              
+
                    paragraph gap, \\n and
                    spaces."
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void paragraphSingleQuoted() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void paragraphSingleQuoted() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               - long text: 'very "long"
                             ''string'' with
-              
+
                             paragraph gap, \\n and
                             spaces.'
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - long text: 'very "long"
                   ''string'' with
-              
+
                   paragraph gap, \\n and
                   spaces.'
-              """, conf,
-                getLintProblem(2, 5), getLintProblem(4, 5), getLintProblem(5, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 5),
+        getLintProblem(4, 5),
+        getLintProblem(5, 5));
+    check(
+        """
               - long text: 'very "long"
               ''string'' with
-              
+
               paragraph gap, \\n and
               spaces.'
-              """, conf,
-                getLintProblem(2, 1), getLintProblem(4, 1), getLintProblem(5, 1));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 1),
+        getLintProblem(4, 1),
+        getLintProblem(5, 1));
+    check(
+        """
               - long text:
                   'very "long"
                    ''string'' with
-              
+
                    paragraph gap, \\n and
                    spaces.'
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void paragraphFolded() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void paragraphFolded() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               - long text: >
                   very "long"
                   'string' with
-              
+
                   paragraph gap, \\n and
                   spaces.
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - long text: >
                   very "long"
                    'string' with
-              
+
                     paragraph gap, \\n and
                      spaces.
-              """, conf,
-                getLintProblem(3, 6), getLintProblem(5, 7), getLintProblem(6, 8));
-    }
+              """,
+        conf,
+        getLintProblem(3, 6),
+        getLintProblem(5, 7),
+        getLintProblem(6, 8));
+  }
 
-    @Test
-    void paragraphLiteral() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void paragraphLiteral() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check(
+        """
               - long text: |
                   very "long"
                   'string' with
-              
+
                   paragraph gap, \\n and
                   spaces.
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               - long text: |
                   very "long"
                    'string' with
-              
+
                     paragraph gap, \\n and
                      spaces.
-              """, conf,
-                getLintProblem(3, 6), getLintProblem(5, 7), getLintProblem(6, 8));
-    }
+              """,
+        conf,
+        getLintProblem(3, 6),
+        getLintProblem(5, 7),
+        getLintProblem(6, 8));
+  }
 
-    @Test
-    void consistent() throws Exception {
-        YamlLintConfig conf = getConfig("indentation: {spaces: consistent,",
-                "              indent-sequences: true,",
-                "              check-multi-line-strings: true}",
-                "document-start: disable");
-        check("""
+  @Test
+  void consistent() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "indentation: {spaces: consistent,",
+            "              indent-sequences: true,",
+            "              check-multi-line-strings: true}",
+            "document-start: disable");
+    check("""
               multi
               line
               """, conf);
-        check("""
+    check(
+        """
               multi
                line
               """, conf, getLintProblem(2, 2));
-        check("""
+    check("""
               - multi
                 line
               """, conf);
-        check("""
+    check(
+        """
               - multi
                  line
-              """, conf, getLintProblem(2, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 4));
+    check(
+        """
               a key: multi
                 line
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               a key: multi
                       line
-              """, conf, getLintProblem(2, 9));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 9));
+    check(
+        """
               a key:
                 multi
                  line
-              """, conf, getLintProblem(3, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 4));
+    check(
+        """
               - C code: void main() {
                             printf("foo");
                         }
-              """, conf, getLintProblem(2, 15));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 15));
+    check(
+        """
               - C code:
                   void main() {
                       printf("foo");
                   }
-              """, conf, getLintProblem(3, 9));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 9));
+    check("""
               >
                 multi
                 line
               """, conf);
-        check("""
+    check(
+        """
               >
                    multi
                    line
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               >
                    multi
                     line
-              """, conf, getLintProblem(3, 7));
-    }
+              """,
+        conf,
+        getLintProblem(3, 7));
+  }
 }

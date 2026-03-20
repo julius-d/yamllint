@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint.rules;
@@ -19,10 +17,11 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import org.junit.jupiter.api.Test;
 
 class FloatValuesTest extends RuleTester {
-    @Test
-    void disabled() throws Exception {
-        YamlLintConfig conf = getConfig("float-values: disable");
-        check("""
+  @Test
+  void disabled() throws Exception {
+    YamlLintConfig conf = getConfig("float-values: disable");
+    check(
+        """
               ---
               - 0.0
               - .NaN
@@ -30,17 +29,20 @@ class FloatValuesTest extends RuleTester {
               - .1
               - 10e-6
               """,
-                conf);
-    }
+        conf);
+  }
 
-    @Test
-    void numeralBeforeDecimal() throws Exception {
-        YamlLintConfig conf = getConfig("float-values:",
-                "  require-numeral-before-decimal: true",
-                "  forbid-scientific-notation: false",
-                "  forbid-nan: false",
-                "  forbid-inf: false");
-        check("""
+  @Test
+  void numeralBeforeDecimal() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "float-values:",
+            "  require-numeral-before-decimal: true",
+            "  forbid-scientific-notation: false",
+            "  forbid-nan: false",
+            "  forbid-inf: false");
+    check(
+        """
               ---
               - 0.0
               - .1
@@ -53,18 +55,22 @@ class FloatValuesTest extends RuleTester {
               - &angle2 .3
               - *angle2
               """,
-                conf,
-                getLintProblem(3, 3), getLintProblem(10, 11));
-    }
+        conf,
+        getLintProblem(3, 3),
+        getLintProblem(10, 11));
+  }
 
-    @Test
-    void scientificNotation() throws Exception {
-        YamlLintConfig conf = getConfig("float-values:",
-                "  require-numeral-before-decimal: false",
-                "  forbid-scientific-notation: true",
-                "  forbid-nan: false",
-                "  forbid-inf: false");
-        check("""
+  @Test
+  void scientificNotation() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "float-values:",
+            "  require-numeral-before-decimal: false",
+            "  forbid-scientific-notation: true",
+            "  forbid-nan: false",
+            "  forbid-inf: false");
+    check(
+        """
               ---
               - 10e6
               - 10e-6
@@ -80,21 +86,24 @@ class FloatValuesTest extends RuleTester {
               - &angle3 10e6
               - *angle3
               """,
-                conf,
-                getLintProblem(2, 3),
-                getLintProblem(3, 3),
-                getLintProblem(11, 11),
-                getLintProblem(13, 11));
-    }
+        conf,
+        getLintProblem(2, 3),
+        getLintProblem(3, 3),
+        getLintProblem(11, 11),
+        getLintProblem(13, 11));
+  }
 
-    @Test
-    void nan() throws Exception {
-        YamlLintConfig conf = getConfig("float-values:",
-                "  require-numeral-before-decimal: false",
-                "  forbid-scientific-notation: false",
-                "  forbid-nan: true",
-                "  forbid-inf: false");
-        check("""
+  @Test
+  void nan() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "float-values:",
+            "  require-numeral-before-decimal: false",
+            "  forbid-scientific-notation: false",
+            "  forbid-nan: true",
+            "  forbid-inf: false");
+    check(
+        """
               ---
               - .NaN
               - .NAN
@@ -105,20 +114,23 @@ class FloatValuesTest extends RuleTester {
               - &angle .nan
               - *angle
               """,
-                conf,
-                getLintProblem(2, 3),
-                getLintProblem(3, 3),
-                getLintProblem(8, 10));
-    }
+        conf,
+        getLintProblem(2, 3),
+        getLintProblem(3, 3),
+        getLintProblem(8, 10));
+  }
 
-    @Test
-    void inf() throws Exception {
-        YamlLintConfig conf = getConfig("float-values:",
-                "  require-numeral-before-decimal: false",
-                "  forbid-scientific-notation: false",
-                "  forbid-nan: false",
-                "  forbid-inf: true");
-        check("""
+  @Test
+  void inf() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "float-values:",
+            "  require-numeral-before-decimal: false",
+            "  forbid-scientific-notation: false",
+            "  forbid-nan: false",
+            "  forbid-inf: true");
+    check(
+        """
               ---
               - .inf
               - .INF
@@ -133,12 +145,12 @@ class FloatValuesTest extends RuleTester {
               - &angle -.inf
               - *angle
               """,
-                conf,
-                getLintProblem(2, 3),
-                getLintProblem(3, 3),
-                getLintProblem(4, 3),
-                getLintProblem(5, 3),
-                getLintProblem(10, 10),
-                getLintProblem(12, 10));
-    }
+        conf,
+        getLintProblem(2, 3),
+        getLintProblem(3, 3),
+        getLintProblem(4, 3),
+        getLintProblem(5, 3),
+        getLintProblem(10, 10),
+        getLintProblem(12, 10));
+  }
 }

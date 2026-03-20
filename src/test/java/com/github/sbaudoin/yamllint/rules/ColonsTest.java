@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint.rules;
@@ -19,10 +17,11 @@ import com.github.sbaudoin.yamllint.YamlLintConfig;
 import org.junit.jupiter.api.Test;
 
 class ColonsTest extends RuleTester {
-    @Test
-    void disabled() throws Exception {
-        YamlLintConfig conf = getConfig("colons: disable");
-        check("""
+  @Test
+  void disabled() throws Exception {
+    YamlLintConfig conf = getConfig("colons: disable");
+    check(
+        """
               ---
               object:
                 k1 : v1
@@ -45,8 +44,10 @@ class ColonsTest extends RuleTester {
                   - q2:
                       - val1
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 k1:   v1
@@ -60,8 +61,10 @@ class ColonsTest extends RuleTester {
                 propriété:    [valeur]
                 o:
                   k1:  [v1, v2]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               obj:
                 p:
@@ -74,17 +77,19 @@ class ColonsTest extends RuleTester {
                   - q2:
                       - val1
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check("""
               ---
               a: {b: {c:  d, e : f}}
               """, conf);
-    }
+  }
 
-    @Test
-    void beforeEnabled() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: -1}");
-        check("""
+  @Test
+  void beforeEnabled() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: -1}");
+    check(
+        """
               ---
               object:
                 k1:
@@ -92,8 +97,10 @@ class ColonsTest extends RuleTester {
                   - b
                 k2: v2
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 k1 :
@@ -101,30 +108,42 @@ class ColonsTest extends RuleTester {
                   - b
                 k2: v2
               ...
-              """, conf, getLintProblem(3, 5));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 5));
+    check(
+        """
               ---
               lib :
                 - var
               ...
-              """, conf, getLintProblem(2, 4));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 4));
+    check(
+        """
               ---
               - lib :
                   - var
               ...
-              """, conf, getLintProblem(2, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 6));
+    check(
+        """
               ---
               a: {b: {c : d, e : f}}
-              """, conf,
-                getLintProblem(2, 10), getLintProblem(2, 17));
-    }
+              """,
+        conf,
+        getLintProblem(2, 10),
+        getLintProblem(2, 17));
+  }
 
-    @Test
-    void beforeMax() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 3, max-spaces-after: -1}");
-        check("""
+  @Test
+  void beforeMax() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: 3, max-spaces-after: -1}");
+    check(
+        """
               ---
               object :
                 k1   :
@@ -132,8 +151,10 @@ class ColonsTest extends RuleTester {
                   - b
                 k2  : v2
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object :
                 k1    :
@@ -141,27 +162,35 @@ class ColonsTest extends RuleTester {
                   - b
                 k2  : v2
               ...
-              """, conf, getLintProblem(3, 8));
-    }
+              """,
+        conf,
+        getLintProblem(3, 8));
+  }
 
-    @Test
-    void beforeWithExplicitBlockMappings() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("""
+  @Test
+  void beforeWithExplicitBlockMappings() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
+    check(
+        """
               ---
               object:
                 ? key
                 : value
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object :
                 ? key
                 : value
               ...
-              """, conf, getLintProblem(2, 7));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 7));
+    check(
+        """
               ---
               ? >
                   multi-line
@@ -170,8 +199,10 @@ class ColonsTest extends RuleTester {
                   multi-line
                   value
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               - ? >
                     multi-line
@@ -180,8 +211,10 @@ class ColonsTest extends RuleTester {
                     multi-line
                     value
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               - ? >
                     multi-line
@@ -190,141 +223,193 @@ class ColonsTest extends RuleTester {
                      multi-line
                      value
               ...
-              """, conf, getLintProblem(5, 5));
-    }
+              """,
+        conf,
+        getLintProblem(5, 5));
+  }
 
-    @Test
-    void afterEnabled() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("""
+  @Test
+  void afterEnabled() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
+    check("""
               ---
               key: value
               """, conf);
-        check("""
+    check(
+        """
               ---
               key:  value
-              """, conf, getLintProblem(2, 6));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 6));
+    check(
+        """
               ---
               object:
                 k1:  [a, b]
                 k2: string
-              """, conf, getLintProblem(3, 7));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 7));
+    check(
+        """
               ---
               object:
                 k1: [a, b]
                 k2:  string
-              """, conf, getLintProblem(4, 7));
-        check("""
+              """,
+        conf,
+        getLintProblem(4, 7));
+    check(
+        """
               ---
               object:
                 other: {key:  value}
               ...
-              """, conf, getLintProblem(3, 16));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 16));
+    check(
+        """
               ---
               a: {b: {c:  d, e :  f}}
-              """, conf,
-                getLintProblem(2, 12), getLintProblem(2, 20));
-    }
+              """,
+        conf,
+        getLintProblem(2, 12),
+        getLintProblem(2, 20));
+  }
 
-    @Test
-    void afterEnabledQuestionMark() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("""
+  @Test
+  void afterEnabledQuestionMark() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
+    check("""
               ---
               ? key
               : value
               """, conf);
-        check("""
+    check(
+        """
               ---
               ?  key
               : value
-              """, conf, getLintProblem(2, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3));
+    check(
+        """
               ---
               ?  key
               :  value
-              """, conf, getLintProblem(2, 3), getLintProblem(3, 3));
-        check("""
+              """,
+        conf,
+        getLintProblem(2, 3),
+        getLintProblem(3, 3));
+    check(
+        """
               ---
               - ?  key
                 :  value
-              """, conf, getLintProblem(2, 5), getLintProblem(3, 5));
-    }
+              """,
+        conf,
+        getLintProblem(2, 5),
+        getLintProblem(3, 5));
+  }
 
-    @Test
-    void afterMax() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 3}");
-        check("""
+  @Test
+  void afterMax() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 3}");
+    check(
+        """
               ---
               object:
                 k1:  [a, b]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 k1:    [a, b]
-              """, conf, getLintProblem(3, 9));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 9));
+    check(
+        """
               ---
               object:
                 k2:  string
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 k2:    string
-              """, conf, getLintProblem(3, 9));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 9));
+    check(
+        """
               ---
               object:
                 other: {key:  value}
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 other: {key:    value}
               ...
-              """, conf, getLintProblem(3, 18));
-    }
+              """,
+        conf,
+        getLintProblem(3, 18));
+  }
 
-    @Test
-    void afterWithExplicitBlockMappings() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
-        check("""
+  @Test
+  void afterWithExplicitBlockMappings() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: -1, max-spaces-after: 1}");
+    check(
+        """
               ---
               object:
                 ? key
                 : value
               ...
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 ? key
                 :  value
               ...
-              """, conf, getLintProblem(4, 5));
-    }
+              """,
+        conf,
+        getLintProblem(4, 5));
+  }
 
-    @Test
-    void afterDoNotConfoundWithTrailingSpace() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 1, max-spaces-after: 1}",
-                "trailing-spaces: disable");
-        check("""
+  @Test
+  void afterDoNotConfoundWithTrailingSpace() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "colons: {max-spaces-before: 1, max-spaces-after: 1}", "trailing-spaces: disable");
+    check(
+        """
               ---
               trailing:    \s
                 - spaces
-              """, conf);
-    }
+              """,
+        conf);
+  }
 
-    @Test
-    void bothBeforeAndAfter() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("""
+  @Test
+  void bothBeforeAndAfter() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
+    check(
+        """
               ---
               obj:
                 string: text
@@ -333,13 +418,19 @@ class ColonsTest extends RuleTester {
                 k3:
                   val
                 property: [value]
-              """, conf);
-        check("""
+              """,
+        conf);
+    check(
+        """
               ---
               object:
                 k1 :  v1
-              """, conf, getLintProblem(3, 5), getLintProblem(3, 8));
-        check("""
+              """,
+        conf,
+        getLintProblem(3, 5),
+        getLintProblem(3, 8));
+    check(
+        """
               ---
               obj:
                 string:  text
@@ -348,20 +439,23 @@ class ColonsTest extends RuleTester {
                 k3:
                   val
                 property: {a: 1, b:  2, c : 3}
-              """, conf,
-                getLintProblem(3, 11), getLintProblem(4, 4),
-                getLintProblem(8, 23), getLintProblem(8, 28));
-    }
+              """,
+        conf,
+        getLintProblem(3, 11),
+        getLintProblem(4, 4),
+        getLintProblem(8, 23),
+        getLintProblem(8, 28));
+  }
 
-    /**
-     * Although accepted by PyYAML, `{*x: 4}` is not valid YAML: it should be
-     * noted `{*x : 4}`. The reason is that a colon can be part of an anchor
-     * name. See commit message for more details.
-     */
-    @Test
-    void withAliasAsKey() throws Exception {
-        YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
-        check("""
+  /**
+   * Although accepted by PyYAML, `{*x: 4}` is not valid YAML: it should be noted `{*x : 4}`. The
+   * reason is that a colon can be part of an anchor name. See commit message for more details.
+   */
+  @Test
+  void withAliasAsKey() throws Exception {
+    YamlLintConfig conf = getConfig("colons: {max-spaces-before: 0, max-spaces-after: 1}");
+    check(
+        """
               ---
               - anchor: &a key
               - *a: 42
@@ -371,7 +465,8 @@ class ColonsTest extends RuleTester {
               - *a  : 42
               - {*a  : 42}
               """,
-                conf,
-                getLintProblem(7, 6), getLintProblem(8, 7));
-    }
+        conf,
+        getLintProblem(7, 6),
+        getLintProblem(8, 7));
+  }
 }

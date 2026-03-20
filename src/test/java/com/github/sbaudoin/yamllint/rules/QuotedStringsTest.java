@@ -1,205 +1,260 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint.rules;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.github.sbaudoin.yamllint.YamlLintConfig;
 import com.github.sbaudoin.yamllint.YamlLintConfigException;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-
 class QuotedStringsTest extends RuleTester {
-    @Test
-    void disabled() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: disable");
+  @Test
+  void disabled() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: disable");
 
-        check("""
+    check("""
               ---
               foo: bar
               """, conf);
-        check("""
+    check("""
               ---
               foo: "bar"
               """, conf);
-        check("""
+    check("""
               ---
               foo: 'bar'
               """, conf);
-        check("""
+    check("""
               ---
               bar: 123
               """, conf);
-    }
+  }
 
-    @Test
-    void quoteTypeAny() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any}");
+  @Test
+  void quoteTypeAny() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any}");
 
-        check("---\n" +
-                "boolean1: true\n" +
-                "number1: 123\n" +
-                "string1: foo\n" +                          // fails
-                "string2: \"foo\"\n" +
-                "string3: \"true\"\n" +
-                "string4: \"123\"\n" +
-                "string5: 'bar'\n" +
-                "string4: !!str genericstring\n" +
-                "string5: !!str 456\n" +
-                "string6: !!str \"quotedgenericstring\"\n" +
-                "binary: !!binary Ymluc3RyaW5n\n" +
-                "integer: !!int intstring\n" +
-                "boolean2: !!bool boolstring\n" +
-                "boolean3: !!bool \"quotedboolstring\"\n" +
-                "block-seq:\n" +
-                "  - foo\n" +                               // fails
-                "  - \"foo\"\n" +
-                "flow-seq: [foo, \"foo\"]\n" +              // fails
-                "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
-                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf, getLintProblem(4, 10), getLintProblem(17, 5), getLintProblem(19, 12),
-                getLintProblem(20, 15), getLintProblem(21, 13), getLintProblem(22, 16),
-                getLintProblem(23, 19), getLintProblem(23, 28), getLintProblem(24, 20));
-        check("---\n" +
-                "multiline string 1: |\n" +
-                "  line 1\n" +
-                "  line 2\n" +
-                "multiline string 2: >\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 3:\n" +
-                "  word 1\n" +               // fails
-                "  word 2\n" +
-                "multiline string 4:\n" +
-                "  \"word 1\\\n" +
-                "   word 2\"\n", conf, getLintProblem(9, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + // fails
+            "string2: \"foo\"\n"
+            + "string3: \"true\"\n"
+            + "string4: \"123\"\n"
+            + "string5: 'bar'\n"
+            + "string4: !!str genericstring\n"
+            + "string5: !!str 456\n"
+            + "string6: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary Ymluc3RyaW5n\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + // fails
+            "  - \"foo\"\n"
+            + "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n"
+            + "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(4, 10),
+        getLintProblem(17, 5),
+        getLintProblem(19, 12),
+        getLintProblem(20, 15),
+        getLintProblem(21, 13),
+        getLintProblem(22, 16),
+        getLintProblem(23, 19),
+        getLintProblem(23, 28),
+        getLintProblem(24, 20));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + // fails
+            "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + "   word 2\"\n",
+        conf,
+        getLintProblem(9, 3));
+  }
 
-    @Test
-    void quoteTypeSingle() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single}");
+  @Test
+  void quoteTypeSingle() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single}");
 
-        check("---\n" +
-                "boolean1: true\n" +
-                "number1: 123\n" +
-                "string1: foo\n" +                          // fails
-                "string2: \"foo\"\n" +                      // fails
-                "string3: \"true\"\n" +                     // fails
-                "string4: \"123\"\n" +                      // fails
-                "string5: 'bar'\n" +
-                "string4: !!str genericstring\n" +
-                "string5: !!str 456\n" +
-                "string6: !!str \"quotedgenericstring\"\n" +
-                "binary: !!binary Ymluc3RyaW5n\n" +
-                "integer: !!int intstring\n" +
-                "boolean2: !!bool boolstring\n" +
-                "boolean3: !!bool \"quotedboolstring\"\n" +
-                "block-seq:\n" +
-                "  - foo\n" +                               // fails
-                "  - \"foo\"\n" +                           // fails
-                "flow-seq: [foo, \"foo\"]\n" +              // fails
-                "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
-                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf,
-                getLintProblem(4, 10), getLintProblem(5, 10),
-                getLintProblem(6, 10), getLintProblem(7, 10),
-                getLintProblem(17, 5), getLintProblem(18, 5),
-                getLintProblem(19, 12), getLintProblem(19, 17),
-                getLintProblem(20, 15), getLintProblem(20, 23),
-                getLintProblem(21, 13), getLintProblem(21, 18),
-                getLintProblem(21, 29), getLintProblem(21, 41), getLintProblem(22, 16),
-                getLintProblem(22, 24), getLintProblem(23, 19), getLintProblem(23, 28),
-                getLintProblem(23, 33), getLintProblem(24, 20), getLintProblem(24, 30),
-                getLintProblem(24, 45));
-        check("---\n" +
-                "multiline string 1: |\n" +
-                "  line 1\n" +
-                "  line 2\n" +
-                "multiline string 2: >\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 3:\n" +
-                "  word 1\n" +               // fails
-                "  word 2\n" +
-                "multiline string 4:\n" +
-                "  \"word 1\\\n" +           // fails
-                "   word 2\"\n", conf,
-                getLintProblem(9, 3), getLintProblem(12, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + // fails
+            "string2: \"foo\"\n"
+            + // fails
+            "string3: \"true\"\n"
+            + // fails
+            "string4: \"123\"\n"
+            + // fails
+            "string5: 'bar'\n"
+            + "string4: !!str genericstring\n"
+            + "string5: !!str 456\n"
+            + "string6: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary Ymluc3RyaW5n\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + // fails
+            "  - \"foo\"\n"
+            + // fails
+            "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n"
+            + "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(4, 10),
+        getLintProblem(5, 10),
+        getLintProblem(6, 10),
+        getLintProblem(7, 10),
+        getLintProblem(17, 5),
+        getLintProblem(18, 5),
+        getLintProblem(19, 12),
+        getLintProblem(19, 17),
+        getLintProblem(20, 15),
+        getLintProblem(20, 23),
+        getLintProblem(21, 13),
+        getLintProblem(21, 18),
+        getLintProblem(21, 29),
+        getLintProblem(21, 41),
+        getLintProblem(22, 16),
+        getLintProblem(22, 24),
+        getLintProblem(23, 19),
+        getLintProblem(23, 28),
+        getLintProblem(23, 33),
+        getLintProblem(24, 20),
+        getLintProblem(24, 30),
+        getLintProblem(24, 45));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + // fails
+            "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + // fails
+            "   word 2\"\n",
+        conf,
+        getLintProblem(9, 3),
+        getLintProblem(12, 3));
+  }
 
-    @Test
-    void quoteTypeDouble() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: double}");
+  @Test
+  void quoteTypeDouble() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {quote-type: double}");
 
-        check("---\n" +
-                        "boolean1: true\n" +
-                        "number1: 123\n" +
-                        "string1: foo\n" +                          // fails
-                        "string2: \"foo\"\n" +
-                        "string3: \"true\"\n" +
-                        "string4: \"123\"\n" +
-                        "string5: 'bar'\n" +                        // fails
-                        "string4: !!str genericstring\n" +
-                        "string5: !!str 456\n" +
-                        "string6: !!str \"quotedgenericstring\"\n" +
-                        "binary: !!binary Ymluc3RyaW5n\n" +
-                        "integer: !!int intstring\n" +
-                        "boolean2: !!bool boolstring\n" +
-                        "boolean3: !!bool \"quotedboolstring\"\n" +
-                        "block-seq:\n" +
-                        "  - foo\n" +                               // fails
-                        "  - \"foo\"\n" +
-                        "flow-seq: [foo, \"foo\"]\n" +              // fails
-                        "flow-map: {a: foo, b: \"foo\"}\n" +        // fails
-                        "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                        "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                        "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                        "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf,
-                getLintProblem(4, 10), getLintProblem(8, 10),
-                getLintProblem(17, 5), getLintProblem(19, 12),
-                getLintProblem(20, 15), getLintProblem(21, 13),
-                getLintProblem(22, 16), getLintProblem(23, 19),
-                getLintProblem(23, 28), getLintProblem(24, 20));
-        check("---\n" +
-                        "multiline string 1: |\n" +
-                        "  line 1\n" +
-                        "  line 2\n" +
-                        "multiline string 2: >\n" +
-                        "  word 1\n" +
-                        "  word 2\n" +
-                        "multiline string 3:\n" +
-                        "  word 1\n" +               // fails
-                        "  word 2\n" +
-                        "multiline string 4:\n" +
-                        "  \"word 1\\\n" +
-                        "   word 2\"\n", conf,
-                getLintProblem(9, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + // fails
+            "string2: \"foo\"\n"
+            + "string3: \"true\"\n"
+            + "string4: \"123\"\n"
+            + "string5: 'bar'\n"
+            + // fails
+            "string4: !!str genericstring\n"
+            + "string5: !!str 456\n"
+            + "string6: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary Ymluc3RyaW5n\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + // fails
+            "  - \"foo\"\n"
+            + "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n"
+            + "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(4, 10),
+        getLintProblem(8, 10),
+        getLintProblem(17, 5),
+        getLintProblem(19, 12),
+        getLintProblem(20, 15),
+        getLintProblem(21, 13),
+        getLintProblem(22, 16),
+        getLintProblem(23, 19),
+        getLintProblem(23, 28),
+        getLintProblem(24, 20));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + // fails
+            "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + "   word 2\"\n",
+        conf,
+        getLintProblem(9, 3));
+  }
 
-    @Test
-    void anyQuotesNotRequired() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any, required: false}");
+  @Test
+  void anyQuotesNotRequired() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {quote-type: any, required: false}");
 
-        check("""
+    check(
+        """
               ---
               boolean1: true
               number1: 123
@@ -225,8 +280,9 @@ class QuotedStringsTest extends RuleTester {
               nested-flow1: {a: foo, b: [foo, "foo,bar"]}
               nested-flow2: [{a: foo}, {b: "foo,bar", c: ["d[e]"]}]
               """,
-               conf);
-        check("""
+        conf);
+    check(
+        """
               ---
               multiline string 1: |
                 line 1
@@ -241,164 +297,214 @@ class QuotedStringsTest extends RuleTester {
                 "word 1\\
                  word 2"
               """,
-               conf);
-    }
+        conf);
+  }
 
-    @Test
-    void singleQuotesNotRequired() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single, required: false}");
+  @Test
+  void singleQuotesNotRequired() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single, required: false}");
 
-        check("---\n" +
-                "boolean1: true\n" +
-                "number1: 123\n" +
-                "string1: foo\n" +
-                "string2: \"foo\"\n" +                        // fails
-                "string3: \"true\"\n" +                       // fails
-                "string4: \"123\"\n" +                        // fails
-                "string5: 'bar'\n" +
-                "string6: !!str genericstring\n" +
-                "string7: !!str 456\n" +
-                "string8: !!str \"quotedgenericstring\"\n" +
-                "binary: !!binary binstring\n" +
-                "integer: !!int intstring\n" +
-                "boolean2: !!bool boolstring\n" +
-                "boolean3: !!bool \"quotedboolstring\"\n" +
-                "block-seq:\n" +
-                "  - foo\n" +                                 // fails
-                "  - \"foo\"\n" +
-                "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
-                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf,
-                getLintProblem(5, 10), getLintProblem(6, 10),
-                getLintProblem(7, 10), getLintProblem(18, 5),
-                getLintProblem(19, 17), getLintProblem(20, 23),
-                getLintProblem(21, 18), getLintProblem(21, 29), getLintProblem(21, 41),
-                getLintProblem(22, 24), getLintProblem(23, 33), getLintProblem(24, 30),
-                getLintProblem(24, 45));
-        check("---\n" +
-                "multiline string 1: |\n" +
-                "  line 1\n" +
-                "  line 2\n" +
-                "multiline string 2: >\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 3:\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 4:\n" +
-                "  \"word 1\\\n" +            // fails
-                "   word 2\"\n",
-                conf, getLintProblem(12, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + "string2: \"foo\"\n"
+            + // fails
+            "string3: \"true\"\n"
+            + // fails
+            "string4: \"123\"\n"
+            + // fails
+            "string5: 'bar'\n"
+            + "string6: !!str genericstring\n"
+            + "string7: !!str 456\n"
+            + "string8: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary binstring\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + // fails
+            "  - \"foo\"\n"
+            + "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n"
+            + "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(5, 10),
+        getLintProblem(6, 10),
+        getLintProblem(7, 10),
+        getLintProblem(18, 5),
+        getLintProblem(19, 17),
+        getLintProblem(20, 23),
+        getLintProblem(21, 18),
+        getLintProblem(21, 29),
+        getLintProblem(21, 41),
+        getLintProblem(22, 24),
+        getLintProblem(23, 33),
+        getLintProblem(24, 30),
+        getLintProblem(24, 45));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + // fails
+            "   word 2\"\n",
+        conf,
+        getLintProblem(12, 3));
+  }
 
-    @Test
-    void onlyWhenNeeded() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
+  @Test
+  void onlyWhenNeeded() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
 
-        check("---\n" +
-                "boolean1: true\n" +
-                "number1: 123\n" +
-                "string1: foo\n" +
-                "string2: \"foo\"\n" +                        // fails
-                "string3: \"true\"\n" +
-                "string4: \"123\"\n" +
-                "string5: 'bar'\n" +                          // fails
-                "string6: !!str genericstring\n" +
-                "string7: !!str 456\n" +
-                "string8: !!str \"quotedgenericstring\"\n" +
-                "binary: !!binary binstring\n" +
-                "integer: !!int intstring\n" +
-                "boolean2: !!bool boolstring\n" +
-                "boolean3: !!bool \"quotedboolstring\"\n" +
-                "block-seq:\n" +
-                "  - foo\n" +
-                "  - \"foo\"\n" +                             // fails
-                "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
-                "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n" +
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf,
-                getLintProblem(5, 10), getLintProblem(8, 10),
-                getLintProblem(18, 5), getLintProblem(19, 17),
-                getLintProblem(20, 23));
-        check("---\n" +
-                "multiline string 1: |\n" +
-                "  line 1\n" +
-                "  line 2\n" +
-                "multiline string 2: >\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 3:\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 4:\n" +
-                "  \"word 1\\\n" +            // fails
-                "   word 2\"\n",
-                conf, getLintProblem(12, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + "string2: \"foo\"\n"
+            + // fails
+            "string3: \"true\"\n"
+            + "string4: \"123\"\n"
+            + "string5: 'bar'\n"
+            + // fails
+            "string6: !!str genericstring\n"
+            + "string7: !!str 456\n"
+            + "string8: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary binstring\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + "  - \"foo\"\n"
+            + // fails
+            "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\", \"foo[bar]\", \"foo{bar}\"]\n"
+            + "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(5, 10),
+        getLintProblem(8, 10),
+        getLintProblem(18, 5),
+        getLintProblem(19, 17),
+        getLintProblem(20, 23));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + // fails
+            "   word 2\"\n",
+        conf,
+        getLintProblem(12, 3));
+  }
 
-    @Test
-    void onlyWhenNeededSingleQuotes() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single,",
-                        "                 required: only-when-needed}");
+  @Test
+  void onlyWhenNeededSingleQuotes() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,", "                 required: only-when-needed}");
 
-        check("---\n" +
-                "boolean1: true\n" +
-                "number1: 123\n" +
-                "string1: foo\n" +
-                "string2: \"foo\"\n" +                        // fails
-                "string3: \"true\"\n" +                       // fails
-                "string4: \"123\"\n" +                        // fails
-                "string5: 'bar'\n" +                          // fails
-                "string6: !!str genericstring\n" +
-                "string7: !!str 456\n" +
-                "string8: !!str \"quotedgenericstring\"\n" +
-                "binary: !!binary binstring\n" +
-                "integer: !!int intstring\n" +
-                "boolean2: !!bool boolstring\n" +
-                "boolean3: !!bool \"quotedboolstring\"\n" +
-                "block-seq:\n" +
-                "  - foo\n" +
-                "  - \"foo\"\n" +                             // fails
-                "flow-seq: [foo, \"foo\"]\n" +                // fails
-                "flow-map: {a: foo, b: \"foo\"}\n" +          // fails
-                "flow-seq2: [foo, \"foo,bar\"]\n" +           // fails
-                "flow-map2: {a: foo, b: \"foo,bar\"}\n" +     // fails
-                "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n" +
-                "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
-                conf,
-                getLintProblem(5, 10), getLintProblem(6, 10),
-                getLintProblem(7, 10), getLintProblem(8, 10),
-                getLintProblem(18, 5), getLintProblem(19, 17),
-                getLintProblem(20, 23), getLintProblem(21, 18), getLintProblem(22, 24),
-                getLintProblem(23, 33), getLintProblem(24, 30), getLintProblem(24, 45));
-        check("---\n" +
-                "multiline string 1: |\n" +
-                "  line 1\n" +
-                "  line 2\n" +
-                "multiline string 2: >\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 3:\n" +
-                "  word 1\n" +
-                "  word 2\n" +
-                "multiline string 4:\n" +
-                "  \"word 1\\\n" +            // fails
-                "   word 2\"\n",
-                conf, getLintProblem(12, 3));
-    }
+    check(
+        "---\n"
+            + "boolean1: true\n"
+            + "number1: 123\n"
+            + "string1: foo\n"
+            + "string2: \"foo\"\n"
+            + // fails
+            "string3: \"true\"\n"
+            + // fails
+            "string4: \"123\"\n"
+            + // fails
+            "string5: 'bar'\n"
+            + // fails
+            "string6: !!str genericstring\n"
+            + "string7: !!str 456\n"
+            + "string8: !!str \"quotedgenericstring\"\n"
+            + "binary: !!binary binstring\n"
+            + "integer: !!int intstring\n"
+            + "boolean2: !!bool boolstring\n"
+            + "boolean3: !!bool \"quotedboolstring\"\n"
+            + "block-seq:\n"
+            + "  - foo\n"
+            + "  - \"foo\"\n"
+            + // fails
+            "flow-seq: [foo, \"foo\"]\n"
+            + // fails
+            "flow-map: {a: foo, b: \"foo\"}\n"
+            + // fails
+            "flow-seq2: [foo, \"foo,bar\"]\n"
+            + // fails
+            "flow-map2: {a: foo, b: \"foo,bar\"}\n"
+            + // fails
+            "nested-flow1: {a: foo, b: [foo, \"foo,bar\"]}\n"
+            + "nested-flow2: [{a: foo}, {b: \"foo,bar\", c: [\"d[e]\"]}]\n",
+        conf,
+        getLintProblem(5, 10),
+        getLintProblem(6, 10),
+        getLintProblem(7, 10),
+        getLintProblem(8, 10),
+        getLintProblem(18, 5),
+        getLintProblem(19, 17),
+        getLintProblem(20, 23),
+        getLintProblem(21, 18),
+        getLintProblem(22, 24),
+        getLintProblem(23, 33),
+        getLintProblem(24, 30),
+        getLintProblem(24, 45));
+    check(
+        "---\n"
+            + "multiline string 1: |\n"
+            + "  line 1\n"
+            + "  line 2\n"
+            + "multiline string 2: >\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 3:\n"
+            + "  word 1\n"
+            + "  word 2\n"
+            + "multiline string 4:\n"
+            + "  \"word 1\\\n"
+            + // fails
+            "   word 2\"\n",
+        conf,
+        getLintProblem(12, 3));
+  }
 
-    @Test
-    void onlyWwhenNeededCornerCases() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
+  @Test
+  void onlyWwhenNeededCornerCases() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {required: only-when-needed}");
 
-        check("""
+    check(
+        """
               ---
               - ""
               - "- item"
@@ -410,8 +516,9 @@ class QuotedStringsTest extends RuleTester {
               - "'Mac' in ansible_facts.product_name"
               - 'foo # bar'
               """,
-                conf);
-        check("""
+        conf);
+    check(
+        """
               ---
               k1: ""
               k2: "- item"
@@ -422,236 +529,336 @@ class QuotedStringsTest extends RuleTester {
               k7: "'foo' == 'bar'"
               k8: "'Mac' in ansible_facts.product_name"
               """,
-                conf);
+        conf);
 
-        check("---\n" +
-                "- ---\n" +
-                "- \"---\"\n" +                     // fails
-                "- ----------\n" +
-                "- \"----------\"\n" +              // fails
-                "- :wq\n" +
-                "- \":wq\"\n",                      // fails
-                conf,
-                getLintProblem(3, 3), getLintProblem(5, 3), getLintProblem(7, 3));
-        check("---\n" +
-                "k1: ---\n" +
-                "k2: \"---\"\n" +                   // fails
-                "k3: ----------\n" +
-                "k4: \"----------\"\n" +            // fails
-                "k5: :wq\n" +
-                "k6: \":wq\"\n",                    // fails
-                conf,
-                getLintProblem(3, 5), getLintProblem(5, 5), getLintProblem(7, 5));
+    check(
+        "---\n"
+            + "- ---\n"
+            + "- \"---\"\n"
+            + // fails
+            "- ----------\n"
+            + "- \"----------\"\n"
+            + // fails
+            "- :wq\n"
+            + "- \":wq\"\n", // fails
+        conf,
+        getLintProblem(3, 3),
+        getLintProblem(5, 3),
+        getLintProblem(7, 3));
+    check(
+        "---\n"
+            + "k1: ---\n"
+            + "k2: \"---\"\n"
+            + // fails
+            "k3: ----------\n"
+            + "k4: \"----------\"\n"
+            + // fails
+            "k5: :wq\n"
+            + "k6: \":wq\"\n", // fails
+        conf,
+        getLintProblem(3, 5),
+        getLintProblem(5, 5),
+        getLintProblem(7, 5));
+  }
+
+  @Test
+  void onlyWhenNeededExtras() throws Exception {
+    YamlLintConfig conf;
+    assertThatThrownBy(
+            () -> getConfig("quoted-strings:", "  required: true", "  extra-allowed: [^http://]"))
+        .isInstanceOf(YamlLintConfigException.class);
+
+    try {
+      getConfig("quoted-strings:", "  required: true", "  extra-required: [^http://]");
+    } catch (YamlLintConfigException e) {
     }
 
-    @Test
-    void onlyWhenNeededExtras() throws Exception {
-        YamlLintConfig conf;
-        assertThatThrownBy(() -> getConfig("quoted-strings:",
-                "  required: true", "  extra-allowed: [^http://]")).isInstanceOf(YamlLintConfigException.class);
-
-        try {
-            getConfig("quoted-strings:",
-                    "  required: true",
-                    "  extra-required: [^http://]");
-        } catch (YamlLintConfigException e) {
-        }
-
-        try {
-            getConfig("quoted-strings:",
-                    "  required: false",
-                    "  extra-allowed: [^http://]");
-        } catch (YamlLintConfigException e) {
-        }
-
-        conf = getConfig("quoted-strings:",
-                "  required: true");
-        check("---\n" +
-                "- 123\n" +
-                "- \"123\"\n" +
-                "- localhost\n" +                  // fails
-                "- \"localhost\"\n" +
-                "- http://localhost\n" +           // fails
-                "- \"http://localhost\"\n" +
-                "- ftp://localhost\n" +            // fails
-                "- \"ftp://localhost\"\n",
-                conf,
-                getLintProblem(4, 3), getLintProblem(6, 3), getLintProblem(8, 3));
-
-        conf = getConfig("quoted-strings:",
-                "  required: only-when-needed",
-                "  extra-allowed: [^ftp://]",
-                "  extra-required: [^http://]");
-        check("---\n" +
-                "- 123\n" +
-                "- \"123\"\n" +
-                "- localhost\n" +
-                "- \"localhost\"\n" +              // fails
-                "- http://localhost\n" +           // fails
-                "- \"http://localhost\"\n" +
-                "- ftp://localhost\n" +
-                "- \"ftp://localhost\"\n",
-                conf,
-                getLintProblem(5, 3), getLintProblem(6, 3));
-
-        conf = getConfig("quoted-strings:",
-                "  required: false",
-                "  extra-required: [^http://, ^ftp://]");
-        check("---\n" +
-                "- 123\n" +
-                "- \"123\"\n" +
-                "- localhost\n" +
-                "- \"localhost\"\n" +
-                "- http://localhost\n" +           // fails
-                "- \"http://localhost\"\n" +
-                "- ftp://localhost\n" +            // fails
-                "- \"ftp://localhost\"\n",
-                conf,
-                getLintProblem(6, 3), getLintProblem(8, 3));
-
-        conf = getConfig("quoted-strings:",
-                "  required: only-when-needed",
-                "  extra-allowed: [^ftp://, \";$\", \" \"]");
-        check("---\n" +
-                "- localhost\n" +
-                "- \"localhost\"\n" +            // fails
-                "- ftp://localhost\n" +
-                "- \"ftp://localhost\"\n" +
-                "- i=i+1\n" +
-                "- \"i=i+1\"\n" +                // fails
-                "- i=i+2;\n" +
-                "- \"i=i+2;\"\n" +
-                "- foo\n" +
-                "- \"foo\"\n" +                  // fails
-                "- foo bar\n" +
-                "- \"foo bar\"\n",
-                conf,
-                getLintProblem(3, 3), getLintProblem(7, 3), getLintProblem(11, 3));
+    try {
+      getConfig("quoted-strings:", "  required: false", "  extra-allowed: [^http://]");
+    } catch (YamlLintConfigException e) {
     }
 
-    @Test
-    void octalValues() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {required: true}");
-        check("---\n" +
-                "- 100\n" +
-                "- 0100\n" +
-                "- 0o100\n" +
-                "- 777\n" +
-                "- 0777\n" +
-                "- 0o777\n" +
-                "- 800\n" +
-                "- 0800\n" +                     // fails
-                "- 0o800\n" +                    // fails
-                "- \"0800\"\n" +
-                "- \"0o800\"\n",
-                conf,
-                getLintProblem(9, 3), getLintProblem(10, 3));
-    }
+    conf = getConfig("quoted-strings:", "  required: true");
+    check(
+        "---\n"
+            + "- 123\n"
+            + "- \"123\"\n"
+            + "- localhost\n"
+            + // fails
+            "- \"localhost\"\n"
+            + "- http://localhost\n"
+            + // fails
+            "- \"http://localhost\"\n"
+            + "- ftp://localhost\n"
+            + // fails
+            "- \"ftp://localhost\"\n",
+        conf,
+        getLintProblem(4, 3),
+        getLintProblem(6, 3),
+        getLintProblem(8, 3));
 
-    @Test
-    void allowQuotedQuotes() throws Exception {
-        YamlLintConfig conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: false,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",         // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+    conf =
+        getConfig(
+            "quoted-strings:",
+            "  required: only-when-needed",
+            "  extra-allowed: [^ftp://]",
+            "  extra-required: [^http://]");
+    check(
+        "---\n"
+            + "- 123\n"
+            + "- \"123\"\n"
+            + "- localhost\n"
+            + "- \"localhost\"\n"
+            + // fails
+            "- http://localhost\n"
+            + // fails
+            "- \"http://localhost\"\n"
+            + "- ftp://localhost\n"
+            + "- \"ftp://localhost\"\n",
+        conf,
+        getLintProblem(5, 3),
+        getLintProblem(6, 3));
 
-        conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: false,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",
-                conf, getLintProblem(2, 7));
+    conf =
+        getConfig("quoted-strings:", "  required: false", "  extra-required: [^http://, ^ftp://]");
+    check(
+        "---\n"
+            + "- 123\n"
+            + "- \"123\"\n"
+            + "- localhost\n"
+            + "- \"localhost\"\n"
+            + "- http://localhost\n"
+            + // fails
+            "- \"http://localhost\"\n"
+            + "- ftp://localhost\n"
+            + // fails
+            "- \"ftp://localhost\"\n",
+        conf,
+        getLintProblem(6, 3),
+        getLintProblem(8, 3));
 
-        conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: true,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",         // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+    conf =
+        getConfig(
+            "quoted-strings:",
+            "  required: only-when-needed",
+            "  extra-allowed: [^ftp://, \";$\", \" \"]");
+    check(
+        "---\n"
+            + "- localhost\n"
+            + "- \"localhost\"\n"
+            + // fails
+            "- ftp://localhost\n"
+            + "- \"ftp://localhost\"\n"
+            + "- i=i+1\n"
+            + "- \"i=i+1\"\n"
+            + // fails
+            "- i=i+2;\n"
+            + "- \"i=i+2;\"\n"
+            + "- foo\n"
+            + "- \"foo\"\n"
+            + // fails
+            "- foo bar\n"
+            + "- \"foo bar\"\n",
+        conf,
+        getLintProblem(3, 3),
+        getLintProblem(7, 3),
+        getLintProblem(11, 3));
+  }
 
-        conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: true,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",
-                conf, getLintProblem(2, 7));
+  @Test
+  void octalValues() throws Exception {
+    YamlLintConfig conf = getConfig("quoted-strings: {required: true}");
+    check(
+        "---\n"
+            + "- 100\n"
+            + "- 0100\n"
+            + "- 0o100\n"
+            + "- 777\n"
+            + "- 0777\n"
+            + "- 0o777\n"
+            + "- 800\n"
+            + "- 0800\n"
+            + // fails
+            "- 0o800\n"
+            + // fails
+            "- \"0800\"\n"
+            + "- \"0o800\"\n",
+        conf,
+        getLintProblem(9, 3),
+        getLintProblem(10, 3));
+  }
 
-        conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: only-when-needed,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",         // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+  @Test
+  void allowQuotedQuotes() throws Exception {
+    YamlLintConfig conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: false,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: single,",
-                "                 required: only-when-needed,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: \"[barbaz]\"\n" +         // fails
-                "foo2: \"[bar'baz]\"\n",
-                conf, getLintProblem(2, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: false,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n",
+        conf,
+        getLintProblem(2, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: false,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",          // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: true,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: false,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",
-                conf, getLintProblem(2, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: true,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n",
+        conf,
+        getLintProblem(2, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: true,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",          // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: only-when-needed,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: true,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",
-                conf, getLintProblem(2, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: single,",
+            "                 required: only-when-needed,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: \"[barbaz]\"\n"
+            + // fails
+            "foo2: \"[bar'baz]\"\n",
+        conf,
+        getLintProblem(2, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: only-when-needed,",
-                "                 allow-quoted-quotes: false}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",          // fails
-                conf, getLintProblem(2, 7), getLintProblem(3, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: false,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: double,",
-                "                 required: only-when-needed,",
-                "                 allow-quoted-quotes: true}");
-        check("---\n" +
-                "foo1: '[barbaz]'\n" +           // fails
-                "foo2: '[bar\"baz]'\n",
-                conf, getLintProblem(2, 7));
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: false,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n",
+        conf,
+        getLintProblem(2, 7));
 
-        conf = getConfig("quoted-strings: {quote-type: any}");
-        check("""
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: true,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
+
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: true,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n",
+        conf,
+        getLintProblem(2, 7));
+
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: only-when-needed,",
+            "                 allow-quoted-quotes: false}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n", // fails
+        conf,
+        getLintProblem(2, 7),
+        getLintProblem(3, 7));
+
+    conf =
+        getConfig(
+            "quoted-strings: {quote-type: double,",
+            "                 required: only-when-needed,",
+            "                 allow-quoted-quotes: true}");
+    check(
+        "---\n"
+            + "foo1: '[barbaz]'\n"
+            + // fails
+            "foo2: '[bar\"baz]'\n",
+        conf,
+        getLintProblem(2, 7));
+
+    conf = getConfig("quoted-strings: {quote-type: any}");
+    check(
+        """
               ---
               foo1: '[barbaz]'
               foo2: '[bar"baz]'
               """,
-                conf);
-    }
+        conf);
+  }
 }

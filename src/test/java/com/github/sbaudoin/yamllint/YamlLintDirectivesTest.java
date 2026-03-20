@@ -1,16 +1,14 @@
 /**
  * Copyright (c) 2018-2023, Sylvain Baudoin
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
+ * <p>Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file
+ * except in compliance with the License. You may obtain a copy of the License at
  *
- *     http://www.apache.org/licenses/LICENSE-2.0
+ * <p>http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
+ * <p>Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and
  * limitations under the License.
  */
 package com.github.sbaudoin.yamllint;
@@ -19,11 +17,12 @@ import com.github.sbaudoin.yamllint.rules.RuleTester;
 import org.junit.jupiter.api.Test;
 
 class YamlLintDirectivesTest extends RuleTester {
-    @Test
-    void disableDirective() throws Exception {
-        YamlLintConfig conf = getDefaultConf();
+  @Test
+  void disableDirective() throws Exception {
+    YamlLintConfig conf = getDefaultConf();
 
-        check("""
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -32,12 +31,13 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(4, 8, "colons"),
-            getLintProblem(6, 7, "colons"),
-            getLintProblem(6, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(4, 8, "colons"),
+        getLintProblem(6, 7, "colons"),
+        getLintProblem(6, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -47,9 +47,10 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable
@@ -60,16 +61,17 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(8, 7, "colons"),
-            getLintProblem(8, 26, "trailing-spaces"));
-    }
+        conf,
+        getLintProblem(8, 7, "colons"),
+        getLintProblem(8, 26, "trailing-spaces"));
+  }
 
-    @Test
-    void disableDirectiveWithRules() throws Exception {
-        YamlLintConfig conf = getDefaultConf();
+  @Test
+  void disableDirectiveWithRules() throws Exception {
+    YamlLintConfig conf = getDefaultConf();
 
-        check("""
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -79,11 +81,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(5, 8, "colons"),
-            getLintProblem(7, 7, "colons"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(5, 8, "colons"),
+        getLintProblem(7, 7, "colons"));
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable rule:trailing-spaces
@@ -94,11 +97,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(5, 8, "colons"),
-            getLintProblem(8, 7, "colons"),
-            getLintProblem(8, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(5, 8, "colons"),
+        getLintProblem(8, 7, "colons"),
+        getLintProblem(8, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable rule:trailing-spaces
@@ -109,11 +113,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(5, 8, "colons"),
-            getLintProblem(8, 7, "colons"),
-            getLintProblem(8, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(5, 8, "colons"),
+        getLintProblem(8, 7, "colons"),
+        getLintProblem(8, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable
@@ -124,9 +129,10 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(8, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(8, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable rule:colons
@@ -138,16 +144,17 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(4, 18, "trailing-spaces"),
-            getLintProblem(9, 7, "colons"));
-    }
+        conf,
+        getLintProblem(4, 18, "trailing-spaces"),
+        getLintProblem(9, 7, "colons"));
+  }
 
-    @Test
-    void disableLineDirective() throws Exception {
-        YamlLintConfig conf = getDefaultConf();
+  @Test
+  void disableLineDirective() throws Exception {
+    YamlLintConfig conf = getDefaultConf();
 
-        check("""
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -157,11 +164,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(7, 7, "colons"),
-            getLintProblem(7, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(7, 7, "colons"),
+        getLintProblem(7, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -170,11 +178,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(6, 7, "colons"),
-            getLintProblem(6, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(6, 7, "colons"),
+        getLintProblem(6, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -183,18 +192,19 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(4, 8, "colons"),
-            getLintProblem(6, 7, "colons"),
-            getLintProblem(6, 26, "trailing-spaces"));
-    }
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(4, 8, "colons"),
+        getLintProblem(6, 7, "colons"),
+        getLintProblem(6, 26, "trailing-spaces"));
+  }
 
-    @Test
-    void disableLineDirectiveWithRules() throws Exception {
-        YamlLintConfig conf = getDefaultConf();
+  @Test
+  void disableLineDirectiveWithRules() throws Exception {
+    YamlLintConfig conf = getDefaultConf();
 
-        check("""
+    check(
+        """
               ---
               - [valid , YAML]
               # yamllint disable-line rule:colons
@@ -204,12 +214,13 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(4, 18, "trailing-spaces"),
-            getLintProblem(5, 8, "colons"),
-            getLintProblem(7, 7, "colons"),
-            getLintProblem(7, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(4, 18, "trailing-spaces"),
+        getLintProblem(5, 8, "colons"),
+        getLintProblem(7, 7, "colons"),
+        getLintProblem(7, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces  # yamllint disable-line rule:colons \s
@@ -218,12 +229,13 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 55, "trailing-spaces"),
-            getLintProblem(4, 8, "colons"),
-            getLintProblem(6, 7, "colons"),
-            getLintProblem(6, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 55, "trailing-spaces"),
+        getLintProblem(4, 8, "colons"),
+        getLintProblem(6, 7, "colons"),
+        getLintProblem(6, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -233,11 +245,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(7, 7, "colons"),
-            getLintProblem(7, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(7, 7, "colons"),
+        getLintProblem(7, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -246,11 +259,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(6, 7, "colons"),
-            getLintProblem(6, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(6, 7, "colons"),
+        getLintProblem(6, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -260,11 +274,12 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(4, 8, "colons"),
-            getLintProblem(7, 26, "trailing-spaces"));
-        check("""
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(4, 8, "colons"),
+        getLintProblem(7, 26, "trailing-spaces"));
+    check(
+        """
               ---
               - [valid , YAML]
               - trailing spaces   \s
@@ -274,69 +289,73 @@ class YamlLintDirectivesTest extends RuleTester {
               - bad  : colon and spaces  \s
               - [valid , YAML]
               """,
-            conf,
-            getLintProblem(3, 18, "trailing-spaces"),
-            getLintProblem(4, 8, "colons"));
-    }
+        conf,
+        getLintProblem(3, 18, "trailing-spaces"),
+        getLintProblem(4, 8, "colons"));
+  }
 
-    @Test
-    void directiveOnLastLine() throws Exception {
-        YamlLintConfig conf = getConf("new-line-at-end-of-file: {}");
+  @Test
+  void directiveOnLastLine() throws Exception {
+    YamlLintConfig conf = getConf("new-line-at-end-of-file: {}");
 
-        check("""
+    check(
+        """
                 ---
                 no new line""",
-            conf,
-            getLintProblem(2, 12, "new-line-at-end-of-file"));
-        check("""
+        conf,
+        getLintProblem(2, 12, "new-line-at-end-of-file"));
+    check(
+        """
               ---
               # yamllint disable
-              no new line""",
-            conf);
-        check("""
+              no new line""", conf);
+    check("""
                 ---
-                no new line  # yamllint disable""",
-            conf);
-    }
+                no new line  # yamllint disable""", conf);
+  }
 
-    @Test
-    void indentedDirective() throws Exception {
-        YamlLintConfig conf = getConf("brackets: {min-spaces-inside: 0, max-spaces-inside: 0}");
+  @Test
+  void indentedDirective() throws Exception {
+    YamlLintConfig conf = getConf("brackets: {min-spaces-inside: 0, max-spaces-inside: 0}");
 
-        check("""
+    check(
+        """
               ---
               - a: 1
                 b:
                   c: [    x]
               """,
-            conf,
-            getLintProblem(4, 12, "brackets"));
-        check("""
+        conf,
+        getLintProblem(4, 12, "brackets"));
+    check(
+        """
               ---
               - a: 1
                 b:
                   # yamllint disable-line rule:brackets
                   c: [    x]
               """,
-            conf);
-    }
+        conf);
+  }
 
-    @Test
-    void directiveOnItself() throws Exception {
-        YamlLintConfig conf = getConf("comments: {min-spaces-from-content: 2}\n",
-                "comments-indentation: {}\n");
+  @Test
+  void directiveOnItself() throws Exception {
+    YamlLintConfig conf =
+        getConf("comments: {min-spaces-from-content: 2}\n", "comments-indentation: {}\n");
 
-        check("""
+    check(
+        """
               ---
               - a: 1 # comment too close
                 b:
                # wrong indentation
                   c: [x]
               """,
-            conf,
-            getLintProblem(2, 8, "comments"),
-            getLintProblem(4, 2, "comments-indentation"));
-        check("""
+        conf,
+        getLintProblem(2, 8, "comments"),
+        getLintProblem(4, 2, "comments-indentation"));
+    check(
+        """
               ---
               # yamllint disable
               - a: 1 # comment too close
@@ -344,8 +363,9 @@ class YamlLintDirectivesTest extends RuleTester {
                # wrong indentation
                   c: [x]
               """,
-            conf);
-        check("""
+        conf);
+    check(
+        """
               ---
               - a: 1 # yamllint disable-line
                 b:
@@ -353,8 +373,9 @@ class YamlLintDirectivesTest extends RuleTester {
                # wrong indentation
                   c: [x]
               """,
-            conf);
-        check("""
+        conf);
+    check(
+        """
               ---
               - a: 1 # yamllint disable-line rule:comments
                 b:
@@ -362,8 +383,9 @@ class YamlLintDirectivesTest extends RuleTester {
                # wrong indentation
                   c: [x]
               """,
-            conf);
-        check("""
+        conf);
+    check(
+        """
               ---
               # yamllint disable
               - a: 1 # comment too close
@@ -372,26 +394,24 @@ class YamlLintDirectivesTest extends RuleTester {
                # wrong indentation
                   c: [x]
               """,
-            conf,
-            getLintProblem(6, 2, "comments-indentation"));
+        conf,
+        getLintProblem(6, 2, "comments-indentation"));
+  }
+
+  private YamlLintConfig getConf(String... rules) throws YamlLintConfigException {
+    StringBuilder sb = new StringBuilder("---\nextends: default\nrules:\n");
+
+    if (rules != null) {
+      for (String rule : rules) {
+        sb.append("  ").append(rule);
+      }
     }
 
+    return new YamlLintConfig(sb.toString());
+  }
 
-    private YamlLintConfig getConf(String... rules) throws YamlLintConfigException {
-        StringBuilder sb = new StringBuilder("---\nextends: default\nrules:\n");
-
-        if (rules != null) {
-            for (String rule : rules) {
-                sb.append("  ").append(rule);
-            }
-        }
-
-        return new YamlLintConfig(sb.toString());
-    }
-
-    private YamlLintConfig getDefaultConf() throws YamlLintConfigException {
-        return getConf("commas: disable\n",
-                "trailing-spaces: {}\n",
-                "colons: {max-spaces-before: 1}\n");
-    }
+  private YamlLintConfig getDefaultConf() throws YamlLintConfigException {
+    return getConf(
+        "commas: disable\n", "trailing-spaces: {}\n", "colons: {max-spaces-before: 1}\n");
+  }
 }
